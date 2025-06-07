@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { initializeMapbox } from "@/lib/mapbox";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { ErrorFallback } from "@/components/error-fallback";
+import { ErrorFallback } from "@/components/app-error-fallback";
 
 import { AuthProvider } from "@/context/supabase-provider";
 import { useColorScheme } from "@/lib/useColorScheme";
