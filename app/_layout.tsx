@@ -2,9 +2,9 @@ import "../global.css";
 
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { View, Text } from "react-native";
 import { initializeMapbox } from "@/lib/mapbox";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { ErrorFallback } from "@/components/error-fallback";
 
 import { AuthProvider } from "@/context/supabase-provider";
 import { useColorScheme } from "@/lib/useColorScheme";
@@ -23,25 +23,7 @@ export default function AppLayout() {
 
 	return (
 		<AuthProvider>
-			<ErrorBoundary
-				fallback={({ error }) => (
-					<View
-						style={{
-							flex: 1,
-							justifyContent: "center",
-							alignItems: "center",
-							padding: 20,
-						}}
-					>
-						<Text
-							style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}
-						>
-							Something went wrong
-						</Text>
-						<Text style={{ color: "red" }}>{error?.message}</Text>
-					</View>
-				)}
-			>
+			<ErrorBoundary fallback={({ error }) => <ErrorFallback error={error} />}>
 				<Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
 					<Stack.Screen name="(protected)" />
 					<Stack.Screen name="welcome" />
