@@ -7,6 +7,8 @@
 		"web": "expo start --web",
 		"android": "expo run:android",
 		"ios": "expo run:ios",
+		"clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd .. && npx expo run:ios",
+		"clean:android": "cd android && ./gradlew clean && cd .. && npx expo run:android",
 		"lint": "eslint . --fix",
 		"generate-colors": "node ./scripts/generate-colors.js && eslint ./constants/colors.ts --fix"
 	},
