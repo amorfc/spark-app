@@ -17,13 +17,13 @@ Note: By default Supabase Auth requires email verification before a session is c
 2. Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/FlemingVincent/expo-supabase-starter.git
+git clone https://github.com/FlemingVincent/spark-app.git
 ```
 
 3. Navigate to the project directory:
 
 ```bash
-cd expo-supabase-starter
+cd spark-app
 ```
 
 4. Install the required dependencies:
