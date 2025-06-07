@@ -37,7 +37,7 @@ export const ISTANBUL_BOUNDS = {
 // Default camera position for Istanbul
 export const DEFAULT_CAMERA = {
 	centerCoordinate: [28.9784, 41.0082] as [number, number], // Istanbul center
-	zoomLevel: 10,
+	zoomLevel: 11,
 	animationDuration: 0,
 };
 
@@ -52,8 +52,8 @@ export const NEIGHBORHOOD_STYLE = {
 	fillColor: [
 		"case",
 		["boolean", ["feature-state", "selected"], false],
-		"#ff0000", // Selected color
-		"#0080ff", // Default color
+		"#FF69B4", // Hot pink for selected
+		"#FFB6C1", // Light pink for default
 	],
 	fillOpacity: [
 		"case",
@@ -61,7 +61,7 @@ export const NEIGHBORHOOD_STYLE = {
 		0.8,
 		0.5,
 	],
-	fillOutlineColor: "#000000",
+	fillOutlineColor: "#FF1493", // Deep pink for outline
 } as const;
 
 // utils/mapboxApi.ts
@@ -132,4 +132,92 @@ export async function searchMapboxGeocoding({
 	}
 
 	return await response.json();
+}
+
+// Update the interface to include polygon data
+interface NeighborhoodResult {
+	id: string;
+	name: string;
+	place_name: string;
+	center: [number, number];
+	polygon?: GeoJSON.Polygon | GeoJSON.MultiPolygon;
+}
+
+// Add new search function that includes polygon data
+export async function searchNeighborhoods(
+	query: string,
+): Promise<NeighborhoodResult[]> {
+	const token = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
+	if (!token) {
+		throw new Error("Mapbox access token is missing. Check your .env file.");
+	}
+
+	// First, search for the neighborhood
+	const searchParams = new URLSearchParams({
+		access_token: token,
+		country: "tr",
+		types: MapboxGeocodingType.NEIGHBORHOOD,
+		limit: "5",
+		bbox: [
+			ISTANBUL_BOUNDS.sw[0],
+			ISTANBUL_BOUNDS.sw[1],
+			ISTANBUL_BOUNDS.ne[0],
+			ISTANBUL_BOUNDS.ne[1],
+		].join(","),
+	});
+
+	const baseUrl = process.env.EXPO_PUBLIC_MAPBOX_BASE_URL;
+	const searchUrl = `${baseUrl}${encodeURIComponent(query)}.json?${searchParams.toString()}`;
+
+	const searchResponse = await fetch(searchUrl);
+	if (!searchResponse.ok) {
+		throw new Error(`Search failed: ${searchResponse.statusText}`);
+	}
+
+	const searchData = await searchResponse.json();
+
+	// For each result, fetch the polygon data
+	const results = await Promise.all(
+		searchData.features.map(async (feature: any) => {
+			// Get the polygon data using the Mapbox Tilequery API
+			const tilequeryParams = new URLSearchParams({
+				access_token: token,
+				radius: "0",
+				limit: "1",
+				dedupe: "true",
+				geometry: "polygon",
+			});
+
+			const [lng, lat] = feature.center;
+			const tilequeryUrl = `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/tilequery/${lng},${lat}.json?${tilequeryParams.toString()}`;
+
+			try {
+				const tilequeryResponse = await fetch(tilequeryUrl);
+				if (!tilequeryResponse.ok) {
+					throw new Error(`Tilequery failed: ${tilequeryResponse.statusText}`);
+				}
+
+				const tilequeryData = await tilequeryResponse.json();
+				const polygon = tilequeryData.features[0]?.geometry;
+
+				return {
+					id: feature.id,
+					name: feature.text,
+					place_name: feature.place_name,
+					center: feature.center,
+					polygon: polygon,
+				};
+			} catch (error) {
+				console.error("Failed to fetch polygon data:", error);
+				return {
+					id: feature.id,
+					name: feature.text,
+					place_name: feature.place_name,
+					center: feature.center,
+				};
+			}
+		}),
+	);
+
+	return results;
 }
