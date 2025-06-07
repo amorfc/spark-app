@@ -1,8 +1,6 @@
 import "../global.css";
 
 import { Stack } from "expo-router";
-import { useEffect } from "react";
-import { initializeMapbox } from "@/lib/mapbox";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { ErrorFallback } from "@/components/app-error-fallback";
 
@@ -12,14 +10,6 @@ import { colors } from "@/constants/colors";
 
 export default function AppLayout() {
 	const { colorScheme } = useColorScheme();
-
-	useEffect(() => {
-		try {
-			initializeMapbox();
-		} catch (error) {
-			console.error("Failed to initialize Mapbox:", error);
-		}
-	}, []);
 
 	return (
 		<AuthProvider>
