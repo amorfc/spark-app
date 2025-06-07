@@ -1,7 +1,17 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useMemo } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SearchableSelect } from "@/components/searchable-select";
 import Map from "@/components/map/map";
+import {
+	filter,
+	map,
+	take,
+	deburr,
+	toLower,
+	includes,
+	memoize,
+	orderBy,
+} from "lodash";
 
 // Import the GeoJSON data
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
@@ -33,6 +43,62 @@ export default function MapScreen() {
 	}>(null);
 	const [selectedFeature, setSelectedFeature] = useState<SelectedFeature>(null);
 
+	// Pre-process and memoize neighborhood data for better search performance
+	const processedNeighborhoods = useMemo(() => {
+		return map(neighborhoodsData.features, (feature: any) => {
+			const displayName = feature.properties.display_name || "";
+			const cityName = feature.properties.address?.city || "";
+
+			return {
+				id: feature.properties.place_id?.toString() || "",
+				name: cityName || displayName.split(",")[0] || "Unknown",
+				place_name: displayName,
+				center: [
+					(feature.bbox[0] + feature.bbox[2]) / 2,
+					(feature.bbox[1] + feature.bbox[3]) / 2,
+				] as [number, number],
+				polygon: feature.geometry,
+				// Pre-processed search fields (normalized for better search)
+				searchText: toLower(deburr(`${displayName} ${cityName}`)),
+				originalFeature: feature,
+			};
+		});
+	}, []);
+
+	// Memoized search function for better performance
+	const searchNeighborhoods = useMemo(
+		() =>
+			memoize((query: string) => {
+				if (!query || query.length < 2) return [];
+
+				// Normalize search query
+				const normalizedQuery = toLower(deburr(query));
+
+				// Filter and score results
+				const results = filter(processedNeighborhoods, (neighborhood) =>
+					includes(neighborhood.searchText, normalizedQuery),
+				);
+
+				// Sort by relevance (exact matches first, then by length)
+				const sortedResults = orderBy(
+					results,
+					[
+						// Exact match in name gets highest priority
+						(item) => (toLower(item.name) === normalizedQuery ? 0 : 1),
+						// Then by how early the match appears
+						(item) => item.searchText.indexOf(normalizedQuery),
+						// Then by length (shorter names are more relevant)
+						(item) => item.name.length,
+					],
+					["asc", "asc", "asc"],
+				);
+
+				// Return top 5 results
+				return take(sortedResults, 5);
+			}),
+		[processedNeighborhoods],
+	);
+
 	const centerToFeature = useCallback((feature: SelectedFeature) => {
 		if (feature && mapRef.current?.centerOnCoordinates) {
 			mapRef.current?.centerOnCoordinates(feature.center, 14);
@@ -42,38 +108,13 @@ export default function MapScreen() {
 	const handleSearch = useCallback(
 		async (query: string): Promise<NeighborhoodResult[]> => {
 			try {
-				// Search through local neighborhood data
-				const filteredNeighborhoods = neighborhoodsData.features
-					.filter(
-						(feature: any) =>
-							feature.properties.display_name
-								.toLowerCase()
-								.includes(query.toLowerCase()) ||
-							feature.properties.address?.city
-								?.toLowerCase()
-								.includes(query.toLowerCase()),
-					)
-					.slice(0, 5)
-					.map((feature: any) => ({
-						id: feature.properties.place_id.toString(),
-						name:
-							feature.properties.address?.city ||
-							feature.properties.display_name.split(",")[0],
-						place_name: feature.properties.display_name,
-						center: [
-							(feature.bbox[0] + feature.bbox[2]) / 2, // longitude center
-							(feature.bbox[1] + feature.bbox[3]) / 2, // latitude center
-						] as [number, number],
-						polygon: feature.geometry,
-					}));
-
-				return filteredNeighborhoods;
+				return searchNeighborhoods(query);
 			} catch (err) {
 				console.error("Error searching location:", err);
 				return [];
 			}
 		},
-		[],
+		[searchNeighborhoods],
 	);
 
 	const handleSelect = useCallback((item: NeighborhoodResult) => {
