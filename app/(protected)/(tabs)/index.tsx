@@ -1,22 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
-import Mapbox, {
-	MapView,
-	Camera,
-	UserLocation,
-	ShapeSource,
-	FillLayer,
-} from "@rnmapbox/maps";
-import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
+import { useCallback, useRef, useState } from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SearchableSelect } from "@/components/searchable-select";
-
-import { initializeMapbox, getCameraConfig } from "@/lib/mapbox";
+import Map from "@/components/map/map";
 
 // Import the GeoJSON data
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 
-// Type the imported data as any for now to avoid strict type checking issues
-const neighborhoodsData = neighborhoodsDataRaw as any;
+// Type the imported data
+const neighborhoodsData = neighborhoodsDataRaw as GeoJSON.FeatureCollection;
 
 interface NeighborhoodResult {
 	id: string;
@@ -26,39 +17,26 @@ interface NeighborhoodResult {
 	polygon?: GeoJSON.Polygon | GeoJSON.MultiPolygon;
 }
 
-interface SelectedFeature {
-	id: string;
-	name: string;
+type NeigborhoodFeature = NeighborhoodResult & {
 	type: "neighborhood";
 	properties: any;
-}
+};
+
+export type SelectedFeature = NeigborhoodFeature | null;
 
 export default function MapScreen() {
-	const mapRef = useRef<MapView>(null);
-	const cameraRef = useRef<Camera>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [selectedFeature, setSelectedFeature] =
-		useState<SelectedFeature | null>(null);
+	const mapRef = useRef<{
+		centerOnCoordinates: (
+			coordinates: [number, number],
+			zoomLevel?: number,
+		) => void;
+	}>(null);
+	const [selectedFeature, setSelectedFeature] = useState<SelectedFeature>(null);
 
-	// Get camera configuration for Istanbul
-	const cameraConfig = getCameraConfig("istanbul");
-
-	// Initialize Mapbox
-	useEffect(() => {
-		const initMap = async () => {
-			try {
-				await initializeMapbox();
-			} catch (err) {
-				console.error("Failed to initialize map:", err);
-				setError(
-					err instanceof Error ? err.message : "Failed to initialize map",
-				);
-				setError("Failed to initialize map");
-			}
-		};
-
-		initMap();
+	const centerToFeature = useCallback((feature: SelectedFeature) => {
+		if (feature && mapRef.current?.centerOnCoordinates) {
+			mapRef.current?.centerOnCoordinates(feature.center, 14);
+		}
 	}, []);
 
 	const handleSearch = useCallback(
@@ -99,13 +77,9 @@ export default function MapScreen() {
 	);
 
 	const handleSelect = useCallback((item: NeighborhoodResult) => {
-		if (cameraRef.current && item.center) {
-			const [lng, lat] = item.center;
-			cameraRef.current.setCamera({
-				centerCoordinate: [lng, lat],
-				zoomLevel: 14,
-				animationDuration: 1000,
-			});
+		// Center map on selected item
+		if (mapRef.current?.centerOnCoordinates) {
+			mapRef.current.centerOnCoordinates(item.center, 14);
 		}
 
 		// Set selected feature for highlighting
@@ -114,51 +88,14 @@ export default function MapScreen() {
 			name: item.name,
 			type: "neighborhood",
 			properties: {},
+			place_name: item.place_name,
+			center: item.center,
 		});
 	}, []);
 
-	const onMapLoad = useCallback(() => {
-		setIsLoading(false);
+	const handleFeaturePress = useCallback((feature: SelectedFeature) => {
+		setSelectedFeature(feature);
 	}, []);
-
-	// Handle neighborhood click
-	const onNeighborhoodPress = useCallback((event: OnPressEvent) => {
-		const feature = event.features[0];
-		if (feature && feature.properties) {
-			const selectedNeighborhood: SelectedFeature = {
-				id: feature.properties.place_id?.toString() || "unknown",
-				name:
-					feature.properties.address?.city ||
-					feature.properties.display_name?.split(",")[0] ||
-					"Unknown Neighborhood",
-				type: "neighborhood",
-				properties: feature.properties,
-			};
-
-			setSelectedFeature(selectedNeighborhood);
-
-			// Center map on clicked neighborhood
-			if (cameraRef.current && feature.properties.bbox) {
-				const bbox = feature.properties.bbox;
-				const centerLng = (bbox[0] + bbox[2]) / 2;
-				const centerLat = (bbox[1] + bbox[3]) / 2;
-
-				cameraRef.current.setCamera({
-					centerCoordinate: [centerLng, centerLat],
-					zoomLevel: 14,
-					animationDuration: 1000,
-				});
-			}
-		}
-	}, []);
-
-	if (error) {
-		return (
-			<View style={styles.errorContainer}>
-				<Text style={styles.errorText}>{error}</Text>
-			</View>
-		);
-	}
 
 	return (
 		<View className="flex-1">
@@ -170,104 +107,30 @@ export default function MapScreen() {
 				debounceMs={300}
 				getItemLabel={(item) => item.place_name}
 			/>
-			{isLoading && (
-				<View style={styles.loadingContainer}>
-					<ActivityIndicator size="large" color="#0080ff" />
-				</View>
-			)}
-			<MapView
+
+			<Map
 				ref={mapRef}
-				style={styles.map}
-				styleURL={Mapbox.StyleURL.Street}
-				onDidFinishLoadingMap={onMapLoad}
-				compassEnabled={true}
-				compassViewPosition={2}
-				logoEnabled={false}
-				attributionEnabled={true}
-			>
-				<Camera
-					ref={cameraRef}
-					centerCoordinate={cameraConfig.centerCoordinate}
-					zoomLevel={cameraConfig.zoomLevel}
-					animationDuration={cameraConfig.animationDuration}
-					bounds={cameraConfig.bounds}
-				/>
-
-				<UserLocation
-					visible={true}
-					animated={true}
-					showsUserHeadingIndicator={true}
-				/>
-
-				{/* Neighborhoods Layer */}
-				<ShapeSource
-					id="neighborhoods-source"
-					shape={neighborhoodsData}
-					onPress={onNeighborhoodPress}
-				>
-					<FillLayer
-						id="neighborhoods-fill"
-						style={{
-							fillColor: [
-								"case",
-								[
-									"==",
-									["get", "place_id"],
-									selectedFeature ? parseInt(selectedFeature.id) : -1,
-								],
-								"#FFB6C1", // Light pink for selected neighborhood
-								"#F0F8FF", // Alice blue for unselected neighborhoods
-							],
-							fillOpacity: [
-								"case",
-								[
-									"==",
-									["get", "place_id"],
-									selectedFeature ? parseInt(selectedFeature.id) : -1,
-								],
-								0.7,
-								0.2,
-							],
-							fillOutlineColor: "#FF1493",
-						}}
-					/>
-				</ShapeSource>
-			</MapView>
+				location="istanbul"
+				geoJsonData={neighborhoodsData}
+				selectedFeature={selectedFeature}
+				onFeaturePress={handleFeaturePress}
+			/>
 
 			{/* Selected Feature Info */}
 			{selectedFeature && (
-				<View style={styles.infoContainer}>
+				<TouchableOpacity
+					style={styles.infoContainer}
+					onPress={() => centerToFeature(selectedFeature)}
+				>
 					<Text style={styles.infoTitle}>Neighborhood</Text>
 					<Text style={styles.infoName}>{selectedFeature.name}</Text>
-				</View>
+				</TouchableOpacity>
 			)}
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	map: {
-		flex: 1,
-	},
-	loadingContainer: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: "rgba(255, 255, 255, 0.8)",
-		justifyContent: "center",
-		alignItems: "center",
-		zIndex: 1,
-	},
-	errorContainer: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		padding: 20,
-		backgroundColor: "#fff",
-	},
-	errorText: {
-		color: "red",
-		fontSize: 16,
-		textAlign: "center",
-	},
 	infoContainer: {
 		position: "absolute",
 		bottom: 100,
