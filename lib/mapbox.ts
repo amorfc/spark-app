@@ -1,7 +1,13 @@
 import Mapbox from "@rnmapbox/maps";
+import {
+	LocationConfig,
+	MapCameraConfig,
+	IstanbulLocationConfig,
+} from "@/constants/geo";
 
 let isInitialized = false;
 
+// Initialize Mapbox with your access token
 export const initializeMapbox = async () => {
 	if (isInitialized) {
 		return;
@@ -27,15 +33,27 @@ export const initializeMapbox = async () => {
 	}
 };
 
-// Istanbul bounds for map restriction
-export const ISTANBUL_BOUNDS = {
-	ne: [29.5, 41.3] as [number, number], // Northeast coordinates
-	sw: [28.5, 40.8] as [number, number], // Southwest coordinates
-};
+// Utility function to get camera configuration for different locations
+export const getCameraConfig = (locationName: string): MapCameraConfig => {
+	let config: LocationConfig;
 
-// Default camera position for Istanbul
-export const DEFAULT_CAMERA = {
-	centerCoordinate: [28.9784, 41.0082] as [number, number], // Istanbul center
-	zoomLevel: 11,
-	animationDuration: 0,
+	switch (locationName.toLowerCase()) {
+		case "istanbul":
+			config = IstanbulLocationConfig;
+			break;
+		default:
+			// Default to Istanbul if location not found
+			config = IstanbulLocationConfig;
+			break;
+	}
+
+	return {
+		centerCoordinate: [config.center1, config.center2],
+		zoomLevel: 10,
+		animationDuration: 0,
+		bounds: {
+			ne: [config.ne1, config.ne2],
+			sw: [config.sw1, config.sw2],
+		},
+	};
 };

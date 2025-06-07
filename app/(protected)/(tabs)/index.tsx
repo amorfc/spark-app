@@ -10,18 +10,12 @@ import Mapbox, {
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { SearchableSelect } from "@/components/searchable-select";
 
-import {
-	initializeMapbox,
-	ISTANBUL_BOUNDS,
-	DEFAULT_CAMERA,
-} from "@/lib/mapbox";
+import { initializeMapbox, getCameraConfig } from "@/lib/mapbox";
 
 // Import the GeoJSON data
-import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 
 // Type the imported data as any for now to avoid strict type checking issues
-const districtsData = districtsDataRaw as any;
 const neighborhoodsData = neighborhoodsDataRaw as any;
 
 interface NeighborhoodResult {
@@ -35,7 +29,7 @@ interface NeighborhoodResult {
 interface SelectedFeature {
 	id: string;
 	name: string;
-	type: "district" | "neighborhood";
+	type: "neighborhood";
 	properties: any;
 }
 
@@ -46,6 +40,9 @@ export default function MapScreen() {
 	const [error, setError] = useState<string | null>(null);
 	const [selectedFeature, setSelectedFeature] =
 		useState<SelectedFeature | null>(null);
+
+	// Get camera configuration for Istanbul
+	const cameraConfig = getCameraConfig("istanbul");
 
 	// Initialize Mapbox
 	useEffect(() => {
@@ -124,37 +121,6 @@ export default function MapScreen() {
 		setIsLoading(false);
 	}, []);
 
-	// Handle district click
-	const onDistrictPress = useCallback((event: OnPressEvent) => {
-		const feature = event.features[0];
-		if (feature && feature.properties) {
-			const selectedDistrict: SelectedFeature = {
-				id: feature.properties.place_id?.toString() || "unknown",
-				name:
-					feature.properties.address?.archipelago ||
-					feature.properties.display_name?.split(",")[0] ||
-					"Unknown District",
-				type: "district",
-				properties: feature.properties,
-			};
-
-			setSelectedFeature(selectedDistrict);
-
-			// Center map on clicked district
-			if (cameraRef.current && feature.properties.bbox) {
-				const bbox = feature.properties.bbox;
-				const centerLng = (bbox[0] + bbox[2]) / 2;
-				const centerLat = (bbox[1] + bbox[3]) / 2;
-
-				cameraRef.current.setCamera({
-					centerCoordinate: [centerLng, centerLat],
-					zoomLevel: 12,
-					animationDuration: 1000,
-				});
-			}
-		}
-	}, []);
-
 	// Handle neighborhood click
 	const onNeighborhoodPress = useCallback((event: OnPressEvent) => {
 		const feature = event.features[0];
@@ -221,10 +187,10 @@ export default function MapScreen() {
 			>
 				<Camera
 					ref={cameraRef}
-					centerCoordinate={DEFAULT_CAMERA.centerCoordinate}
-					zoomLevel={DEFAULT_CAMERA.zoomLevel}
-					animationDuration={DEFAULT_CAMERA.animationDuration}
-					bounds={ISTANBUL_BOUNDS}
+					centerCoordinate={cameraConfig.centerCoordinate}
+					zoomLevel={cameraConfig.zoomLevel}
+					animationDuration={cameraConfig.animationDuration}
+					bounds={cameraConfig.bounds}
 				/>
 
 				<UserLocation
@@ -232,44 +198,6 @@ export default function MapScreen() {
 					animated={true}
 					showsUserHeadingIndicator={true}
 				/>
-
-				{/* Districts Layer */}
-				<ShapeSource
-					id="districts-source"
-					shape={districtsData}
-					onPress={onDistrictPress}
-				>
-					<FillLayer
-						id="districts-fill"
-						style={{
-							fillColor: [
-								"case",
-								[
-									"==",
-									["get", "place_id"],
-									selectedFeature?.type === "district"
-										? parseInt(selectedFeature.id)
-										: -1,
-								],
-								"#FF69B4", // Hot pink for selected district
-								"#E6F3FF", // Light blue for unselected districts
-							],
-							fillOpacity: [
-								"case",
-								[
-									"==",
-									["get", "place_id"],
-									selectedFeature?.type === "district"
-										? parseInt(selectedFeature.id)
-										: -1,
-								],
-								0.8,
-								0.3,
-							],
-							fillOutlineColor: "#0080ff",
-						}}
-					/>
-				</ShapeSource>
 
 				{/* Neighborhoods Layer */}
 				<ShapeSource
@@ -285,9 +213,7 @@ export default function MapScreen() {
 								[
 									"==",
 									["get", "place_id"],
-									selectedFeature?.type === "neighborhood"
-										? parseInt(selectedFeature.id)
-										: -1,
+									selectedFeature ? parseInt(selectedFeature.id) : -1,
 								],
 								"#FFB6C1", // Light pink for selected neighborhood
 								"#F0F8FF", // Alice blue for unselected neighborhoods
@@ -297,9 +223,7 @@ export default function MapScreen() {
 								[
 									"==",
 									["get", "place_id"],
-									selectedFeature?.type === "neighborhood"
-										? parseInt(selectedFeature.id)
-										: -1,
+									selectedFeature ? parseInt(selectedFeature.id) : -1,
 								],
 								0.7,
 								0.2,
@@ -313,9 +237,7 @@ export default function MapScreen() {
 			{/* Selected Feature Info */}
 			{selectedFeature && (
 				<View style={styles.infoContainer}>
-					<Text style={styles.infoTitle}>
-						{selectedFeature.type === "district" ? "District" : "Neighborhood"}
-					</Text>
+					<Text style={styles.infoTitle}>Neighborhood</Text>
 					<Text style={styles.infoName}>{selectedFeature.name}</Text>
 				</View>
 			)}
