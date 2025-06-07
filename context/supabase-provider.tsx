@@ -51,7 +51,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			setSession(data.session);
 			console.log("User signed up:", data.user);
 		} else {
-			console.log("No user returned from sign up");
+			throw new Error("Email already in use or invalid password/email");
 		}
 	};
 
@@ -66,11 +66,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
+		if (!data.user.user_metadata.email_verified) {
+			throw new Error("Email not verified");
+		}
+
 		if (data.session) {
 			setSession(data.session);
 			console.log("User signed in:", data.user);
 		} else {
-			console.log("No user returned from sign in");
+			throw new Error("Email already in use or invalid password/email");
 		}
 	};
 

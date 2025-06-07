@@ -27,7 +27,7 @@ const formSchema = z
 			)
 			.regex(/^(?=.*[0-9])/, "Your password must have at least one number.")
 			.regex(
-				/^(?=.*[!@#$%^&*])/,
+				/^(?=.*[_!@#$%^&*])/,
 				"Your password must have at least one special character.",
 			),
 		confirmPassword: z.string().min(8, "Please enter at least 8 characters."),
@@ -54,6 +54,7 @@ export default function SignUp() {
 			await signUp(data.email, data.password);
 
 			form.reset();
+			console.log("Sign up successful");
 		} catch (error: Error | any) {
 			console.error(error.message);
 		}
