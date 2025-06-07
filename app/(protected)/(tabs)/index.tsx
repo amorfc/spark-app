@@ -1,54 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
-import Mapbox, {
-	MapView,
-	ShapeSource,
-	FillLayer,
-	Camera,
-	UserLocation,
-} from "@rnmapbox/maps";
-import type { Feature, FeatureCollection, Geometry } from "geojson";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Mapbox, { MapView, Camera, UserLocation } from "@rnmapbox/maps";
+import { SearchableSelect } from "@/components/searchable-select";
 
 import {
 	initializeMapbox,
 	ISTANBUL_BOUNDS,
 	DEFAULT_CAMERA,
-	LAYER_IDS,
-	NEIGHBORHOOD_STYLE,
+	searchMapboxGeocoding,
 } from "@/lib/mapbox";
 
-// Types for our neighborhood data
-interface NeighborhoodFeature
-	extends Feature<
-		Geometry,
-		{
-			mahalle_adi: string;
-			ilce_adi: string;
-			selected?: boolean;
-		}
-	> {}
-
-interface NeighborhoodCollection
-	extends FeatureCollection<
-		Geometry,
-		{
-			mahalle_adi: string;
-			ilce_adi: string;
-			selected?: boolean;
-		}
-	> {}
-
-// Cache key for neighborhoods
-const NEIGHBORHOOD_CACHE_KEY = "@neighborhoods_cache";
+interface NeighborhoodResult {
+	id: string;
+	name: string;
+	place_name: string;
+	center: [number, number];
+}
 
 export default function MapScreen() {
 	const mapRef = useRef<MapView>(null);
-	const [neighborhoods, setNeighborhoods] =
-		useState<NeighborhoodCollection | null>(null);
-	const [selectedNeighborhood, setSelectedNeighborhood] = useState<
-		string | null
-	>(null);
+	const cameraRef = useRef<Camera>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +28,7 @@ export default function MapScreen() {
 		const initMap = async () => {
 			try {
 				await initializeMapbox();
-				await loadNeighborhoods();
+				// await loadNeighborhoods();
 			} catch (err) {
 				console.error("Failed to initialize map:", err);
 				setError(
@@ -69,94 +40,50 @@ export default function MapScreen() {
 		initMap();
 	}, []);
 
-	// Load neighborhoods from cache or fetch them
-	const loadNeighborhoods = useCallback(async () => {
-		try {
-			setIsLoading(true);
-			setError(null);
-
-			// Try to load from cache first
-			const cached = await AsyncStorage.getItem(NEIGHBORHOOD_CACHE_KEY);
-			if (cached) {
-				setNeighborhoods(JSON.parse(cached));
-				return;
+	const handleSearch = useCallback(
+		async (query: string): Promise<NeighborhoodResult[]> => {
+			try {
+				const data = await searchMapboxGeocoding({ query });
+				console.log({ data });
+				// Filter results to ensure they're within Istanbul
+				const istanbulResults = data.features;
+				return istanbulResults.map((feature: any) => ({
+					id: feature.id,
+					name: feature.text,
+					place_name: feature.place_name,
+					center: feature.center,
+				}));
+			} catch (err) {
+				console.error("Error searching location:", err);
+				return [];
 			}
+		},
+		[],
+	);
 
-			// If not in cache, fetch from your API or static file
-			// TODO: Replace with your actual data source
-			const response = await fetch("YOUR_NEIGHBORHOOD_GEOJSON_URL");
-			if (!response.ok) {
-				throw new Error(
-					`Failed to fetch neighborhoods: ${response.statusText}`,
-				);
-			}
-
-			const data: NeighborhoodCollection = await response.json();
-
-			// Cache the data
-			await AsyncStorage.setItem(NEIGHBORHOOD_CACHE_KEY, JSON.stringify(data));
-			setNeighborhoods(data);
-		} catch (err) {
-			console.error("Error loading neighborhoods:", err);
-			setError(
-				err instanceof Error ? err.message : "Failed to load neighborhoods",
-			);
-		} finally {
-			setIsLoading(false);
+	const handleSelect = useCallback((item: NeighborhoodResult) => {
+		if (cameraRef.current && item.center) {
+			const [lng, lat] = item.center;
+			cameraRef.current.setCamera({
+				centerCoordinate: [lng, lat],
+				zoomLevel: 14,
+				animationDuration: 1000,
+			});
 		}
 	}, []);
 
-	const onPress = useCallback(
-		async (event: any) => {
-			if (!mapRef.current || !neighborhoods) return;
-
-			try {
-				const features = await mapRef.current.queryRenderedFeaturesAtPoint(
-					[event.properties.screenPointX, event.properties.screenPointY],
-					[LAYER_IDS.NEIGHBORHOODS],
-				);
-
-				if (features && features.features && features.features.length > 0) {
-					const feature = features.features[0] as NeighborhoodFeature;
-					const mahalleAdi = feature.properties.mahalle_adi;
-
-					// Reset previous selection
-					if (selectedNeighborhood && mapRef.current) {
-						try {
-							await mapRef.current.setFeatureState(
-								{ source: LAYER_IDS.NEIGHBORHOODS, id: selectedNeighborhood },
-								{ selected: false },
-							);
-						} catch (err) {
-							console.error("Error resetting feature state:", err);
-						}
-					}
-
-					// Update selection
-					setSelectedNeighborhood((prev) => {
-						const newSelection = prev === mahalleAdi ? null : mahalleAdi;
-						if (newSelection && mapRef.current) {
-							try {
-								mapRef.current.setFeatureState(
-									{ source: LAYER_IDS.NEIGHBORHOODS, id: newSelection },
-									{ selected: true },
-								);
-							} catch (err) {
-								console.error("Error setting feature state:", err);
-							}
-						}
-						return newSelection;
-					});
-				}
-			} catch (err) {
-				console.error("Error handling map press:", err);
-			}
-		},
-		[neighborhoods, selectedNeighborhood],
-	);
-
 	const onMapLoad = useCallback(() => {
 		setIsLoading(false);
+	}, []);
+
+	useEffect(() => {
+		if (mapRef.current) {
+			// mapRef.current.setBounds(
+			// 	[28.5, 40.8], // SW (minLng, minLat)
+			// 	[29.5, 41.3], // NE (maxLng, maxLat)
+			// 	50, // padding in pixels
+			// );
+		}
 	}, []);
 
 	if (error) {
@@ -168,7 +95,15 @@ export default function MapScreen() {
 	}
 
 	return (
-		<View style={styles.container}>
+		<View className="flex-1">
+			<SearchableSelect<NeighborhoodResult>
+				onSearch={handleSearch}
+				onSelect={handleSelect}
+				placeholder="Search neighborhoods in Istanbul..."
+				minSearchLength={4}
+				debounceMs={300}
+				getItemLabel={(item) => item.place_name}
+			/>
 			{isLoading && (
 				<View style={styles.loadingContainer}>
 					<ActivityIndicator size="large" color="#0080ff" />
@@ -178,7 +113,6 @@ export default function MapScreen() {
 				ref={mapRef}
 				style={styles.map}
 				styleURL={Mapbox.StyleURL.Street}
-				onPress={onPress}
 				onDidFinishLoadingMap={onMapLoad}
 				compassEnabled={true}
 				compassViewPosition={2}
@@ -186,6 +120,7 @@ export default function MapScreen() {
 				attributionEnabled={true}
 			>
 				<Camera
+					ref={cameraRef}
 					centerCoordinate={DEFAULT_CAMERA.centerCoordinate}
 					zoomLevel={DEFAULT_CAMERA.zoomLevel}
 					animationDuration={DEFAULT_CAMERA.animationDuration}
@@ -198,23 +133,21 @@ export default function MapScreen() {
 					showsUserHeadingIndicator={true}
 				/>
 
-				{neighborhoods && (
+				{/* Comment out ShapeSource for now */}
+				{/* {neighborhoods && (
 					<ShapeSource id={LAYER_IDS.NEIGHBORHOODS} shape={neighborhoods}>
 						<FillLayer
 							id={LAYER_IDS.NEIGHBORHOODS_FILL}
 							style={NEIGHBORHOOD_STYLE}
 						/>
 					</ShapeSource>
-				)}
+				)} */}
 			</MapView>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
 	map: {
 		flex: 1,
 	},
