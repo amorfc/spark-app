@@ -19,7 +19,6 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 	containerStyle,
 }) => {
 	// Dropdown picker state
-	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState<string | null>(null);
 	const { setSelectedFeatureId } = useSearch();
 
@@ -55,18 +54,20 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 	return (
 		<View style={[styles.container, containerStyle]}>
 			<Select
-				open={open}
 				value={value}
-				items={items}
-				setOpen={setOpen}
+				originalItems={items}
 				setValue={setValue}
-				setItems={setItems}
 				onSelectItem={handleSelectItem}
 				placeholder={placeholder}
 				searchable={true}
 				searchPlaceholder="Type to search..."
-				listMode="MODAL"
-				modalTitle={`Select ${city.charAt(0).toUpperCase() + city.slice(1)} Location`}
+				listMode="SCROLLVIEW"
+				minSearchLength={3}
+				maxResults={5}
+				debounceMs={300}
+				initialItemsCount={50}
+				clearable={true}
+				maxVisibleItems={2}
 			/>
 		</View>
 	);
