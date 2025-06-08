@@ -1,38 +1,16 @@
-import { useCallback, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { SearchableSelect } from "@/components/searchable-select";
+import { defaultTo } from "lodash";
 import Map from "@/components/map/map";
-import {
-	filter,
-	map,
-	take,
-	deburr,
-	toLower,
-	includes,
-	memoize,
-	orderBy,
-} from "lodash";
+import { FeatureSelect } from "@/components/select/feature-select";
+import { useSearch, SelectedFeature } from "@/context/search-provider";
+import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
 
 // Import the GeoJSON data
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 
 // Type the imported data
 const neighborhoodsData = neighborhoodsDataRaw as GeoJSON.FeatureCollection;
-
-interface NeighborhoodResult {
-	id: string;
-	name: string;
-	place_name: string;
-	center: [number, number];
-	polygon?: GeoJSON.Polygon | GeoJSON.MultiPolygon;
-}
-
-type NeigborhoodFeature = NeighborhoodResult & {
-	type: "neighborhood";
-	properties: any;
-};
-
-export type SelectedFeature = NeigborhoodFeature | null;
 
 export default function MapScreen() {
 	const mapRef = useRef<{
@@ -41,112 +19,44 @@ export default function MapScreen() {
 			zoomLevel?: number,
 		) => void;
 	}>(null);
-	const [selectedFeature, setSelectedFeature] = useState<SelectedFeature>(null);
 
-	// Pre-process and memoize neighborhood data for better search performance
-	const processedNeighborhoods = useMemo(() => {
-		return map(neighborhoodsData.features, (feature: any) => {
-			const displayName = feature.properties.display_name || "";
-			const cityName = feature.properties.address?.city || "";
+	// Use the search context for global state management
+	const { selectedFeature, setSelectedFeatureId } = useSearch();
 
-			return {
-				id: feature.properties.place_id?.toString() || "",
-				name: cityName || displayName.split(",")[0] || "Unknown",
-				place_name: displayName,
-				center: [
-					(feature.bbox[0] + feature.bbox[2]) / 2,
-					(feature.bbox[1] + feature.bbox[3]) / 2,
-				] as [number, number],
-				polygon: feature.geometry,
-				// Pre-processed search fields (normalized for better search)
-				searchText: toLower(deburr(`${displayName} ${cityName}`)),
-				originalFeature: feature,
-			};
-		});
-	}, []);
+	// Get the original camera configuration for Istanbul
+	const originalCameraConfig = getCameraConfig("istanbul");
 
-	// Memoized search function for better performance
-	const searchNeighborhoods = useMemo(
-		() =>
-			memoize((query: string) => {
-				if (!query || query.length < 2) return [];
-
-				// Normalize search query
-				const normalizedQuery = toLower(deburr(query));
-
-				// Filter and score results
-				const results = filter(processedNeighborhoods, (neighborhood) =>
-					includes(neighborhood.searchText, normalizedQuery),
+	const centerTo = useCallback(
+		(feature: SelectedFeature) => {
+			if (mapRef.current?.centerOnCoordinates) {
+				const target = defaultTo(
+					feature?.center,
+					originalCameraConfig.centerCoordinate,
 				);
 
-				// Sort by relevance (exact matches first, then by length)
-				const sortedResults = orderBy(
-					results,
-					[
-						// Exact match in name gets highest priority
-						(item) => (toLower(item.name) === normalizedQuery ? 0 : 1),
-						// Then by how early the match appears
-						(item) => item.searchText.indexOf(normalizedQuery),
-						// Then by length (shorter names are more relevant)
-						(item) => item.name.length,
-					],
-					["asc", "asc", "asc"],
-				);
-
-				// Return top 5 results
-				return take(sortedResults, 5);
-			}),
-		[processedNeighborhoods],
-	);
-
-	const centerToFeature = useCallback((feature: SelectedFeature) => {
-		if (feature && mapRef.current?.centerOnCoordinates) {
-			mapRef.current?.centerOnCoordinates(feature.center, 14);
-		}
-	}, []);
-
-	const handleSearch = useCallback(
-		async (query: string): Promise<NeighborhoodResult[]> => {
-			try {
-				return searchNeighborhoods(query);
-			} catch (err) {
-				console.error("Error searching location:", err);
-				return [];
+				mapRef.current.centerOnCoordinates(target, calculateZoomLevel(feature));
 			}
 		},
-		[searchNeighborhoods],
+		[originalCameraConfig],
 	);
 
-	const handleSelect = useCallback((item: NeighborhoodResult) => {
-		// Center map on selected item
-		if (mapRef.current?.centerOnCoordinates) {
-			mapRef.current.centerOnCoordinates(item.center, 14);
-		}
+	const handleFeaturePress = useCallback(
+		(id: string) => {
+			id && setSelectedFeatureId(id);
+		},
+		[setSelectedFeatureId],
+	);
 
-		// Set selected feature for highlighting
-		setSelectedFeature({
-			id: item.id,
-			name: item.name,
-			type: "neighborhood",
-			properties: {},
-			place_name: item.place_name,
-			center: item.center,
-		});
-	}, []);
-
-	const handleFeaturePress = useCallback((feature: SelectedFeature) => {
-		setSelectedFeature(feature);
-	}, []);
+	useEffect(() => {
+		centerTo(selectedFeature);
+	}, [centerTo, selectedFeature]);
 
 	return (
 		<View className="flex-1">
-			<SearchableSelect<NeighborhoodResult>
-				onSearch={handleSearch}
-				onSelect={handleSelect}
+			<FeatureSelect
+				city="istanbul"
+				geoJsonData={neighborhoodsData}
 				placeholder="Search neighborhoods in Istanbul..."
-				minSearchLength={2}
-				debounceMs={300}
-				getItemLabel={(item) => item.place_name}
 			/>
 
 			<Map
@@ -155,18 +65,32 @@ export default function MapScreen() {
 				geoJsonData={neighborhoodsData}
 				selectedFeature={selectedFeature}
 				onFeaturePress={handleFeaturePress}
+				variant="moderate"
 			/>
 
 			{/* Selected Feature Info */}
 			{selectedFeature && (
 				<TouchableOpacity
 					style={styles.infoContainer}
-					onPress={() => centerToFeature(selectedFeature)}
+					onPress={() => centerTo(selectedFeature)}
 				>
 					<Text style={styles.infoTitle}>Neighborhood</Text>
 					<Text style={styles.infoName}>{selectedFeature.name}</Text>
 				</TouchableOpacity>
 			)}
+
+			{/* Debug: Clear selection button */}
+			<TouchableOpacity
+				style={[styles.infoContainer, { bottom: 200, backgroundColor: "red" }]}
+				onPress={() => setSelectedFeatureId(null)}
+			>
+				<Text style={[styles.infoTitle, { color: "white" }]}>
+					Clear Selection
+				</Text>
+				<Text style={[styles.infoName, { color: "white" }]}>
+					Back to Original
+				</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }

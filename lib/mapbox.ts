@@ -4,6 +4,8 @@ import {
 	MapCameraConfig,
 	IstanbulLocationConfig,
 } from "@/constants/geo";
+import { SelectedFeature } from "@/context/search-provider";
+import { useCallback } from "react";
 
 let isInitialized = false;
 
@@ -56,4 +58,30 @@ export const getCameraConfig = (locationName: string): MapCameraConfig => {
 			sw: [config.sw1, config.sw2],
 		},
 	};
+};
+
+const calculateBoundingBoxArea = (bbox: number[]) => {
+	if (!bbox || bbox.length < 4) return 0;
+	// bbox format: [minLon, minLat, maxLon, maxLat]
+	const width = Math.abs(bbox[2] - bbox[0]); // longitude difference
+	const height = Math.abs(bbox[3] - bbox[1]); // latitude difference
+	return width * height; // approximate area
+};
+
+export const calculateZoomLevel = (
+	feature: SelectedFeature,
+	areaThreshold: number = 0.01,
+) => {
+	let zoomLevel = 12; // default zoom
+
+	if (feature?.bbox) {
+		const area = calculateBoundingBoxArea(feature.bbox);
+
+		if (area > areaThreshold) {
+			zoomLevel = 10; // zoom out for larger areas
+		} else {
+			zoomLevel = 12; // zoom in for smaller areas
+		}
+	}
+	return zoomLevel;
 };

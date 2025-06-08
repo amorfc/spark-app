@@ -16,7 +16,8 @@ import Mapbox, {
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { initializeMapbox, getCameraConfig } from "@/lib/mapbox";
-import { SelectedFeature } from "@/app/(protected)/(tabs)/index";
+import { SelectedFeature } from "@/context/search-provider";
+import { usePolygonStyle } from "@/hooks/usePolygonStyle";
 
 interface MapRef {
 	centerOnCoordinates: (
@@ -29,13 +30,21 @@ interface MapProps {
 	location: string;
 	geoJsonData: GeoJSON.FeatureCollection;
 	selectedFeature: SelectedFeature | null;
-	onFeaturePress: (feature: SelectedFeature) => void;
+	onFeaturePress: (id: string) => void;
 	onMapLoad?: () => void;
+	variant?: "subtle" | "moderate" | "vibrant";
 }
 
 const Map = forwardRef<MapRef, MapProps>(
 	(
-		{ location, geoJsonData, selectedFeature, onFeaturePress, onMapLoad },
+		{
+			location,
+			geoJsonData,
+			selectedFeature,
+			onFeaturePress,
+			onMapLoad,
+			variant = "moderate",
+		},
 		ref,
 	) => {
 		const mapRef = useRef<MapView>(null);
@@ -45,6 +54,9 @@ const Map = forwardRef<MapRef, MapProps>(
 
 		// Get camera configuration for the specified location
 		const cameraConfig = getCameraConfig(location);
+
+		// Get polygon styling with variant support
+		const polygonStyle = usePolygonStyle({ selectedFeature, variant });
 
 		// Initialize Mapbox
 		useEffect(() => {
@@ -69,34 +81,7 @@ const Map = forwardRef<MapRef, MapProps>(
 		const onNeighborhoodPress = useCallback(
 			(event: OnPressEvent) => {
 				const feature = event.features[0];
-				if (feature && feature.properties) {
-					const selectedNeighborhood: SelectedFeature = {
-						id: feature.properties.place_id?.toString() || "unknown",
-						name:
-							feature.properties.address?.city ||
-							feature.properties.display_name?.split(",")[0] ||
-							"Unknown Neighborhood",
-						type: "neighborhood",
-						properties: feature.properties,
-						place_name: feature.properties.place_name,
-						center: feature.properties.center,
-					};
-
-					onFeaturePress(selectedNeighborhood);
-
-					// Center map on clicked neighborhood
-					if (cameraRef.current && feature.properties.bbox) {
-						const bbox = feature.properties.bbox;
-						const centerLng = (bbox[0] + bbox[2]) / 2;
-						const centerLat = (bbox[1] + bbox[3]) / 2;
-
-						cameraRef.current.setCamera({
-							centerCoordinate: [centerLng, centerLat],
-							zoomLevel: 14,
-							animationDuration: 1000,
-						});
-					}
-				}
+				onFeaturePress(feature.properties?.place_id?.toString() || "unknown");
 			},
 			[onFeaturePress],
 		);
@@ -104,6 +89,10 @@ const Map = forwardRef<MapRef, MapProps>(
 		// Public method to center camera on coordinates
 		const centerOnCoordinates = useCallback(
 			(coordinates: [number, number], zoomLevel: number = 14) => {
+				console.log("🎯 Centering to coordinates:", coordinates);
+				console.log("🎯 Expected: [lng, lat] format");
+				console.log("🎯 Camera ref exists:", !!cameraRef.current);
+
 				if (cameraRef.current) {
 					cameraRef.current.setCamera({
 						centerCoordinate: coordinates,
@@ -170,41 +159,14 @@ const Map = forwardRef<MapRef, MapProps>(
 					/>
 
 					{/* Neighborhoods Layer */}
-					{isValidGeoJSON && (
-						<ShapeSource
-							key={`neighborhoods-source-${selectedFeature?.id || "none"}`}
-							id="neighborhoods-source"
-							shape={geoJsonData}
-							onPress={onNeighborhoodPress}
-						>
-							<FillLayer
-								id="neighborhoods-fill"
-								style={{
-									fillColor: [
-										"case",
-										[
-											"==",
-											["get", "place_id"],
-											selectedFeature ? parseInt(selectedFeature.id) : -1,
-										],
-										"#FFB6C1", // Light pink for selected neighborhood
-										"#F0F8FF", // Alice blue for unselected neighborhoods
-									],
-									fillOpacity: [
-										"case",
-										[
-											"==",
-											["get", "place_id"],
-											selectedFeature ? parseInt(selectedFeature.id) : -1,
-										],
-										0.7,
-										0.2,
-									],
-									fillOutlineColor: "#FF1493",
-								}}
-							/>
-						</ShapeSource>
-					)}
+					<ShapeSource
+						key={`neighborhoods-source-${selectedFeature?.id || "none"}`}
+						id="neighborhoods-source"
+						shape={geoJsonData}
+						onPress={onNeighborhoodPress}
+					>
+						<FillLayer id="neighborhoods-fill" style={polygonStyle} />
+					</ShapeSource>
 				</MapView>
 			</View>
 		);
