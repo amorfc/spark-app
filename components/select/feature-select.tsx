@@ -67,7 +67,6 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 				debounceMs={300}
 				initialItemsCount={50}
 				clearable={true}
-				maxVisibleItems={2}
 			/>
 		</View>
 	);

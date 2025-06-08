@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	Text,
 	Animated,
+	TextInput,
 } from "react-native";
 import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -126,7 +127,21 @@ export const Select: React.FC<SelectProps> = ({
 
 	// Handle search text change with debouncing
 	const handleSearch = (text: string) => {
+		// Don't update searchText if the text matches the current selected value
+		// This prevents the selected value from being treated as search text
+		const currentDisplayValue = getDisplayValue();
+		if (text === currentDisplayValue && value) {
+			return; // Don't treat selected value display as search
+		}
+
 		setSearchText(text);
+
+		// If user clears the search completely, reset to show selected value
+		if (text === "" && value) {
+			setItems(originalItems.slice(0, initialItemsCount));
+			setIsLoading(false);
+			return;
+		}
 
 		// Clear previous debounce timer
 		if (debounceRef.current) {
@@ -142,6 +157,18 @@ export const Select: React.FC<SelectProps> = ({
 		debounceRef.current = setTimeout(() => {
 			performSearch(text);
 		}, debounceMs);
+	};
+
+	// Always show the selected value in the input, regardless of search state
+	const getDisplayValue = () => {
+		// If has selected value, always show it
+		if (value && originalItems.length > 0) {
+			const selectedItem = originalItems.find((item) => item.value === value);
+			return selectedItem?.label || "";
+		}
+
+		// No selection - show empty for placeholder
+		return "";
 	};
 
 	// Cleanup debounce on unmount
@@ -196,6 +223,12 @@ export const Select: React.FC<SelectProps> = ({
 		setSearchText("");
 		setItems(originalItems.slice(0, initialItemsCount));
 		setOpen(false);
+		// Force the dropdown to reset its internal search state
+		setTimeout(() => {
+			if (debounceRef.current) {
+				clearTimeout(debounceRef.current);
+			}
+		}, 0);
 	};
 
 	// Allow dropdown to stay open regardless of search length
