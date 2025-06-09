@@ -48,13 +48,7 @@ export default function MapScreen() {
 	>([POICategory.RESTAURANT, POICategory.BUS_STATION]);
 
 	// Use the search context for global state management
-	const {
-		selectedFeature,
-		setSelectedFeatureId,
-		clearSelection,
-		selectedCity,
-	} = useSearch();
-	const { rawGeoJsonData } = useSafeGeoData();
+	const { selectedFeature, setSelectedFeatureId, clearSelection } = useSearch();
 
 	// Fetch POI data for Istanbul with selected categories (no bounds filtering)
 	const {
@@ -128,7 +122,7 @@ export default function MapScreen() {
 	}, [clearSelection]);
 
 	const handleCloseFilterSheet = useCallback(() => {
-		filterSheetRef.current?.close();
+		// filterSheetRef.current?.close();
 	}, []);
 
 	const openFilterSheet = useCallback(() => {
@@ -140,14 +134,6 @@ export default function MapScreen() {
 
 	// Center map when feature changes
 	useEffect(() => {
-		console.log("selectedFeature", {
-			featureSheetRef: featureSheetRef.current,
-		});
-
-		if (selectedFeature) {
-			featureSheetRef.current?.collapse();
-		}
-		// Only center if we have a selectedFeature (avoid infinite render)
 		if (selectedFeature) {
 			centerTo(selectedFeature);
 			featureSheetRef.current?.snapToIndex(0);
