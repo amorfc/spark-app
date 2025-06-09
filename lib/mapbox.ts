@@ -8,6 +8,7 @@ import { SelectedFeature } from "@/context/search-provider";
 
 let isInitialized = false;
 
+//This is not in use anymore but we keep it here for future reference
 // Initialize Mapbox with your access token
 export const initializeMapbox = async () => {
 	if (isInitialized) {

@@ -15,7 +15,7 @@ import Mapbox, {
 	FillLayer,
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
-import { initializeMapbox, getCameraConfig } from "@/lib/mapbox";
+import { getCameraConfig } from "@/lib/mapbox";
 import {
 	FeatureType,
 	SelectedFeature,
@@ -65,8 +65,6 @@ const Map = forwardRef<MapRef, MapProps>(
 	({ selectedFeature, onFeaturePress, onMapLoad, variant = "subtle" }, ref) => {
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
-		const [isLoading, setIsLoading] = useState(true);
-		const [error, setError] = useState<string | null>(null);
 
 		const { rawGeoJsonData } = useSafeGeoData();
 		const { selectedCity } = useSearch();
@@ -77,22 +75,7 @@ const Map = forwardRef<MapRef, MapProps>(
 		// Get polygon styling with variant support
 		const polygonStyle = usePolygonStyle({ selectedFeature, variant });
 
-		// Initialize Mapbox
-		useEffect(() => {
-			const initMap = async () => {
-				try {
-					await initializeMapbox();
-				} catch (err) {
-					console.error("Failed to initialize map:", err);
-					setError("Failed to initialize map");
-				}
-			};
-
-			initMap();
-		}, []);
-
 		const handleMapLoad = useCallback(() => {
-			setIsLoading(false);
 			onMapLoad?.();
 		}, [onMapLoad]);
 
@@ -127,14 +110,6 @@ const Map = forwardRef<MapRef, MapProps>(
 			[centerOnCoordinates],
 		);
 
-		if (error) {
-			return (
-				<View style={styles.errorContainer}>
-					<Text style={styles.errorText}>{error}</Text>
-				</View>
-			);
-		}
-
 		// Validate GeoJSON data
 		const isValidGeoJSON =
 			rawGeoJsonData &&
@@ -143,11 +118,6 @@ const Map = forwardRef<MapRef, MapProps>(
 
 		return (
 			<View style={styles.container}>
-				{isLoading && (
-					<View style={styles.loadingContainer}>
-						<ActivityIndicator size="large" color="#0080ff" />
-					</View>
-				)}
 				<MapView
 					ref={mapRef}
 					style={styles.map}
