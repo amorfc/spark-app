@@ -20,13 +20,18 @@ export default function TabsLayout() {
 				},
 				tabBarActiveTintColor: "#FF69B4",
 				tabBarInactiveTintColor: "#9CA3AF",
-				tabBarShowLabel: false,
+				tabBarShowLabel: true,
+				tabBarLabelStyle: {
+					fontSize: 12,
+					fontWeight: "500",
+					marginTop: 2,
+				},
 			}}
 		>
 			<Tabs.Screen
 				name="map-screen"
 				options={{
-					title: "Home",
+					title: "Map",
 					tabBarIcon: ({ focused }) => (
 						<MaterialIcons
 							name="map"

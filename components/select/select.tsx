@@ -306,6 +306,12 @@ export const Select: React.FC<SelectProps> = ({
 		fontWeight: "600",
 	};
 
+	// Item container styling with dividers
+	const listItemContainerStyle: ViewStyle = {
+		borderBottomWidth: 1,
+		borderBottomColor: isDark ? colors.dark.border : colors.light.border,
+	};
+
 	return (
 		<View className="w-full flex flex-row items-center">
 			<Animated.View
@@ -352,6 +358,7 @@ export const Select: React.FC<SelectProps> = ({
 					modalContentContainerStyle={defaultModalContentStyle}
 					selectedItemContainerStyle={selectedItemContainerStyle}
 					selectedItemLabelStyle={selectedItemLabelStyle}
+					listItemContainerStyle={listItemContainerStyle}
 				/>
 			</Animated.View>
 

@@ -5,7 +5,7 @@ import React, {
 	forwardRef,
 	useImperativeHandle,
 } from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import BottomSheetLib, {
 	BottomSheetView,
 	BottomSheetScrollView,
