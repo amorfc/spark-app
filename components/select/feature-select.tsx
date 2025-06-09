@@ -50,6 +50,11 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 		[findProcessedFeature, setSelectedFeatureId],
 	);
 
+	const handleSelectClear = useCallback(() => {
+		setValue(null);
+		setSelectedFeatureId(null);
+	}, [setSelectedFeatureId]);
+
 	return (
 		<View style={[styles.container, containerStyle]}>
 			<Select
@@ -57,6 +62,7 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 				originalItems={items}
 				setValue={setValue}
 				onSelectItem={handleSelectItem}
+				onClear={handleSelectClear}
 				placeholder={placeholder}
 				searchPlaceholder="Type to search..."
 				searchable={true}

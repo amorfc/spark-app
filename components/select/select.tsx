@@ -18,6 +18,7 @@ interface SelectProps {
 	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 	setValue: React.Dispatch<React.SetStateAction<string | null>>;
 	onSelectItem?: (item: ItemType<string>) => void;
+	onClear?: () => void;
 	placeholder?: string;
 	searchable?: boolean;
 	searchPlaceholder?: string;
@@ -44,6 +45,7 @@ export const Select: React.FC<SelectProps> = ({
 	originalItems,
 	setValue,
 	onSelectItem,
+	onClear,
 	placeholder = "Select an option...",
 	searchable = false,
 	searchPlaceholder = "Type to search...",
@@ -196,6 +198,7 @@ export const Select: React.FC<SelectProps> = ({
 	}, [value, clearable, clearButtonAnimation, dropdownWidthAnimation]);
 
 	const handleClear = () => {
+		onClear?.();
 		setValue(null);
 		setSearchText("");
 		setItems(originalItems.slice(0, initialItemsCount));

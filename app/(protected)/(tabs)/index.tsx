@@ -82,7 +82,7 @@ export default function MapScreen() {
 			{/* Debug: Clear selection button */}
 			<TouchableOpacity
 				style={[styles.infoContainer, { bottom: 200, backgroundColor: "red" }]}
-				onPress={() => setSelectedFeatureId(null)}
+				onPress={() => centerTo(null)}
 			>
 				<Text style={[styles.infoTitle, { color: "white" }]}>
 					Clear Selection
