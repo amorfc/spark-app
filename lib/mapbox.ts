@@ -5,7 +5,6 @@ import {
 	IstanbulLocationConfig,
 } from "@/constants/geo";
 import { SelectedFeature } from "@/context/search-provider";
-import { useCallback } from "react";
 
 let isInitialized = false;
 

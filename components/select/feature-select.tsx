@@ -58,13 +58,8 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 				setValue={setValue}
 				onSelectItem={handleSelectItem}
 				placeholder={placeholder}
-				searchable={true}
 				searchPlaceholder="Type to search..."
-				minSearchLength={3}
-				maxResults={10}
-				debounceMs={300}
-				initialItemsCount={50}
-				clearable={true}
+				searchable={true}
 			/>
 		</View>
 	);

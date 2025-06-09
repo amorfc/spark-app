@@ -1,5 +1,4 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
 
 interface Props {
 	children: React.ReactNode;
@@ -33,20 +32,3 @@ export class ErrorBoundary extends React.Component<Props, State> {
 		return this.props.children;
 	}
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		padding: 20,
-	},
-	title: {
-		fontSize: 18,
-		fontWeight: "bold",
-		marginBottom: 10,
-	},
-	errorText: {
-		color: "red",
-	},
-});

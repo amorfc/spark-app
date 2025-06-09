@@ -35,10 +35,9 @@ export type SelectedFeature = NeigborhoodFeature | null;
 interface SearchContextType {
 	selectedFeature: SelectedFeature;
 	selectedCity: CityNames;
-	selectedFeatureId: string | null;
-	setSelectedFeatureId: (featureId: string | null) => void;
+	selectedFeatureId: SelectedFeatureId;
+	setSelectedFeatureId: (featureId: SelectedFeatureId) => void;
 	clearSelection: () => void;
-	isFeatureSelected: (featureId: string) => boolean;
 	selectedFeatureType: FeatureType;
 }
 
@@ -48,18 +47,13 @@ interface SearchProviderProps {
 	children: ReactNode;
 }
 
+type SelectedFeatureId = string | null;
+
 export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
-	const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(
-		null,
-	);
-
-	const [selectedFeatureType, _setSelectedFeatureType] = useState<FeatureType>(
-		FeatureType.Neighborhood,
-	);
-
-	const [selectedCity, _setSelectedCity] = useState<CityNames>(
-		CityNames.Istanbul,
-	);
+	const [selectedFeatureId, setSelectedFeatureId] =
+		useState<SelectedFeatureId>(null);
+	const [selectedFeatureType] = useState<FeatureType>(FeatureType.Neighborhood);
+	const [selectedCity] = useState<CityNames>(CityNames.Istanbul);
 
 	const { findProcessedFeature } = useGeoData({
 		city: selectedCity,
@@ -79,20 +73,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 		setSelectedFeatureId(null);
 	}, []);
 
-	const isFeatureSelected = useCallback(
-		(featureId: string) => {
-			return selectedFeatureId === featureId;
-		},
-		[selectedFeatureId],
-	);
-
 	const value: SearchContextType = {
 		selectedFeature,
 		selectedCity,
 		selectedFeatureId,
 		setSelectedFeatureId,
 		clearSelection,
-		isFeatureSelected,
 		selectedFeatureType,
 	};
 

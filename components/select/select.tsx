@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-	StyleSheet,
 	ViewStyle,
 	TextStyle,
 	View,
 	TouchableOpacity,
-	Text,
 	Animated,
-	TextInput,
 } from "react-native";
 import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -62,7 +59,7 @@ export const Select: React.FC<SelectProps> = ({
 	searchTextInputStyle,
 	modalContentContainerStyle,
 	minSearchLength = 3,
-	maxResults = 5,
+	maxResults = 10,
 	debounceMs = 300,
 	initialItemsCount = 50,
 	clearable = true,
@@ -86,20 +83,18 @@ export const Select: React.FC<SelectProps> = ({
 	// Initialize items state - start with limited items for searchable, full for non-searchable
 	useEffect(() => {
 		if (searchable) {
-			setItems(originalItems.slice(0, initialItemsCount)); // Start with first 50 items
+			setItems(originalItems.slice(0, initialItemsCount));
 		} else {
-			setItems(originalItems); // Show all items for non-searchable
+			setItems(originalItems);
 		}
 	}, [originalItems, searchable, initialItemsCount]);
 
-	// Debounced search function
 	const performSearch = (text: string) => {
 		if (!searchable) return;
 
 		if (text.length >= minSearchLength) {
 			setIsLoading(true);
 
-			// Simulate async search (you can replace with actual async call)
 			setTimeout(() => {
 				const filtered = originalItems
 					.filter(
@@ -112,66 +107,52 @@ export const Select: React.FC<SelectProps> = ({
 				setItems(filtered);
 				setIsLoading(false);
 
-				// Auto-open dropdown when user starts searching
 				if (!open) {
 					setOpen(true);
 				}
 			}, 50); // Small delay to simulate search processing
 		} else {
-			// Show initial limited items when search is too short
 			setItems(originalItems.slice(0, initialItemsCount));
 			setIsLoading(false);
-			// Don't auto-close - let user keep dropdown open
 		}
 	};
 
-	// Handle search text change with debouncing
 	const handleSearch = (text: string) => {
-		// Don't update searchText if the text matches the current selected value
-		// This prevents the selected value from being treated as search text
 		const currentDisplayValue = getDisplayValue();
 		if (text === currentDisplayValue && value) {
-			return; // Don't treat selected value display as search
+			return;
 		}
 
 		setSearchText(text);
 
-		// If user clears the search completely, reset to show selected value
 		if (text === "" && value) {
 			setItems(originalItems.slice(0, initialItemsCount));
 			setIsLoading(false);
 			return;
 		}
 
-		// Clear previous debounce timer
 		if (debounceRef.current) {
 			clearTimeout(debounceRef.current);
 		}
 
-		// Show loading immediately if search is long enough
 		if (text.length >= minSearchLength) {
 			setIsLoading(true);
 		}
 
-		// Set new debounce timer
 		debounceRef.current = setTimeout(() => {
 			performSearch(text);
 		}, debounceMs);
 	};
 
-	// Always show the selected value in the input, regardless of search state
 	const getDisplayValue = () => {
-		// If has selected value, always show it
 		if (value && originalItems.length > 0) {
 			const selectedItem = originalItems.find((item) => item.value === value);
 			return selectedItem?.label || "";
 		}
 
-		// No selection - show empty for placeholder
 		return "";
 	};
 
-	// Cleanup debounce on unmount
 	useEffect(() => {
 		return () => {
 			if (debounceRef.current) {
@@ -180,10 +161,8 @@ export const Select: React.FC<SelectProps> = ({
 		};
 	}, []);
 
-	// Animation effect for both clear button and dropdown width
 	useEffect(() => {
 		if (clearable && value) {
-			// Animate clear button in and dropdown width adjustment
 			Animated.parallel([
 				Animated.spring(clearButtonAnimation, {
 					toValue: 1,
@@ -193,13 +172,12 @@ export const Select: React.FC<SelectProps> = ({
 				}),
 				Animated.spring(dropdownWidthAnimation, {
 					toValue: 1,
-					useNativeDriver: false, // marginRight requires layout animation
+					useNativeDriver: false,
 					tension: 120,
 					friction: 8,
 				}),
 			]).start();
 		} else {
-			// Animate clear button out and dropdown width back to full
 			Animated.parallel([
 				Animated.spring(clearButtonAnimation, {
 					toValue: 0,
@@ -209,7 +187,7 @@ export const Select: React.FC<SelectProps> = ({
 				}),
 				Animated.spring(dropdownWidthAnimation, {
 					toValue: 0,
-					useNativeDriver: false, // marginRight requires layout animation
+					useNativeDriver: false,
 					tension: 120,
 					friction: 8,
 				}),
@@ -217,13 +195,11 @@ export const Select: React.FC<SelectProps> = ({
 		}
 	}, [value, clearable, clearButtonAnimation, dropdownWidthAnimation]);
 
-	// Clear selection function
 	const handleClear = () => {
 		setValue(null);
 		setSearchText("");
 		setItems(originalItems.slice(0, initialItemsCount));
 		setOpen(false);
-		// Force the dropdown to reset its internal search state
 		setTimeout(() => {
 			if (debounceRef.current) {
 				clearTimeout(debounceRef.current);
@@ -231,10 +207,8 @@ export const Select: React.FC<SelectProps> = ({
 		}, 0);
 	};
 
-	// Allow dropdown to stay open regardless of search length
 	const shouldShowDropdown = true;
 
-	// Create loading item for display
 	const displayItems =
 		isLoading && searchable && searchText.length >= minSearchLength
 			? [{ label: "Searching...", value: "loading", disabled: true }]
@@ -362,9 +336,5 @@ export const Select: React.FC<SelectProps> = ({
 		</View>
 	);
 };
-
-const styles = StyleSheet.create({
-	// Add any additional styles here if needed
-});
 
 export default Select;

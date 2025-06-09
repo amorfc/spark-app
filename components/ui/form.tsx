@@ -191,6 +191,7 @@ const FormInput = React.forwardRef<
 			return {} as React.ComponentRef<typeof Input>;
 		}
 		return inputRef.current;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputRef.current]);
 
 	function handleOnLabelPress() {
@@ -249,6 +250,7 @@ const FormTextarea = React.forwardRef<
 			return {} as React.ComponentRef<typeof Textarea>;
 		}
 		return textareaRef.current;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [textareaRef.current]);
 
 	function handleOnLabelPress() {
@@ -347,6 +349,7 @@ const FormSwitch = React.forwardRef<
 			return {} as React.ComponentRef<typeof Switch>;
 		}
 		return switchRef.current;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [switchRef.current]);
 
 	function handleOnLabelPress() {
