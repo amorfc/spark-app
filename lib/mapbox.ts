@@ -8,11 +8,10 @@ import { SelectedFeature } from "@/context/search-provider";
 
 let isInitialized = false;
 
-//This is not in use anymore but we keep it here for future reference
 // Initialize Mapbox with your access token
 export const initializeMapbox = async () => {
 	if (isInitialized) {
-		return;
+		return true;
 	}
 
 	const token = process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -27,6 +26,7 @@ export const initializeMapbox = async () => {
 		Mapbox.setAccessToken(token);
 		Mapbox.setTelemetryEnabled(false);
 		isInitialized = true;
+		return true;
 	} catch (error) {
 		console.error("Failed to initialize Mapbox:", error);
 		throw new Error(

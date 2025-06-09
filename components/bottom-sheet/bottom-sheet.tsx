@@ -20,7 +20,7 @@ export interface BottomSheetRef {
 	collapse: () => void;
 }
 
-interface BottomSheetProps {
+export interface BottomSheetProps {
 	children: React.ReactNode;
 	snapPoints?: (string | number)[];
 	initialSnapIndex?: number;

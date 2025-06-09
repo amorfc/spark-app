@@ -1,18 +1,13 @@
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-	forwardRef,
-	useImperativeHandle,
-} from "react";
-import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
+import { useCallback, useRef, forwardRef, useImperativeHandle } from "react";
+import { View, StyleSheet, Text } from "react-native";
 import Mapbox, {
 	MapView,
 	Camera,
 	UserLocation,
 	ShapeSource,
 	FillLayer,
+	PointAnnotation,
+	Callout,
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { getCameraConfig } from "@/lib/mapbox";
@@ -25,6 +20,11 @@ import { usePolygonStyle } from "@/hooks/usePolygonStyle";
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
 import { useSafeGeoData } from "@/hooks/useSafeGeoData";
+import {
+	POIItem,
+	CameraBounds,
+	POI_CATEGORY_CONFIG,
+} from "@/services/poi-service";
 
 export enum CityNames {
 	Istanbul = "istanbul",
@@ -59,10 +59,24 @@ interface MapProps {
 	onFeaturePress: (id: string) => void;
 	onMapLoad?: () => void;
 	variant?: "subtle" | "moderate" | "vibrant";
+	pois?: POIItem[];
+	onPOIPress?: (poi: POIItem) => void;
+	onCameraChanged?: (bounds: CameraBounds, zoomLevel: number) => void;
 }
 
 const Map = forwardRef<MapRef, MapProps>(
-	({ selectedFeature, onFeaturePress, onMapLoad, variant = "subtle" }, ref) => {
+	(
+		{
+			selectedFeature,
+			onFeaturePress,
+			onMapLoad,
+			variant = "subtle",
+			pois = [],
+			onPOIPress,
+			onCameraChanged,
+		},
+		ref,
+	) => {
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
@@ -87,13 +101,37 @@ const Map = forwardRef<MapRef, MapProps>(
 			[onFeaturePress],
 		);
 
+		// Handle camera movement to get current bounds and zoom level
+		const handleCameraChanged = useCallback(async () => {
+			if (!mapRef.current || !onCameraChanged) return;
+
+			try {
+				const visibleBounds = await mapRef.current.getVisibleBounds();
+				const zoom = await mapRef.current.getZoom();
+
+				if (visibleBounds && visibleBounds.length === 2) {
+					const bounds: CameraBounds = {
+						sw: [visibleBounds[0][0], visibleBounds[0][1]], // [lng, lat]
+						ne: [visibleBounds[1][0], visibleBounds[1][1]], // [lng, lat]
+					};
+
+					onCameraChanged(bounds, zoom);
+				}
+			} catch (error) {
+				console.error("Error getting camera bounds:", error);
+			}
+		}, [onCameraChanged]);
+
 		// Public method to center camera on coordinates
 		const centerOnCoordinates = useCallback(
 			(coordinates: [number, number], zoomLevel: number = 14) => {
+				// Enforce maximum zoom level
+				const clampedZoomLevel = Math.min(zoomLevel, 14);
+
 				if (cameraRef.current) {
 					cameraRef.current.setCamera({
 						centerCoordinate: coordinates,
-						zoomLevel,
+						zoomLevel: clampedZoomLevel,
 						animationDuration: 1000,
 					});
 				}
@@ -116,6 +154,22 @@ const Map = forwardRef<MapRef, MapProps>(
 			rawGeoJsonData.type === "FeatureCollection" &&
 			Array.isArray(rawGeoJsonData.features);
 
+		const handlePOIPress = useCallback(
+			(poi: POIItem) => {
+				onPOIPress?.(poi);
+			},
+			[onPOIPress],
+		);
+
+		// Get pin styling from POI_CATEGORY_CONFIG
+		const getPinIcon = useCallback((poi: POIItem) => {
+			return POI_CATEGORY_CONFIG[poi.type]?.icon || "📍";
+		}, []);
+
+		const getPinColor = useCallback((poi: POIItem) => {
+			return POI_CATEGORY_CONFIG[poi.type]?.color || "#DDA0DD";
+		}, []);
+
 		return (
 			<View style={styles.container}>
 				<MapView
@@ -123,6 +177,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					style={styles.map}
 					styleURL={Mapbox.StyleURL.Street}
 					onDidFinishLoadingMap={handleMapLoad}
+					onCameraChanged={handleCameraChanged}
 					compassEnabled={true}
 					compassViewPosition={2}
 					logoEnabled={false}
@@ -131,7 +186,8 @@ const Map = forwardRef<MapRef, MapProps>(
 					<Camera
 						ref={cameraRef}
 						centerCoordinate={cameraConfig.centerCoordinate}
-						zoomLevel={cameraConfig.zoomLevel}
+						zoomLevel={Math.min(cameraConfig.zoomLevel, 14)} // Enforce max zoom
+						maxZoomLevel={14} // Set maximum zoom level
 						animationDuration={cameraConfig.animationDuration}
 						bounds={cameraConfig.bounds}
 					/>
@@ -152,6 +208,26 @@ const Map = forwardRef<MapRef, MapProps>(
 							<FillLayer id="feature-fill" style={polygonStyle} />
 						</ShapeSource>
 					)}
+
+					{/* POI Pins */}
+					{pois.map((poi) => (
+						<PointAnnotation
+							key={poi.id}
+							id={poi.id}
+							coordinate={poi.coordinates}
+							onSelected={() => handlePOIPress(poi)}
+						>
+							<View
+								style={[
+									styles.pinContainer,
+									{ backgroundColor: getPinColor(poi) },
+								]}
+							>
+								<Text style={styles.pinText}>{getPinIcon(poi)}</Text>
+							</View>
+							<Callout title={poi.name} />
+						</PointAnnotation>
+					))}
 				</MapView>
 			</View>
 		);
@@ -183,6 +259,26 @@ const styles = StyleSheet.create({
 		color: "red",
 		fontSize: 16,
 		textAlign: "center",
+	},
+	pinContainer: {
+		width: 30,
+		height: 30,
+		borderRadius: 15,
+		justifyContent: "center",
+		alignItems: "center",
+		borderWidth: 2,
+		borderColor: "white",
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
+	},
+	pinText: {
+		fontSize: 14,
 	},
 });
 
