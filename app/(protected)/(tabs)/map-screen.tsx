@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { defaultTo } from "lodash";
 import Map from "@/components/map/map";
@@ -29,6 +29,7 @@ export default function MapScreen() {
 
 	const featureSheetRef = useRef<BottomSheetRef>(null);
 	const featureSelectRef = useRef<FeatureSelectRef>(null);
+	const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
 
 	// Use the search context for global state management
 	const { selectedFeature, setSelectedFeatureId, clearSelection } = useSearch();
@@ -58,11 +59,14 @@ export default function MapScreen() {
 	);
 
 	const handleExpandFeatureSheet = useCallback(() => {
-		// Optionally center on feature when expanded
 		if (selectedFeature) {
 			centerTo(selectedFeature);
 		}
 	}, [selectedFeature, centerTo]);
+
+	const handleBottomSheetChange = useCallback((index: number) => {
+		setIsBottomSheetExpanded(index > 0);
+	}, []);
 
 	const handleAnimate = useCallback(() => {
 		if (selectedFeature) {
@@ -74,6 +78,7 @@ export default function MapScreen() {
 
 	const handleCloseFeatureSheet = useCallback(() => {
 		featureSheetRef.current?.snapToIndex(-1);
+		setIsBottomSheetExpanded(false);
 		// Delay clearing selection to allow animation to start
 		setTimeout(() => {
 			clearSelection();
@@ -82,36 +87,39 @@ export default function MapScreen() {
 
 	// Center map when feature changes
 	useEffect(() => {
-		if (selectedFeature) {
-			featureSheetRef.current?.snapToIndex(0);
+		if (selectedFeature && !isBottomSheetExpanded) {
+			featureSheetRef.current?.collapse();
 		}
 		centerTo(selectedFeature);
-	}, [centerTo, selectedFeature]);
+	}, [centerTo, selectedFeature, isBottomSheetExpanded]);
 
 	return (
 		<View className="flex-1">
-			<View className="flex-1">
-				<View className="absolute top-20 left-2 right-2 z-[1000]">
+			{/* Conditionally render FeatureSelect based on bottom sheet state */}
+			{!isBottomSheetExpanded && (
+				<View className="absolute top-20 left-2 right-2 z-[1]">
 					<FeatureSelect
 						ref={featureSelectRef}
 						placeholder="Search neighborhoods in Istanbul..."
 					/>
 				</View>
+			)}
 
-				<Map
-					ref={mapRef}
-					location="istanbul"
-					geoJsonData={neighborhoodsData}
-					selectedFeature={selectedFeature}
-					onFeaturePress={handleFeaturePress}
-					variant="moderate"
-				/>
-			</View>
+			<Map
+				ref={mapRef}
+				location="istanbul"
+				geoJsonData={neighborhoodsData}
+				selectedFeature={selectedFeature}
+				onFeaturePress={handleFeaturePress}
+				variant="moderate"
+			/>
+
 			{/* Feature Info Bottom Sheet */}
 			<FeatureInfoBottomSheet
 				ref={featureSheetRef}
 				onClose={handleCloseFeatureSheet}
 				onExpand={handleExpandFeatureSheet}
+				onChange={handleBottomSheetChange}
 				onAnimate={handleAnimate}
 			/>
 		</View>
