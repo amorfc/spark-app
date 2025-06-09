@@ -134,7 +134,7 @@ export default function MapScreen() {
 	}, []);
 
 	const handleCloseFeatureSheet = useCallback(() => {
-		featureSheetRef.current?.snapToIndex(-1);
+		featureSheetRef.current?.collapse();
 		setIsFeatureBottomSheetExpanded(false);
 		// Delay clearing selection to allow animation to start
 		setTimeout(() => {
@@ -149,9 +149,7 @@ export default function MapScreen() {
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
-		console.log("Opening filter sheet");
-		console.log("featureSheetRef.current", featureSheetRef.current);
-		featureSheetRef.current?.close();
+		featureSheetRef.current?.collapse();
 	}, []);
 
 	// Center map when feature changes

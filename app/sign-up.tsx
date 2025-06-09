@@ -54,7 +54,6 @@ export default function SignUp() {
 			await signUp(data.email, data.password);
 
 			form.reset();
-			console.log("Sign up successful");
 		} catch (error: Error | any) {
 			console.error(error.message);
 		}
