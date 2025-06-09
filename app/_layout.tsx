@@ -8,6 +8,9 @@ import { AuthProvider } from "@/context/supabase-provider";
 import { SearchProvider } from "@/context/search-provider";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
+import { setupLogBox } from "@/utils/ignoreLogs";
+
+setupLogBox();
 
 export default function AppLayout() {
 	const { colorScheme } = useColorScheme();

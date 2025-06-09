@@ -52,12 +52,8 @@ export default function MapScreen() {
 	}, [centerTo, selectedFeature]);
 
 	return (
-		<View className="flex-1">
-			<FeatureSelect
-				city="istanbul"
-				geoJsonData={neighborhoodsData}
-				placeholder="Search neighborhoods in Istanbul..."
-			/>
+		<View className="flex-1 pt-5">
+			<FeatureSelect placeholder="Search neighborhoods in Istanbul..." />
 
 			<Map
 				ref={mapRef}

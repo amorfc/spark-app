@@ -4,10 +4,12 @@ import { useSearch } from "@/context/search-provider";
 export const useSafeGeoData = () => {
 	const { selectedCity, selectedFeatureType } = useSearch();
 
-	const { findProcessedFeature, processedFeature } = useGeoData({
-		city: selectedCity,
-		featureType: selectedFeatureType,
-	});
+	const { findProcessedFeature, processedFeature, rawGeoJsonData } = useGeoData(
+		{
+			city: selectedCity,
+			featureType: selectedFeatureType,
+		},
+	);
 
-	return { findProcessedFeature, processedFeature };
+	return { findProcessedFeature, processedFeature, rawGeoJsonData };
 };

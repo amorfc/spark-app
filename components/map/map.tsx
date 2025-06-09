@@ -16,10 +16,15 @@ import Mapbox, {
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { initializeMapbox, getCameraConfig } from "@/lib/mapbox";
-import { FeatureType, SelectedFeature } from "@/context/search-provider";
+import {
+	FeatureType,
+	SelectedFeature,
+	useSearch,
+} from "@/context/search-provider";
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
+import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 
 export enum CityNames {
 	Istanbul = "istanbul",
@@ -57,24 +62,17 @@ interface MapProps {
 }
 
 const Map = forwardRef<MapRef, MapProps>(
-	(
-		{
-			location,
-			geoJsonData,
-			selectedFeature,
-			onFeaturePress,
-			onMapLoad,
-			variant = "subtle",
-		},
-		ref,
-	) => {
+	({ selectedFeature, onFeaturePress, onMapLoad, variant = "subtle" }, ref) => {
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 		const [isLoading, setIsLoading] = useState(true);
 		const [error, setError] = useState<string | null>(null);
 
+		const { rawGeoJsonData } = useSafeGeoData();
+		const { selectedCity } = useSearch();
+
 		// Get camera configuration for the specified location
-		const cameraConfig = getCameraConfig(location);
+		const cameraConfig = getCameraConfig(selectedCity);
 
 		// Get polygon styling with variant support
 		const polygonStyle = usePolygonStyle({ selectedFeature, variant });
@@ -109,10 +107,6 @@ const Map = forwardRef<MapRef, MapProps>(
 		// Public method to center camera on coordinates
 		const centerOnCoordinates = useCallback(
 			(coordinates: [number, number], zoomLevel: number = 14) => {
-				console.log("🎯 Centering to coordinates:", coordinates);
-				console.log("🎯 Expected: [lng, lat] format");
-				console.log("🎯 Camera ref exists:", !!cameraRef.current);
-
 				if (cameraRef.current) {
 					cameraRef.current.setCamera({
 						centerCoordinate: coordinates,
@@ -143,9 +137,9 @@ const Map = forwardRef<MapRef, MapProps>(
 
 		// Validate GeoJSON data
 		const isValidGeoJSON =
-			geoJsonData &&
-			geoJsonData.type === "FeatureCollection" &&
-			Array.isArray(geoJsonData.features);
+			rawGeoJsonData &&
+			rawGeoJsonData.type === "FeatureCollection" &&
+			Array.isArray(rawGeoJsonData.features);
 
 		return (
 			<View style={styles.container}>
@@ -182,7 +176,7 @@ const Map = forwardRef<MapRef, MapProps>(
 						<ShapeSource
 							key={`feature-source-${selectedFeature?.id || "none"}`}
 							id="feature-source"
-							shape={geoJsonData}
+							shape={rawGeoJsonData}
 							onPress={onShapePress}
 						>
 							<FillLayer id="feature-fill" style={polygonStyle} />

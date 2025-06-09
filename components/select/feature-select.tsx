@@ -6,8 +6,6 @@ import { useSearch } from "@/context/search-provider";
 import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 
 interface FeatureSelectProps {
-	city: string;
-	geoJsonData: GeoJSON.FeatureCollection;
 	placeholder?: string;
 	containerStyle?: any;
 }

@@ -10,9 +10,8 @@ interface UseGeoDataProps {
 }
 
 export const useGeoData = ({ city, featureType }: UseGeoDataProps) => {
+	const geoJsonData = CityGeoJson[city][featureType];
 	const processedFeature: SelectedFeature[] = useMemo(() => {
-		const geoJsonData = CityGeoJson[city][featureType];
-
 		if (!geoJsonData?.features) return [];
 
 		return map(geoJsonData.features, (feature: any) => {
@@ -35,7 +34,7 @@ export const useGeoData = ({ city, featureType }: UseGeoDataProps) => {
 				originalFeature: feature,
 			};
 		});
-	}, [city, featureType]);
+	}, [featureType, geoJsonData.features]);
 
 	const findProcessedFeature = useCallback(
 		(featureId: string) => {
@@ -47,5 +46,6 @@ export const useGeoData = ({ city, featureType }: UseGeoDataProps) => {
 	return {
 		processedFeature,
 		findProcessedFeature,
+		rawGeoJsonData: geoJsonData,
 	};
 };
