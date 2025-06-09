@@ -42,7 +42,7 @@ export const CityGeoJson: Record<
 	},
 };
 
-interface MapRef {
+export interface MapRef {
 	centerOnCoordinates: (
 		coordinates: [number, number],
 		zoomLevel?: number,
@@ -50,7 +50,6 @@ interface MapRef {
 }
 
 interface MapProps {
-	selectedFeature: SelectedFeature | null;
 	onFeaturePress: (id: string) => void;
 	onMapLoad?: () => void;
 	variant?: "subtle" | "moderate" | "vibrant";
@@ -61,22 +60,14 @@ interface MapProps {
 
 const Map = forwardRef<MapRef, MapProps>(
 	(
-		{
-			onFeaturePress,
-			onMapLoad,
-			variant = "subtle",
-			pois = [],
-			onPOIPress,
-			onCameraChanged,
-			selectedFeature,
-		},
+		{ onFeaturePress, onMapLoad, variant = "subtle", pois = [], onPOIPress },
 		ref,
 	) => {
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
 		const { rawGeoJsonData } = useSafeGeoData();
-		const { selectedCity } = useSearch();
+		const { selectedCity, selectedFeature } = useSearch();
 
 		// Get camera configuration for the specified location
 		const cameraConfig = getCameraConfig(selectedCity);
@@ -93,27 +84,6 @@ const Map = forwardRef<MapRef, MapProps>(
 			},
 			[onFeaturePress],
 		);
-
-		// Handle camera movement to get current bounds and zoom level
-		const handleCameraChanged = useCallback(async () => {
-			if (!mapRef.current || !onCameraChanged) return;
-
-			try {
-				const visibleBounds = await mapRef.current.getVisibleBounds();
-				const zoom = await mapRef.current.getZoom();
-
-				if (visibleBounds && visibleBounds.length === 2) {
-					const bounds: CameraBounds = {
-						sw: [visibleBounds[0][0], visibleBounds[0][1]], // [lng, lat]
-						ne: [visibleBounds[1][0], visibleBounds[1][1]], // [lng, lat]
-					};
-
-					onCameraChanged(bounds, zoom);
-				}
-			} catch (error) {
-				console.error("Error getting camera bounds:", error);
-			}
-		}, [onCameraChanged]);
 
 		// Public method to center camera on coordinates
 		const centerOnCoordinates = useCallback(
@@ -173,7 +143,6 @@ const Map = forwardRef<MapRef, MapProps>(
 					style={styles.map}
 					styleURL={Mapbox.StyleURL.Street}
 					onDidFinishLoadingMap={handleMapLoad}
-					onCameraChanged={handleCameraChanged}
 					compassEnabled={true}
 					compassViewPosition={2}
 					logoEnabled={false}

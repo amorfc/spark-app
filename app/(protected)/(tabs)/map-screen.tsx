@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
-import Map from "@/components/map/map";
+import Map, { MapRef } from "@/components/map/map";
 import { SelectedFeature, useSearch } from "@/context/search-provider";
 import {
 	FeatureInfoBottomSheet,
@@ -16,7 +16,6 @@ import { POIItem, POICategory } from "@/services/poi-service";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 
 import { MaterialIcons } from "@expo/vector-icons";
-import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
 import { defaultTo } from "lodash";
 
@@ -29,12 +28,7 @@ export default function MapScreen() {
 		error: mapboxError,
 	} = useMapboxInit();
 
-	const mapRef = useRef<{
-		centerOnCoordinates: (
-			coordinates: [number, number],
-			zoomLevel?: number,
-		) => void;
-	}>(null);
+	const mapRef = useRef<MapRef>(null);
 
 	const featureSheetRef = useRef<BottomSheetRef>(null);
 	const filterSheetRef = useRef<MapFilterBottomSheetRef>(null);
@@ -48,7 +42,12 @@ export default function MapScreen() {
 	>([POICategory.RESTAURANT, POICategory.BUS_STATION]);
 
 	// Use the search context for global state management
-	const { selectedFeature, setSelectedFeatureId, clearSelection } = useSearch();
+	const {
+		selectedCity,
+		selectedFeature,
+		setSelectedFeatureId,
+		clearSelection,
+	} = useSearch();
 
 	// Fetch POI data for Istanbul with selected categories (no bounds filtering)
 	const {
@@ -64,7 +63,7 @@ export default function MapScreen() {
 	});
 
 	// Get the original camera configuration for Istanbul
-	const originalCameraConfig = getCameraConfig("istanbul");
+	const originalCameraConfig = getCameraConfig(selectedCity);
 
 	const centerTo = useCallback(
 		(feature: SelectedFeature) => {
@@ -219,7 +218,6 @@ export default function MapScreen() {
 				variant="moderate"
 				pois={searchType === SearchType.PLACE ? pois : []} // Only show POIs in Place mode
 				onPOIPress={handlePOIPress}
-				selectedFeature={selectedFeature}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
