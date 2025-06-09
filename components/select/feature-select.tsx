@@ -10,12 +10,14 @@ import React, {
 import { View } from "react-native";
 import { ItemType } from "react-native-dropdown-picker";
 import { Select, SelectRef } from "@/components/select/select";
-import { useSearch } from "@/context/search-provider";
+import { SelectedFeature, useSearch } from "@/context/search-provider";
 import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 
 interface FeatureSelectProps {
 	placeholder?: string;
 	containerStyle?: any;
+	useModal?: boolean;
+	onSelect?: (feature: SelectedFeature) => void;
 }
 
 export interface FeatureSelectRef {
@@ -23,7 +25,15 @@ export interface FeatureSelectRef {
 }
 
 export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
-	({ placeholder = "Search neighborhoods...", containerStyle }, ref) => {
+	(
+		{
+			placeholder = "Search neighborhoods...",
+			containerStyle,
+			useModal = false,
+			onSelect,
+		},
+		ref,
+	) => {
 		// Dropdown picker state
 		const { selectedFeatureId, clearSelection, setSelectedFeatureId } =
 			useSearch();
@@ -65,10 +75,11 @@ export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
 				const selectedFeature = findProcessedFeature(selectedItem.value || "");
 
 				if (selectedFeature) {
+					onSelect?.(selectedFeature);
 					setSelectedFeatureId(selectedFeature.id);
 				}
 			},
-			[findProcessedFeature, setSelectedFeatureId],
+			[findProcessedFeature, setSelectedFeatureId, onSelect],
 		);
 
 		const handleSelectClear = useCallback(() => {
@@ -93,6 +104,8 @@ export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
 					placeholder={placeholder}
 					searchPlaceholder="Type to search..."
 					searchable={true}
+					listMode={useModal ? "MODAL" : "FLATLIST"}
+					modalTitle="Search Neighborhoods"
 				/>
 			</View>
 		);

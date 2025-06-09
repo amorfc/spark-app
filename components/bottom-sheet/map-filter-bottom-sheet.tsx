@@ -86,16 +86,19 @@ export const MapFilterBottomSheet = forwardRef<
 			? colors.dark.mutedForeground
 			: colors.light.mutedForeground;
 
+		const closeBottomSheet = () => {
+			bottomSheetRef.current?.close();
+		};
+
 		return (
 			<BottomSheet
 				ref={bottomSheetRef}
 				snapPoints={snapPoints}
-				initialSnapIndex={-1}
+				initialSnapIndex={0}
 				containerStyle={{ zIndex: 1500 }}
-				scrollable={true}
 				{...bottomSheetProps}
 			>
-				<View className="flex-1 px-4">
+				<View className="flex-1">
 					{/* Header */}
 					<View className="flex-row justify-between items-center pb-4 border-b border-gray-200 mb-4">
 						<View className="flex-1">
@@ -116,7 +119,7 @@ export const MapFilterBottomSheet = forwardRef<
 							</TouchableOpacity>
 							{/* Close button */}
 							<TouchableOpacity
-								onPress={() => bottomSheetRef.current?.close()}
+								onPress={closeBottomSheet}
 								className="p-2 rounded-lg bg-gray-100"
 							>
 								<MaterialIcons name="close" size={20} color={iconColor} />
@@ -134,6 +137,7 @@ export const MapFilterBottomSheet = forwardRef<
 							value={searchType}
 							onValueChange={onSearchTypeChange}
 							placeholder="Select search type..."
+							useModal={true}
 						/>
 					</View>
 
@@ -145,7 +149,9 @@ export const MapFilterBottomSheet = forwardRef<
 							</Text>
 							<FeatureSelect
 								ref={featureSelectRef}
+								onSelect={closeBottomSheet}
 								placeholder="Search neighborhoods in Istanbul..."
+								useModal={true}
 							/>
 						</View>
 					)}

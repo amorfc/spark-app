@@ -35,6 +35,7 @@ interface FilterSearchTypeSelectProps {
 	onValueChange: (searchType: SearchType) => void;
 	placeholder?: string;
 	containerStyle?: any;
+	useModal?: boolean;
 }
 
 export const FilterSearchTypeSelect = forwardRef<
@@ -47,6 +48,7 @@ export const FilterSearchTypeSelect = forwardRef<
 			onValueChange,
 			placeholder = "Select search type...",
 			containerStyle,
+			useModal = false,
 		},
 		ref,
 	) => {
@@ -97,6 +99,8 @@ export const FilterSearchTypeSelect = forwardRef<
 					placeholder={placeholder}
 					searchable={false}
 					clearable={false} // Don't allow clearing search type
+					listMode={useModal ? "MODAL" : "FLATLIST"}
+					modalTitle="Select Search Type"
 				/>
 			</View>
 		);

@@ -115,6 +115,7 @@ export default function MapScreen() {
 			setSearchType(type);
 			// Clear feature selection when switching modes
 			clearSelection();
+			featureSheetRef.current?.close();
 		},
 		[clearSelection],
 	);
@@ -123,12 +124,6 @@ export default function MapScreen() {
 	const handlePOICategoriesChange = useCallback((categories: POICategory[]) => {
 		setSelectedPOICategories(categories);
 	}, []);
-
-	const handleExpandFeatureSheet = useCallback(() => {
-		if (selectedFeature) {
-			centerTo(selectedFeature);
-		}
-	}, [selectedFeature, centerTo]);
 
 	const handleFeatureBottomSheetChange = useCallback((index: number) => {
 		setIsFeatureBottomSheetExpanded(index > 0);
@@ -154,10 +149,17 @@ export default function MapScreen() {
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
+		console.log("Opening filter sheet");
+		console.log("featureSheetRef.current", featureSheetRef.current);
+		featureSheetRef.current?.close();
 	}, []);
 
 	// Center map when feature changes
 	useEffect(() => {
+		console.log("selectedFeature", {
+			featureSheetRef: featureSheetRef.current,
+		});
+
 		if (selectedFeature && !isFeatureBottomSheetExpanded) {
 			featureSheetRef.current?.collapse();
 		}
@@ -250,13 +252,11 @@ export default function MapScreen() {
 			/>
 
 			{/* Feature Info Bottom Sheet */}
-			{selectedFeature && (
-				<FeatureInfoBottomSheet
-					ref={featureSheetRef}
-					onClose={handleCloseFeatureSheet}
-					onChange={handleFeatureBottomSheetChange}
-				/>
-			)}
+			<FeatureInfoBottomSheet
+				ref={featureSheetRef}
+				onClose={handleCloseFeatureSheet}
+				onChange={handleFeatureBottomSheetChange}
+			/>
 
 			{/* Map Filter Bottom Sheet */}
 			<MapFilterBottomSheet

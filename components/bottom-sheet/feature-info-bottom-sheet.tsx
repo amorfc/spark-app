@@ -20,6 +20,14 @@ export const FeatureInfoBottomSheet = forwardRef<
 	const snapPoints = useMemo(() => ["16%"], []);
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 
+	// Expose methods to parent via ref
+	useImperativeHandle(
+		ref,
+		() => ({
+			...bottomSheetRef.current!,
+		}),
+		[],
+	);
 	if (!feature) return null; // TODO: Add loading state
 
 	const iconColor = isDark
