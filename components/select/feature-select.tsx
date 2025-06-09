@@ -7,7 +7,7 @@ import React, {
 	forwardRef,
 	useImperativeHandle,
 } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { ItemType } from "react-native-dropdown-picker";
 import { Select, SelectRef } from "@/components/select/select";
 import { useSearch } from "@/context/search-provider";
@@ -82,7 +82,7 @@ export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
 		}, [dropdownItems]);
 
 		return (
-			<View style={[styles.container, containerStyle]}>
+			<View style={containerStyle}>
 				<Select
 					ref={selectRef}
 					value={value}
@@ -100,15 +100,5 @@ export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
 );
 
 FeatureSelect.displayName = "FeatureSelect";
-
-const styles = StyleSheet.create({
-	container: {
-		position: "absolute",
-		top: 60,
-		left: 20,
-		right: 20,
-		zIndex: 1000,
-	},
-});
 
 export default FeatureSelect;
