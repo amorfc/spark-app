@@ -92,14 +92,15 @@ const Map = forwardRef<MapRef, MapProps>(
 				const clampedZoomLevel = Math.min(zoomLevel, 14);
 
 				if (cameraRef.current) {
-					console.log("setting camerat", coordinates, clampedZoomLevel);
-					console.log("ref", cameraRef.current);
-
-					cameraRef.current.setCamera({
-						centerCoordinate: coordinates,
-						zoomLevel: clampedZoomLevel,
-						animationDuration: 1000,
-					});
+					try {
+						cameraRef.current.setCamera({
+							centerCoordinate: coordinates,
+							zoomLevel: clampedZoomLevel,
+							animationDuration: 1000,
+						});
+					} catch (error) {
+						console.error("Error setting camera:", error);
+					}
 				}
 			},
 			[],
