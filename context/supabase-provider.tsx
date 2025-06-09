@@ -105,7 +105,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		if (initialized) {
 			SplashScreen.hideAsync();
 			if (session) {
-				router.replace("/");
+				router.replace("/map-screen");
 			} else {
 				router.replace("/welcome");
 			}

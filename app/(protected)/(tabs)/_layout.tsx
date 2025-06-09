@@ -3,6 +3,7 @@ import { Tabs } from "expo-router";
 
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function TabsLayout() {
 	const { colorScheme } = useColorScheme();
@@ -17,15 +18,50 @@ export default function TabsLayout() {
 							? colors.dark.background
 							: colors.light.background,
 				},
-				tabBarActiveTintColor:
-					colorScheme === "dark"
-						? colors.dark.foreground
-						: colors.light.foreground,
+				tabBarActiveTintColor: "#FF69B4",
+				tabBarInactiveTintColor: "#9CA3AF",
 				tabBarShowLabel: false,
 			}}
 		>
-			<Tabs.Screen name="index" options={{ title: "Home" }} />
-			<Tabs.Screen name="settings" options={{ title: "Settings" }} />
+			<Tabs.Screen
+				name="map-screen"
+				options={{
+					title: "Home",
+					tabBarIcon: ({ focused }) => (
+						<MaterialIcons
+							name="map"
+							size={24}
+							color={focused ? "#FF69B4" : "#9CA3AF"}
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="blog-screen"
+				options={{
+					title: "Blog",
+					tabBarIcon: ({ focused }) => (
+						<MaterialIcons
+							name="article"
+							size={24}
+							color={focused ? "#FF69B4" : "#9CA3AF"}
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="settings-screen"
+				options={{
+					title: "Settings",
+					tabBarIcon: ({ focused }) => (
+						<MaterialIcons
+							name="settings"
+							size={24}
+							color={focused ? "#FF69B4" : "#9CA3AF"}
+						/>
+					),
+				}}
+			/>
 		</Tabs>
 	);
 }

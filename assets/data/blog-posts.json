@@ -1,0 +1,270 @@
+{
+	"data": [
+		{
+			"id": "1",
+			"category": "selfDefense",
+			"title": "7 Savunma Tekniği - Tekmelere Karşı Kendini Savun - Kendini Korumayı Öğren",
+			"link": "https://m.youtube.com/watch?v=WIcNo2Ncd-k",
+			"image": "https://img.youtube.com/vi/WIcNo2Ncd-k/0.jpg"
+		},
+		{
+			"id": "2",
+			"category": "selfDefense",
+			"title": "10 Self Defense Strategies Every Woman Needs To Know",
+			"link": "https://www.girlswhofight.co/post/ten-self-defense-strategies-women-need-to-know",
+			"image": "https://static.wixstatic.com/media/734a9f_a869bf0c49d44e12bd4f0d98e9060339~mv2.jpg/v1/fill/w_740,h_493,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/734a9f_a869bf0c49d44e12bd4f0d98e9060339~mv2.jpg"
+		},
+		{
+			"id": "3",
+			"category": "tedTalks",
+			"title": "Confessions of a bad feminist",
+			"link": "https://www.ted.com/talks/roxane_gay_confessions_of_a_bad_feminist?referrer=playlist-talks_on_feminism&autoplay=true",
+			"image": "https://pi.tedcdn.com/r/pe.tedcdn.com/images/ted/65b1ae4b5c831758b5ed12a91a5220325d616cf1_2880x1620.jpg?cb=20160511&quality=63&u=&w=512"
+		},
+		{
+			"id": "4",
+			"category": "tedTalks",
+			"title": "We should all be feminists | Chimamanda Ngozi Adichie | TEDxEuston",
+			"link": "https://www.youtube.com/watch?app=desktop&v=hg3umXU_qWc",
+			"image": "https://img.youtube.com/vi/hg3umXU_qWc/0.jpg"
+		},
+		{
+			"id": "5",
+			"category": "movieRecommendations",
+			"title": "30 Yaşına Gelmeden Önce Her Kadının İzlemesi Gereken 30 Film",
+			"link": "https://amp.onedio.com/haber/30-yasina-gelmeden-once-her-kadinin-izlemesi-gereken-30-film-842992",
+			"image": "https://img-s1.onedio.com/id-5bb8b410c17cac313aecc0f3/rev-0/w-600/h-300/f-jpg/s-b8aa787a146fcc073c72a6528dbf57566687415d.jpg"
+		},
+		{
+			"id": "6",
+			"category": "movieRecommendations",
+			"title": "55 Movies Every Woman Should See",
+			"link": "https://www.imdb.com/list/ls007067527/",
+			"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1200px-IMDB_Logo_2016.svg.png"
+		},
+		{
+			"id": "7",
+			"category": "movieRecommendations",
+			"title": "85 Essential Feminist Movies You Need to See",
+			"link": "https://www.harpersbazaar.com/culture/film-tv/g19037519/best-feminist-movies/",
+			"image": "https://hips.hearstapps.com/vidthumb/images/emma-stone-poor-things-official-teaser-645ce9347d45d.jpg?crop=1.00xw:0.925xh;0,0.0507xh&resize=1200:*"
+		},
+		{
+			"id": "8",
+			"category": "movieRecommendations",
+			"title": "Chick Flicks: 100 Movies All Girls Must Watch!!!!!!!!!!",
+			"link": "https://www.imdb.com/list/ls000754199/",
+			"image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/1200px-IMDB_Logo_2016.svg.png"
+		},
+		{
+			"id": "9",
+			"category": "bookRecommendations",
+			"title": "Her Kadının Okuması Gereken 15 Feminist İçerikli Kitap",
+			"link": "https://amp.onedio.com/haber/her-kadinin-okumasi-gereken-15-feminist-icerikli-kitap-844874",
+			"image": "https://img-s2.onedio.com/id-5bc8a7c45f03c53c1010d847/rev-0/w-600/h-300/f-jpg/s-a28ab276addb14fb49dafd52a0eea44443d5cd52.jpg"
+		},
+		{
+			"id": "10",
+			"category": "bookRecommendations",
+			"title": "Best Feminist Books Every Woman Must Read",
+			"link": "https://www.harpersbazaar.com/culture/art-books-music/g19412213/best-feminist-books-every-woman-must-read/",
+			"image": "https://hips.hearstapps.com/hmg-prod/images/hbz-feminist-books-00-index4-1520965109.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*"
+		},
+		{
+			"id": "11",
+			"category": "inspiringWoman",
+			"title": "Dünyayı Değiştiren ve İlham Veren Kadınlar",
+			"link": "https://www.speakeragency.com.tr/blog/dunyayi-degistiren-ve-ilham-veren-kadinlar",
+			"image": "https://www.speakeragency.com.tr/media/imajjxl2/du-nyayi_degistiren_kadinlar_690x460px_1.jpg"
+		},
+		{
+			"id": "12",
+			"category": "inspiringWoman",
+			"title": "Famous Feminists Throughout History",
+			"link": "https://www.harpersbazaar.com/culture/features/g4201/famous-feminists-throughout-history/",
+			"image": "https://hips.hearstapps.com/hmg-prod/images/hbz-women-feminism-index-1583177674.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*"
+		},
+		{
+			"id": "13",
+			"category": "inspiringWoman",
+			"title": "İlham Veren Kadınlar",
+			"link": "https://www.kadindostumarkalar.org/yazilar/ilham-veren-kadinlar/",
+			"image": "https://www.kadindostumarkalar.org/webimg1/img/blog/mucadele-kadini-halide-edip-adivar-0-16706.jpg?w=360"
+		},
+		{
+			"id": "14",
+			"category": "feminismBasics",
+			"title": "Feminizm Nedir?",
+			"link": "https://feministbellek.org/feminizm/",
+			"image": "https://feministbellek.org/wp-content/uploads/2022/08/New-Project-5-768x516.jpg"
+		},
+		{
+			"id": "15",
+			"category": "feminismBasics",
+			"title": "Dünya Tarihinde Kadınlar: Güçlü Kadın Figürleri",
+			"link": "https://blog.microfon.co/dunya-tarihinde-kadinlar-guclu-kadin-figurleri/?amp=1",
+			"image": "https://eudzr49nzcv.exactdn.com/wp-content/uploads/2023/12/Dunya-Tarihinde-Kadinlar-Guclu-Kadin-Figurleri-Kapak-Fotografi-1-1024x759.jpg?strip=all&lossy=1&ssl=1"
+		},
+		{
+			"id": "16",
+			"category": "feminismBasics",
+			"title": "History of Feminism",
+			"link": "https://www.history.com/articles/feminism-womens-history",
+			"image": "https://yt3.googleusercontent.com/Krs7T_M2MyGR8BP9TnMPW67WGYfmn4ReqAWZ9WcqkY9xOOQXnedvxe0pi9DbGEBWvTNWpjMU=s900-c-k-c0x00ffffff-no-rj"
+		},
+		{
+			"id": "17",
+			"category": "feminismBasics",
+			"title": "Feminism Definition and History",
+			"link": "https://www.britannica.com/topic/feminism",
+			"image": "https://cdn.britannica.com/93/84993-050-73B1AADC/Title-page-American-edition-Mary-Wollstonecraft-A-1792.jpg?w=300"
+		},
+		{
+			"id": "18",
+			"category": "womanMurders",
+			"title": "Kadın Cinayetleri Raporu",
+			"link": "https://news.un.org/en/story/2024/11/1157386",
+			"image": "https://global.unitednations.entermediadb.net/assets/mediadb/services/module/asset/downloads/preset/assets/2018/09/26-09-2018_Femicide_LAC.jpg/image1170x530cropped.jpg"
+		},
+		{
+			"id": "19",
+			"category": "womanMurders",
+			"title": "İstanbul Sözleşmesi Sonrası Kadın Cinayetleri",
+			"link": "https://www.tkdf.org.tr/bizden-haberler/istanbul-sozlesmesinin-ardindan-kadin-cinayetleri-daha-da-artti",
+			"image": "https://www.tkdf.org.tr/uploads/default/blog/b79ec108d4f33a8a755a31415a335a91_big_r.jpg"
+		},
+		{
+			"id": "20",
+			"category": "womanMurders",
+			"title": "Anıt Sayaç",
+			"link": "https://anitsayac.com",
+			"image": "https://i.anitsayac.com/i/7.jpg"
+		},
+		{
+			"id": "21",
+			"category": "womanMurders",
+			"title": "Türkiye'de Kadın Olmak",
+			"link": "https://tuicakademi.org/turkiyede-kadin-olmak-ve-kadina-yonelik-siddet/",
+			"image": "https://tuicakademi.org/wp-content/uploads/2021/04/tuic_akademi_bordered_logo_500v2.png"
+		},
+		{
+			"id": "22",
+			"category": "toxicRelationships",
+			"title": "10 Signs of an Unhealthy Relationship",
+			"link": "https://somersetdomesticabuse.org.uk/10-signs-of-an-unhealthy-relationship/",
+			"image": "https://somersetdomesticabuse.org.uk/wp-content/uploads/2023/09/young-people-1024x456.jpg"
+		},
+		{
+			"id": "23",
+			"category": "toxicRelationships",
+			"title": "Toksik İlişki Nedir?",
+			"link": "https://www.memorial.com.tr/saglik-rehberi/toksik-iliski-ne-demek",
+			"image": "https://cdn.memorial.com.tr/files/images/logo.png"
+		},
+		{
+			"id": "24",
+			"category": "toxicRelationships",
+			"title": "Toksik İlişkiden Kurtulmak",
+			"link": "https://www.getheltia.com/blog/toksik-iliskiden-kurtulmak",
+			"image": "https://media.getheltia.com/strapi-uploads/assets/large_toksik_iliskiden_kurtulma_676a8a662d.jpg"
+		},
+		{
+			"id": "25",
+			"category": "toxicRelationships",
+			"title": "How to Leave a Toxic Relationship",
+			"link": "https://www.choosingtherapy.com/how-to-leave-a-toxic-relationship/",
+			"image": "https://cdn-biiph.nitrocdn.com/UZREvxxQGAxeXhcoPyzyCLtvaevIaCgD/assets/images/source/rev-aa31847/www.choosingtherapy.com/wp-content/uploads/2025/03/ChoosingTherapy.com-Masthead-Logo-Black.svg"
+		},
+		{
+			"id": "26",
+			"category": "selfLove",
+			"title": "İnsan Kendini Nasıl Sever?",
+			"link": "https://terappin.com/blog/insan-kendini-nasil-sever",
+			"image": "https://terappin.com/images/blog/1673597908.jpg"
+		},
+		{
+			"id": "27",
+			"category": "selfLove",
+			"title": "Self-Love Guide",
+			"link": "https://www.betterup.com/blog/self-love",
+			"image": "https://9253440.fs1.hubspotusercontent-na1.net/hub/9253440/hubfs/Blog%20Images/self%20love/self-love-person-makes-heart-with-hands-in-mirror.jpg?width=1505&height=750&name=self-love-person-makes-heart-with-hands-in-mirror.jpg"
+		},
+		{
+			"id": "28",
+			"category": "videoEssays",
+			"title": "The Case for \"Boring\" Self-Care",
+			"link": "https://m.youtube.com/watch?v=zT1iQb0VSX4",
+			"image": "https://img.youtube.com/vi/zT1iQb0VSX4/0.jpg"
+		},
+		{
+			"id": "29",
+			"category": "womanAnatomyAndPeriod",
+			"title": "Kadın Üreme Sistemi Detaylar",
+			"link": "https://basakbaksu.com.tr/en/kadin-ureme-sistemi-detaylar/",
+			"image": "https://basakbaksu.com.tr/wp-content/uploads/2024/04/kadin-bedeni-copy.webp"
+		},
+		{
+			"id": "30",
+			"category": "womanAnatomyAndPeriod",
+			"title": "The Female Anatomy 101",
+			"link": "https://axiawh.com/resources/the-female-anatomy-101/",
+			"image": "https://cdn.axiawh.com/wp-content/uploads/2021/12/17165924/LP_WUDT.jpg"
+		},
+		{
+			"id": "31",
+			"category": "womanAnatomyAndPeriod",
+			"title": "Ağrılı Adet Görme (Dismenore)",
+			"link": "https://www.memorial.com.tr/saglik-rehberi/agrili-adet-gorme-dismenore-nedir",
+			"image": "https://cdn.memorial.com.tr/files/images/logo.png"
+		},
+		{
+			"id": "32",
+			"category": "womanAnatomyAndPeriod",
+			"title": "Menstrual Cramps Treatment",
+			"link": "https://www.mayoclinic.org/diseases-conditions/menstrual-cramps/diagnosis-treatment/drc-20374944",
+			"image": "https://assets.mayoclinic.org/content/dam/mayoclinic/images/logos/mayo-clinic-logo.svg"
+		},
+		{
+			"id": "33",
+			"category": "podcasts",
+			"title": "The Guilty Feminist",
+			"link": "https://open.spotify.com/show/1krsAvYm52tQPrHkP4XBNV",
+			"image": "https://i.scdn.co/image/ab6765630000ba8a8b5e6b6b6b6b6b6b6b6b6b6b"
+		},
+		{
+			"id": "34",
+			"category": "podcasts",
+			"title": "Call Your Girlfriend",
+			"link": "https://open.spotify.com/show/0sAgB3flk32QNHLjNlGAZw",
+			"image": "https://i.scdn.co/image/ab6765630000ba8a8b5e6b6b6b6b6b6b6b6b6b6b"
+		},
+		{
+			"id": "35",
+			"category": "podcasts",
+			"title": "The High Low",
+			"link": "https://open.spotify.com/show/5l6ouwBnkc1QBe0iDA5tKw",
+			"image": "https://i.scdn.co/image/ab6765630000ba8a8b5e6b6b6b6b6b6b6b6b6b6b"
+		},
+		{
+			"id": "36",
+			"category": "podcasts",
+			"title": "Women of Impact",
+			"link": "https://open.spotify.com/show/7mPYdMnKMESL3gAhzzXIVE",
+			"image": "https://i.scdn.co/image/ab6765630000ba8a8b5e6b6b6b6b6b6b6b6b6b6b"
+		},
+		{
+			"id": "37",
+			"category": "podcasts",
+			"title": "The History Chicks",
+			"link": "https://open.spotify.com/show/1q6zr0Va8JXmTrcfqRTcJO",
+			"image": "https://i.scdn.co/image/ab6765630000ba8a8b5e6b6b6b6b6b6b6b6b6b6b"
+		},
+		{
+			"id": "38",
+			"category": "podcasts",
+			"title": "Feminist Current",
+			"link": "https://open.spotify.com/show/2iOUnSav8dwIDDMXVRBu1x",
+			"image": "https://i.scdn.co/image/ab6765630000ba8a8b5e6b6b6b6b6b6b6b6b6b6b"
+		}
+	]
+}
