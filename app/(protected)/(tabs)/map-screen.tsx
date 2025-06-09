@@ -254,7 +254,6 @@ export default function MapScreen() {
 				<FeatureInfoBottomSheet
 					ref={featureSheetRef}
 					onClose={handleCloseFeatureSheet}
-					onExpand={handleExpandFeatureSheet}
 					onChange={handleFeatureBottomSheetChange}
 				/>
 			)}
@@ -262,7 +261,7 @@ export default function MapScreen() {
 			{/* Map Filter Bottom Sheet */}
 			<MapFilterBottomSheet
 				ref={filterSheetRef}
-				// onClose={handleCloseFilterSheet}
+				onClose={handleCloseFilterSheet}
 				onChange={handleFilterBottomSheetChange}
 				searchType={searchType}
 				onSearchTypeChange={handleSearchTypeChange}

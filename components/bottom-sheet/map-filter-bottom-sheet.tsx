@@ -1,4 +1,10 @@
-import React, { forwardRef, useMemo, useCallback, useRef } from "react";
+import React, {
+	forwardRef,
+	useMemo,
+	useCallback,
+	useRef,
+	useImperativeHandle,
+} from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheet, BottomSheetRef } from "@/components/bottom-sheet";
@@ -53,18 +59,12 @@ export const MapFilterBottomSheet = forwardRef<
 		const filterTypeSelectRef = useRef<FilterSearchTypeSelectRef>(null);
 		const featureSelectRef = useRef<FeatureSelectRef>(null);
 		const poiCategorySelectRef = useRef<POICategorySelectRef>(null);
+		const bottomSheetRef = useRef<BottomSheetRef>(null);
 
 		// Dynamic snap points based on search type
 		const snapPoints = useMemo(() => {
-			switch (searchType) {
-				case SearchType.NEIGHBORHOOD:
-					return ["25%", "50%"]; // Smaller for neighborhood search
-				case SearchType.PLACE:
-					return ["30%", "70%"]; // Larger for POI category selection
-				default:
-					return ["25%", "50%"];
-			}
-		}, [searchType]);
+			return ["35%", "80%"];
+		}, []);
 
 		const clearFilters = useCallback(() => {
 			onPOICategoriesChange([]);
@@ -72,13 +72,23 @@ export const MapFilterBottomSheet = forwardRef<
 			featureSelectRef.current?.closeDropdown();
 		}, [onPOICategoriesChange]);
 
+		// Expose methods to parent via ref
+		useImperativeHandle(
+			ref,
+			() => ({
+				...bottomSheetRef.current!,
+				clearFilters,
+			}),
+			[clearFilters],
+		);
+
 		const iconColor = isDark
 			? colors.dark.mutedForeground
 			: colors.light.mutedForeground;
 
 		return (
 			<BottomSheet
-				ref={ref}
+				ref={bottomSheetRef}
 				snapPoints={snapPoints}
 				initialSnapIndex={-1}
 				containerStyle={{ zIndex: 1500 }}
@@ -106,7 +116,7 @@ export const MapFilterBottomSheet = forwardRef<
 							</TouchableOpacity>
 							{/* Close button */}
 							<TouchableOpacity
-								onPress={() => null}
+								onPress={() => bottomSheetRef.current?.close()}
 								className="p-2 rounded-lg bg-gray-100"
 							>
 								<MaterialIcons name="close" size={20} color={iconColor} />
