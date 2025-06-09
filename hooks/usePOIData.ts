@@ -6,7 +6,6 @@ import {
 	CameraBounds,
 	POICategory,
 } from "@/services/poi-service";
-import { queryKeys } from "@/lib/query-client";
 
 interface UsePOIDataProps {
 	city: string;
