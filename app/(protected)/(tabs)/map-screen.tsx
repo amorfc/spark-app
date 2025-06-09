@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useRef } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import { defaultTo } from "lodash";
 import Map from "@/components/map/map";
 import { FeatureSelect } from "@/components/select/feature-select";
 import { useSearch, SelectedFeature } from "@/context/search-provider";
 import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
+import {
+	FeatureInfoBottomSheet,
+	BottomSheetRef,
+} from "@/components/bottom-sheet";
 
 // Import the GeoJSON data
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
@@ -20,8 +24,10 @@ export default function MapScreen() {
 		) => void;
 	}>(null);
 
+	const featureSheetRef = useRef<BottomSheetRef>(null);
+
 	// Use the search context for global state management
-	const { selectedFeature, setSelectedFeatureId } = useSearch();
+	const { selectedFeature, setSelectedFeatureId, clearSelection } = useSearch();
 
 	// Get the original camera configuration for Istanbul
 	const originalCameraConfig = getCameraConfig("istanbul");
@@ -47,7 +53,26 @@ export default function MapScreen() {
 		[setSelectedFeatureId],
 	);
 
+	const handleCloseFeatureSheet = useCallback(() => {
+		featureSheetRef.current?.snapToIndex(-1);
+		// Delay clearing selection to allow animation to start
+		setTimeout(() => {
+			clearSelection();
+		}, 100);
+	}, [clearSelection]);
+
+	const handleExpandFeatureSheet = useCallback(() => {
+		// Optionally center on feature when expanded
+		if (selectedFeature) {
+			centerTo(selectedFeature);
+		}
+	}, [selectedFeature, centerTo]);
+
+	// Center map when feature changes
 	useEffect(() => {
+		if (selectedFeature) {
+			featureSheetRef.current?.snapToIndex(0);
+		}
 		centerTo(selectedFeature);
 	}, [centerTo, selectedFeature]);
 
@@ -64,61 +89,12 @@ export default function MapScreen() {
 				variant="moderate"
 			/>
 
-			{/* Selected Feature Info */}
-			{selectedFeature && (
-				<TouchableOpacity
-					style={styles.infoContainer}
-					onPress={() => centerTo(selectedFeature)}
-				>
-					<Text style={styles.infoTitle}>Neighborhood</Text>
-					<Text style={styles.infoName}>{selectedFeature.name}</Text>
-				</TouchableOpacity>
-			)}
-
-			{/* Debug: Clear selection button */}
-			<TouchableOpacity
-				style={[styles.infoContainer, { bottom: 200, backgroundColor: "red" }]}
-				onPress={() => centerTo(null)}
-			>
-				<Text style={[styles.infoTitle, { color: "white" }]}>
-					Clear Selection
-				</Text>
-				<Text style={[styles.infoName, { color: "white" }]}>
-					Back to Original
-				</Text>
-			</TouchableOpacity>
+			{/* Feature Info Bottom Sheet */}
+			<FeatureInfoBottomSheet
+				ref={featureSheetRef}
+				onClose={handleCloseFeatureSheet}
+				onExpand={handleExpandFeatureSheet}
+			/>
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	infoContainer: {
-		position: "absolute",
-		bottom: 100,
-		left: 20,
-		right: 20,
-		backgroundColor: "white",
-		padding: 16,
-		borderRadius: 8,
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5,
-	},
-	infoTitle: {
-		fontSize: 14,
-		fontWeight: "600",
-		color: "#666",
-		textTransform: "uppercase",
-	},
-	infoName: {
-		fontSize: 18,
-		fontWeight: "bold",
-		color: "#333",
-		marginTop: 4,
-	},
-});
