@@ -1,89 +1,80 @@
 {
-  "expo": {
-    "name": "spark-app",
-    "slug": "spark-app",
-    "scheme": "spark-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "config": {
-        "usesNonExemptEncryption": false
-      },
-      "splash": {
-        "image": "./assets/splash.png",
-        "resizeMode": "cover",
-        "backgroundColor": "#ffffff",
-        "dark": {
-          "backgroundColor": "#000000",
-          "resizeMode": "cover",
-          "image": "./assets/splash-dark.png"
-        }
-      },
-      "icon": {
-        "dark": "./assets/icon-dark.png",
-        "light": "./assets/icon.png"
-      },
-      "bundleIdentifier": "com.sparkcompanytr.spark-app",
-      "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
-        "NSLocationAlwaysUsageDescription": "This app needs access to location to show your position on the map.",
-        "UIBackgroundModes": [
-          "location",
-          "fetch"
-        ]
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png"
-      },
-      "splash": {
-        "image": "./assets/splash.png",
-        "resizeMode": "cover",
-        "backgroundColor": "#ffffff",
-        "dark": {
-          "backgroundColor": "#000000",
-          "resizeMode": "cover",
-          "image": "./assets/splash-dark.png"
-        }
-      },
-      "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
-      ],
-      "package": "com.sparkcompanytr.sparkapp"
-    },
-    "experiments": {
-      "typedRoutes": true
-    },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      [
-        "@rnmapbox/maps",
-        {
-          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location in the background."
-        }
-      ]
-    ],
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "dd1be4d4-52ed-4255-a0e1-5d7e35339a8a"
-      }
-    },
-    "owner": "sparkcompanytr"
-  }
+	"expo": {
+		"name": "spark-app",
+		"slug": "spark-app",
+		"scheme": "spark-app",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"userInterfaceStyle": "automatic",
+		"assetBundlePatterns": ["**/*"],
+		"newArchEnabled": true,
+		"ios": {
+			"supportsTablet": true,
+			"config": {
+				"usesNonExemptEncryption": false
+			},
+			"splash": {
+				"image": "./assets/splash.png",
+				"resizeMode": "cover",
+				"backgroundColor": "#ffffff",
+				"dark": {
+					"backgroundColor": "#000000",
+					"resizeMode": "cover",
+					"image": "./assets/splash-dark.png"
+				}
+			},
+			"icon": {
+				"dark": "./assets/icon-dark.png",
+				"light": "./assets/icon.png"
+			},
+			"bundleIdentifier": "com.sparkcompanytr.spark-app",
+			"infoPlist": {
+				"NSLocationWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
+				"NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
+				"NSLocationAlwaysUsageDescription": "This app needs access to location to show your position on the map.",
+				"UIBackgroundModes": ["location", "fetch"],
+				"ITSAppUsesNonExemptEncryption": false
+			}
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png"
+			},
+			"splash": {
+				"image": "./assets/splash.png",
+				"resizeMode": "cover",
+				"backgroundColor": "#ffffff",
+				"dark": {
+					"backgroundColor": "#000000",
+					"resizeMode": "cover",
+					"image": "./assets/splash-dark.png"
+				}
+			},
+			"permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+			"package": "com.sparkcompanytr.sparkapp"
+		},
+		"experiments": {
+			"typedRoutes": true
+		},
+		"plugins": [
+			"expo-router",
+			"expo-secure-store",
+			[
+				"@rnmapbox/maps",
+				{
+					"locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+					"locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+					"locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location in the background."
+				}
+			]
+		],
+		"extra": {
+			"router": {},
+			"eas": {
+				"projectId": "dd1be4d4-52ed-4255-a0e1-5d7e35339a8a"
+			}
+		},
+		"owner": "sparkcompanytr"
+	}
 }
