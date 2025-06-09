@@ -10,6 +10,7 @@ import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface SelectProps {
 	open?: boolean;
@@ -90,6 +91,34 @@ export const Select: React.FC<SelectProps> = ({
 			setItems(originalItems);
 		}
 	}, [originalItems, searchable, initialItemsCount]);
+
+	// Ensure selected value item is always included in items array
+	useEffect(() => {
+		if (value && originalItems.length > 0) {
+			const selectedItem = originalItems.find((item) => item.value === value);
+			if (selectedItem) {
+				setItems((currentItems) => {
+					// Check if the selected item is already in current items
+					const itemExists = currentItems.some((item) => item.value === value);
+					if (!itemExists) {
+						// Add the selected item at the beginning of the list
+						return [selectedItem, ...currentItems];
+					}
+					return currentItems;
+				});
+			}
+		}
+	}, [value, originalItems]);
+
+	// Close dropdown when screen loses focus
+	useFocusEffect(
+		React.useCallback(() => {
+			return () => {
+				// This cleanup function runs when screen loses focus
+				setOpen(false);
+			};
+		}, []),
+	);
 
 	const performSearch = (text: string) => {
 		if (!searchable) return;
@@ -230,6 +259,7 @@ export const Select: React.FC<SelectProps> = ({
 		borderColor,
 		borderWidth: 1,
 		borderRadius: 8,
+		maxHeight: 300,
 		...dropDownContainerStyle,
 	};
 
@@ -262,6 +292,20 @@ export const Select: React.FC<SelectProps> = ({
 		...modalContentContainerStyle,
 	};
 
+	// Selected item styling
+	const selectedItemContainerStyle: ViewStyle = {
+		backgroundColor: isDark ? colors.dark.accent : colors.light.accent,
+		borderRadius: 6,
+		marginVertical: 1,
+	};
+
+	const selectedItemLabelStyle: TextStyle = {
+		color: isDark
+			? colors.dark.accentForeground
+			: colors.light.accentForeground,
+		fontWeight: "600",
+	};
+
 	return (
 		<View className="w-full flex flex-row items-center">
 			<Animated.View
@@ -292,10 +336,13 @@ export const Select: React.FC<SelectProps> = ({
 					multiple={multiple}
 					dropDownDirection="BOTTOM"
 					closeAfterSelecting={true}
-					showTickIcon={false}
+					showTickIcon={true}
 					showArrowIcon={true}
 					showBadgeDot={false}
 					closeOnBackPressed={true}
+					onPress={() => setOpen(!open)}
+					onOpen={() => setOpen(true)}
+					onClose={() => setOpen(false)}
 					style={defaultStyle}
 					dropDownContainerStyle={defaultDropDownStyle}
 					textStyle={defaultTextStyle}
@@ -303,6 +350,8 @@ export const Select: React.FC<SelectProps> = ({
 					searchContainerStyle={defaultSearchContainerStyle}
 					searchTextInputStyle={defaultSearchInputStyle}
 					modalContentContainerStyle={defaultModalContentStyle}
+					selectedItemContainerStyle={selectedItemContainerStyle}
+					selectedItemLabelStyle={selectedItemLabelStyle}
 				/>
 			</Animated.View>
 

@@ -1,5 +1,4 @@
 import { BlogPost, BlogCategory, CreateBlogPostInput } from "@/types/blog";
-import { generateUniqueId } from "@/utils/common";
 
 /**
  * Get YouTube video thumbnail URL from YouTube video URL
@@ -17,8 +16,6 @@ export const getYoutubeThumbnail = (url: string): string => {
  * @returns Complete blog post object
  */
 export const createBlog = (input: CreateBlogPostInput): BlogPost => {
-	const now = new Date();
-
 	// Auto-generate image if it's a YouTube link
 	let image = input.image;
 	if (!image && input.link.includes("youtube.com")) {
@@ -26,13 +23,11 @@ export const createBlog = (input: CreateBlogPostInput): BlogPost => {
 	}
 
 	return {
-		id: generateUniqueId(),
+		id: crypto.randomUUID(),
 		category: input.category,
 		title: input.title,
 		link: input.link,
 		image: image || "", // Default empty string if no image
-		createdAt: now,
-		updatedAt: now,
 	};
 };
 

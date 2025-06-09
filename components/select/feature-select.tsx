@@ -15,9 +15,14 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 	containerStyle,
 }) => {
 	// Dropdown picker state
-	const [value, setValue] = useState<string | null>(null);
-	const { setSelectedFeatureId } = useSearch();
+	const { selectedFeatureId, setSelectedFeatureId } = useSearch();
 	const { findProcessedFeature, processedFeature } = useSafeGeoData();
+	const [value, setValue] = useState<string | null>(null);
+
+	// Sync dropdown value with context selectedFeatureId
+	useEffect(() => {
+		setValue(selectedFeatureId);
+	}, [selectedFeatureId]);
 
 	const dropdownItems = useMemo(() => {
 		if (!processedFeature) return [];
@@ -30,11 +35,6 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 
 	// Local state for dropdown items
 	const [items, setItems] = useState<ItemType<string>[]>(dropdownItems);
-
-	// Update items when dropdownItems changes
-	useEffect(() => {
-		setItems(dropdownItems);
-	}, [dropdownItems]);
 
 	// Handle location selection
 	const handleSelectItem = useCallback(
@@ -52,6 +52,11 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 		setValue(null);
 		setSelectedFeatureId(null);
 	}, [setSelectedFeatureId]);
+
+	// Update items when dropdownItems changes
+	useEffect(() => {
+		setItems(dropdownItems);
+	}, [dropdownItems]);
 
 	return (
 		<View style={[styles.container, containerStyle]}>

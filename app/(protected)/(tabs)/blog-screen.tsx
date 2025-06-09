@@ -18,7 +18,7 @@ export default function BlogScreen() {
 
 	// State for selected category - default to SelfDefense as requested
 	const [selectedCategory, setSelectedCategory] = useState<BlogCategory>(
-		BlogCategory.SelfDefense,
+		BlogCategory.MovieRecommendations,
 	);
 	const [refreshing, setRefreshing] = useState(false);
 
