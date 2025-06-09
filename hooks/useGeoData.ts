@@ -1,14 +1,18 @@
 import { useCallback, useMemo } from "react";
 import { map, toLower, deburr } from "lodash";
 
+import { CityGeoJson, CityNames } from "@/components/map/map";
+import { FeatureType, SelectedFeature } from "@/context/search-provider";
+
 interface UseGeoDataProps {
-	city: string;
-	geoJsonData?: GeoJSON.FeatureCollection;
+	city: CityNames;
+	featureType: FeatureType;
 }
 
-export const useGeoData = ({ city, geoJsonData }: UseGeoDataProps) => {
-	// Pre-process and memoize neighborhood data for better search performance
-	const processedFeature = useMemo(() => {
+export const useGeoData = ({ city, featureType }: UseGeoDataProps) => {
+	const processedFeature: SelectedFeature[] = useMemo(() => {
+		const geoJsonData = CityGeoJson[city][featureType];
+
 		if (!geoJsonData?.features) return [];
 
 		return map(geoJsonData.features, (feature: any) => {
@@ -24,32 +28,24 @@ export const useGeoData = ({ city, geoJsonData }: UseGeoDataProps) => {
 					(feature.bbox[1] + feature.bbox[3]) / 2,
 				] as [number, number],
 				polygon: feature.geometry,
+				type: featureType,
+				properties: feature.properties,
 				// Pre-processed search fields (normalized for better search)
 				searchText: toLower(deburr(`${displayName} ${cityName}`)),
 				originalFeature: feature,
 			};
 		});
-	}, [geoJsonData]);
-
-	// Convert to dropdown picker format
-	const dropdownItems = useMemo(() => {
-		return processedFeature.map((neighborhood) => ({
-			label: neighborhood.place_name,
-			value: neighborhood.id,
-			...neighborhood, // Include all neighborhood data for easy access
-		}));
-	}, [processedFeature]);
+	}, [city, featureType]);
 
 	const findProcessedFeature = useCallback(
 		(featureId: string) => {
-			return processedFeature.find((feature) => feature.id === featureId);
+			return processedFeature.find((feature) => feature?.id === featureId);
 		},
 		[processedFeature],
 	);
 
 	return {
 		processedFeature,
-		dropdownItems,
 		findProcessedFeature,
 	};
 };

@@ -355,7 +355,7 @@ export const Select: React.FC<SelectProps> = ({
 						className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-sm"
 						activeOpacity={0.7}
 					>
-						<MaterialIcons name="clear" size={16} color="white" />
+						<MaterialIcons name="delete" size={16} color="white" />
 					</TouchableOpacity>
 				</Animated.View>
 			)}

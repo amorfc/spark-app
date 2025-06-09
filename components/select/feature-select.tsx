@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { ItemType } from "react-native-dropdown-picker";
 import { Select } from "@/components/select/select";
-import { useGeoData } from "@/hooks/useGeoData";
 import { useSearch } from "@/context/search-provider";
+import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 
 interface FeatureSelectProps {
 	city: string;
@@ -13,20 +13,22 @@ interface FeatureSelectProps {
 }
 
 export const FeatureSelect: React.FC<FeatureSelectProps> = ({
-	city,
-	geoJsonData,
 	placeholder = "Search neighborhoods...",
 	containerStyle,
 }) => {
 	// Dropdown picker state
 	const [value, setValue] = useState<string | null>(null);
 	const { setSelectedFeatureId } = useSearch();
+	const { findProcessedFeature, processedFeature } = useSafeGeoData();
 
-	// Use the custom hook for geo data
-	const { dropdownItems, findProcessedFeature } = useGeoData({
-		city,
-		geoJsonData,
-	});
+	const dropdownItems = useMemo(() => {
+		if (!processedFeature) return [];
+		return processedFeature.map((feature) => ({
+			label: feature?.place_name,
+			value: feature?.id,
+			...feature, // Include all neighborhood data for easy access
+		}));
+	}, [processedFeature]);
 
 	// Local state for dropdown items
 	const [items, setItems] = useState<ItemType<string>[]>(dropdownItems);
@@ -39,13 +41,10 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 	// Handle location selection
 	const handleSelectItem = useCallback(
 		(selectedItem: ItemType<string>) => {
-			// Find the selected neighborhood from processed data
-			const selectedNeighborhood = findProcessedFeature(
-				selectedItem.value || "",
-			);
+			const selectedFeature = findProcessedFeature(selectedItem.value || "");
 
-			if (selectedNeighborhood) {
-				setSelectedFeatureId(selectedNeighborhood.id);
+			if (selectedFeature) {
+				setSelectedFeatureId(selectedFeature.id);
 			}
 		},
 		[findProcessedFeature, setSelectedFeatureId],
@@ -61,9 +60,8 @@ export const FeatureSelect: React.FC<FeatureSelectProps> = ({
 				placeholder={placeholder}
 				searchable={true}
 				searchPlaceholder="Type to search..."
-				listMode="SCROLLVIEW"
 				minSearchLength={3}
-				maxResults={5}
+				maxResults={10}
 				debounceMs={300}
 				initialItemsCount={50}
 				clearable={true}

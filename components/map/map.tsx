@@ -16,8 +16,29 @@ import Mapbox, {
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { initializeMapbox, getCameraConfig } from "@/lib/mapbox";
-import { SelectedFeature } from "@/context/search-provider";
+import { FeatureType, SelectedFeature } from "@/context/search-provider";
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
+import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
+import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
+
+export enum CityNames {
+	Istanbul = "istanbul",
+}
+
+export const CityGeoJson: Record<
+	CityNames,
+	{
+		[FeatureType.Neighborhood]: GeoJSON.FeatureCollection;
+		[FeatureType.District]: GeoJSON.FeatureCollection;
+	}
+> = {
+	[CityNames.Istanbul]: {
+		[FeatureType.Neighborhood]:
+			neighborhoodsDataRaw as unknown as GeoJSON.FeatureCollection,
+		[FeatureType.District]:
+			districtsDataRaw as unknown as GeoJSON.FeatureCollection,
+	},
+};
 
 interface MapRef {
 	centerOnCoordinates: (
@@ -43,7 +64,7 @@ const Map = forwardRef<MapRef, MapProps>(
 			selectedFeature,
 			onFeaturePress,
 			onMapLoad,
-			variant = "moderate",
+			variant = "subtle",
 		},
 		ref,
 	) => {
@@ -77,8 +98,7 @@ const Map = forwardRef<MapRef, MapProps>(
 			onMapLoad?.();
 		}, [onMapLoad]);
 
-		// Handle neighborhood click
-		const onNeighborhoodPress = useCallback(
+		const onShapePress = useCallback(
 			(event: OnPressEvent) => {
 				const feature = event.features[0];
 				onFeaturePress(feature.properties?.place_id?.toString() || "unknown");
@@ -158,15 +178,16 @@ const Map = forwardRef<MapRef, MapProps>(
 						showsUserHeadingIndicator={true}
 					/>
 
-					{/* Neighborhoods Layer */}
-					<ShapeSource
-						key={`neighborhoods-source-${selectedFeature?.id || "none"}`}
-						id="neighborhoods-source"
-						shape={geoJsonData}
-						onPress={onNeighborhoodPress}
-					>
-						<FillLayer id="neighborhoods-fill" style={polygonStyle} />
-					</ShapeSource>
+					{isValidGeoJSON && (
+						<ShapeSource
+							key={`feature-source-${selectedFeature?.id || "none"}`}
+							id="feature-source"
+							shape={geoJsonData}
+							onPress={onShapePress}
+						>
+							<FillLayer id="feature-fill" style={polygonStyle} />
+						</ShapeSource>
+					)}
 				</MapView>
 			</View>
 		);
