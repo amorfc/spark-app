@@ -89,21 +89,24 @@ export default function MapScreen() {
 	}, [centerTo, selectedFeature]);
 
 	return (
-		<View className="flex-1 pt-5">
-			<FeatureSelect
-				ref={featureSelectRef}
-				placeholder="Search neighborhoods in Istanbul..."
-			/>
+		<View className="flex-1">
+			<View className="flex-1">
+				<View className="absolute top-20 left-2 right-2 z-[1000]">
+					<FeatureSelect
+						ref={featureSelectRef}
+						placeholder="Search neighborhoods in Istanbul..."
+					/>
+				</View>
 
-			<Map
-				ref={mapRef}
-				location="istanbul"
-				geoJsonData={neighborhoodsData}
-				selectedFeature={selectedFeature}
-				onFeaturePress={handleFeaturePress}
-				variant="moderate"
-			/>
-
+				<Map
+					ref={mapRef}
+					location="istanbul"
+					geoJsonData={neighborhoodsData}
+					selectedFeature={selectedFeature}
+					onFeaturePress={handleFeaturePress}
+					variant="moderate"
+				/>
+			</View>
 			{/* Feature Info Bottom Sheet */}
 			<FeatureInfoBottomSheet
 				ref={featureSheetRef}
