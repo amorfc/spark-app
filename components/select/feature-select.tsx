@@ -1,7 +1,15 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+	useState,
+	useEffect,
+	useCallback,
+	useMemo,
+	useRef,
+	forwardRef,
+	useImperativeHandle,
+} from "react";
 import { View, StyleSheet } from "react-native";
 import { ItemType } from "react-native-dropdown-picker";
-import { Select } from "@/components/select/select";
+import { Select, SelectRef } from "@/components/select/select";
 import { useSearch } from "@/context/search-provider";
 import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 
@@ -10,69 +18,88 @@ interface FeatureSelectProps {
 	containerStyle?: any;
 }
 
-export const FeatureSelect: React.FC<FeatureSelectProps> = ({
-	placeholder = "Search neighborhoods...",
-	containerStyle,
-}) => {
-	// Dropdown picker state
-	const { selectedFeatureId, setSelectedFeatureId } = useSearch();
-	const { findProcessedFeature, processedFeature } = useSafeGeoData();
-	const [value, setValue] = useState<string | null>(null);
+export interface FeatureSelectRef {
+	closeDropdown: () => void;
+}
 
-	// Sync dropdown value with context selectedFeatureId
-	useEffect(() => {
-		setValue(selectedFeatureId);
-	}, [selectedFeatureId]);
+export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
+	({ placeholder = "Search neighborhoods...", containerStyle }, ref) => {
+		// Dropdown picker state
+		const { selectedFeatureId, clearSelection, setSelectedFeatureId } =
+			useSearch();
+		const { findProcessedFeature, processedFeature } = useSafeGeoData();
+		const [value, setValue] = useState<string | null>(null);
+		const selectRef = useRef<SelectRef>(null);
 
-	const dropdownItems = useMemo(() => {
-		if (!processedFeature) return [];
-		return processedFeature.map((feature) => ({
-			label: feature?.place_name,
-			value: feature?.id,
-			...feature, // Include all neighborhood data for easy access
-		}));
-	}, [processedFeature]);
+		// Sync dropdown value with context selectedFeatureId
+		useEffect(() => {
+			setValue(selectedFeatureId);
+		}, [selectedFeatureId]);
 
-	// Local state for dropdown items
-	const [items, setItems] = useState<ItemType<string>[]>(dropdownItems);
+		// Expose methods to parent
+		useImperativeHandle(
+			ref,
+			() => ({
+				closeDropdown: () => {
+					selectRef.current?.closeDropdown();
+				},
+			}),
+			[],
+		);
 
-	// Handle location selection
-	const handleSelectItem = useCallback(
-		(selectedItem: ItemType<string>) => {
-			const selectedFeature = findProcessedFeature(selectedItem.value || "");
+		const dropdownItems = useMemo(() => {
+			if (!processedFeature) return [];
+			return processedFeature.map((feature) => ({
+				label: feature?.place_name,
+				value: feature?.id,
+				...feature, // Include all neighborhood data for easy access
+			}));
+		}, [processedFeature]);
 
-			if (selectedFeature) {
-				setSelectedFeatureId(selectedFeature.id);
-			}
-		},
-		[findProcessedFeature, setSelectedFeatureId],
-	);
+		// Local state for dropdown items
+		const [items, setItems] = useState<ItemType<string>[]>(dropdownItems);
 
-	const handleSelectClear = useCallback(() => {
-		setValue(null);
-		setSelectedFeatureId(null);
-	}, [setSelectedFeatureId]);
+		// Handle location selection
+		const handleSelectItem = useCallback(
+			(selectedItem: ItemType<string>) => {
+				const selectedFeature = findProcessedFeature(selectedItem.value || "");
 
-	// Update items when dropdownItems changes
-	useEffect(() => {
-		setItems(dropdownItems);
-	}, [dropdownItems]);
+				if (selectedFeature) {
+					setSelectedFeatureId(selectedFeature.id);
+				}
+			},
+			[findProcessedFeature, setSelectedFeatureId],
+		);
 
-	return (
-		<View style={[styles.container, containerStyle]}>
-			<Select
-				value={value}
-				originalItems={items}
-				setValue={setValue}
-				onSelectItem={handleSelectItem}
-				onClear={handleSelectClear}
-				placeholder={placeholder}
-				searchPlaceholder="Type to search..."
-				searchable={true}
-			/>
-		</View>
-	);
-};
+		const handleSelectClear = useCallback(() => {
+			clearSelection();
+			setValue(null);
+		}, [clearSelection]);
+
+		// Update items when dropdownItems changes
+		useEffect(() => {
+			setItems(dropdownItems);
+		}, [dropdownItems]);
+
+		return (
+			<View style={[styles.container, containerStyle]}>
+				<Select
+					ref={selectRef}
+					value={value}
+					originalItems={items}
+					setValue={setValue}
+					onSelectItem={handleSelectItem}
+					onClear={handleSelectClear}
+					placeholder={placeholder}
+					searchPlaceholder="Type to search..."
+					searchable={true}
+				/>
+			</View>
+		);
+	},
+);
+
+FeatureSelect.displayName = "FeatureSelect";
 
 const styles = StyleSheet.create({
 	container: {

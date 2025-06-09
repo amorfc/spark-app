@@ -29,6 +29,7 @@ interface BottomSheetProps {
 	scrollable?: boolean;
 	onClose?: () => void;
 	onChange?: (index: number) => void;
+	onAnimate?: () => void;
 	backgroundStyle?: any;
 	handleIndicatorStyle?: any;
 	containerStyle?: any;
@@ -45,6 +46,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 			scrollable = true,
 			onClose,
 			onChange,
+			onAnimate,
 			backgroundStyle,
 			handleIndicatorStyle,
 			containerStyle,
@@ -68,6 +70,10 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 			},
 			[onChange, onClose],
 		);
+
+		const handleAnimate = useCallback(() => {
+			onAnimate?.();
+		}, [onAnimate]);
 
 		const snapToIndex = useCallback((index: number) => {
 			bottomSheetRef.current?.snapToIndex(index);
@@ -127,6 +133,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 				index={initialSnapIndex}
 				snapPoints={memoizedSnapPoints}
 				onChange={handleSheetChanges}
+				onAnimate={handleAnimate}
 				enablePanDownToClose={enablePanDownToClose}
 				enableHandlePanningGesture={enableDrag}
 				enableContentPanningGesture={enableDrag}

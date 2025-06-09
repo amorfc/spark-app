@@ -10,12 +10,14 @@ import { colors } from "@/constants/colors";
 interface FeatureInfoBottomSheetProps {
 	onClose?: () => void;
 	onExpand?: () => void;
+	onChange?: (index: number) => void;
+	onAnimate?: () => void;
 }
 
 export const FeatureInfoBottomSheet = forwardRef<
 	BottomSheetRef,
 	FeatureInfoBottomSheetProps
->(({ onClose, onExpand }, ref) => {
+>(({ onClose, onExpand, onChange, onAnimate }, ref) => {
 	const { colorScheme } = useColorScheme();
 	const { selectedFeature: feature } = useSearch();
 	const isDark = colorScheme === "dark";
@@ -23,6 +25,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 	if (!feature) return null; // TODO: Add loading state
 
 	const handleChange = (index: number) => {
+		onChange?.(index);
 		if (index === 1) {
 			onExpand?.();
 		}
@@ -40,6 +43,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 			enablePanDownToClose={false}
 			onClose={onClose}
 			onChange={handleChange}
+			onAnimate={onAnimate}
 			scrollable={true}
 		>
 			<View className="flex-1">

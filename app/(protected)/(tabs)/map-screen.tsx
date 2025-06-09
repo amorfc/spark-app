@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { defaultTo } from "lodash";
 import Map from "@/components/map/map";
-import { FeatureSelect } from "@/components/select/feature-select";
+import {
+	FeatureSelect,
+	FeatureSelectRef,
+} from "@/components/select/feature-select";
 import { useSearch, SelectedFeature } from "@/context/search-provider";
 import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
 import {
@@ -25,6 +28,7 @@ export default function MapScreen() {
 	}>(null);
 
 	const featureSheetRef = useRef<BottomSheetRef>(null);
+	const featureSelectRef = useRef<FeatureSelectRef>(null);
 
 	// Use the search context for global state management
 	const { selectedFeature, setSelectedFeatureId, clearSelection } = useSearch();
@@ -53,6 +57,21 @@ export default function MapScreen() {
 		[setSelectedFeatureId],
 	);
 
+	const handleExpandFeatureSheet = useCallback(() => {
+		// Optionally center on feature when expanded
+		if (selectedFeature) {
+			centerTo(selectedFeature);
+		}
+	}, [selectedFeature, centerTo]);
+
+	const handleAnimate = useCallback(() => {
+		if (selectedFeature) {
+			centerTo(selectedFeature);
+		}
+		// Close dropdown immediately when dragging starts
+		featureSelectRef.current?.closeDropdown();
+	}, [centerTo, selectedFeature]);
+
 	const handleCloseFeatureSheet = useCallback(() => {
 		featureSheetRef.current?.snapToIndex(-1);
 		// Delay clearing selection to allow animation to start
@@ -60,13 +79,6 @@ export default function MapScreen() {
 			clearSelection();
 		}, 100);
 	}, [clearSelection]);
-
-	const handleExpandFeatureSheet = useCallback(() => {
-		// Optionally center on feature when expanded
-		if (selectedFeature) {
-			centerTo(selectedFeature);
-		}
-	}, [selectedFeature, centerTo]);
 
 	// Center map when feature changes
 	useEffect(() => {
@@ -78,7 +90,10 @@ export default function MapScreen() {
 
 	return (
 		<View className="flex-1 pt-5">
-			<FeatureSelect placeholder="Search neighborhoods in Istanbul..." />
+			<FeatureSelect
+				ref={featureSelectRef}
+				placeholder="Search neighborhoods in Istanbul..."
+			/>
 
 			<Map
 				ref={mapRef}
@@ -94,6 +109,7 @@ export default function MapScreen() {
 				ref={featureSheetRef}
 				onClose={handleCloseFeatureSheet}
 				onExpand={handleExpandFeatureSheet}
+				onAnimate={handleAnimate}
 			/>
 		</View>
 	);
