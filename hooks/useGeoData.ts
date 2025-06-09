@@ -27,6 +27,7 @@ export const useGeoData = ({ city, featureType }: UseGeoDataProps) => {
 					(feature.bbox[1] + feature.bbox[3]) / 2,
 				] as [number, number],
 				polygon: feature.geometry,
+				bbox: feature.bbox,
 				type: featureType,
 				properties: feature.properties,
 				// Pre-processed search fields (normalized for better search)

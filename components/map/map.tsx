@@ -1,13 +1,10 @@
 import { useCallback, useRef, forwardRef, useImperativeHandle } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Mapbox, {
 	MapView,
 	Camera,
-	UserLocation,
 	ShapeSource,
 	FillLayer,
-	PointAnnotation,
-	Callout,
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { getCameraConfig } from "@/lib/mapbox";
@@ -19,12 +16,12 @@ import {
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
-import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 import {
 	POIItem,
 	CameraBounds,
 	POI_CATEGORY_CONFIG,
 } from "@/services/poi-service";
+import { useSafeGeoData } from "@/hooks/useSafeGeoData";
 
 export enum CityNames {
 	Istanbul = "istanbul",
@@ -53,8 +50,6 @@ interface MapRef {
 }
 
 interface MapProps {
-	location: string;
-	geoJsonData: GeoJSON.FeatureCollection;
 	selectedFeature: SelectedFeature | null;
 	onFeaturePress: (id: string) => void;
 	onMapLoad?: () => void;
@@ -67,13 +62,13 @@ interface MapProps {
 const Map = forwardRef<MapRef, MapProps>(
 	(
 		{
-			selectedFeature,
 			onFeaturePress,
 			onMapLoad,
 			variant = "subtle",
 			pois = [],
 			onPOIPress,
 			onCameraChanged,
+			selectedFeature,
 		},
 		ref,
 	) => {
@@ -85,8 +80,6 @@ const Map = forwardRef<MapRef, MapProps>(
 
 		// Get camera configuration for the specified location
 		const cameraConfig = getCameraConfig(selectedCity);
-
-		// Get polygon styling with variant support
 		const polygonStyle = usePolygonStyle({ selectedFeature, variant });
 
 		const handleMapLoad = useCallback(() => {
@@ -129,6 +122,9 @@ const Map = forwardRef<MapRef, MapProps>(
 				const clampedZoomLevel = Math.min(zoomLevel, 14);
 
 				if (cameraRef.current) {
+					console.log("setting camerat", coordinates, clampedZoomLevel);
+					console.log("ref", cameraRef.current);
+
 					cameraRef.current.setCamera({
 						centerCoordinate: coordinates,
 						zoomLevel: clampedZoomLevel,
@@ -181,7 +177,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					compassEnabled={true}
 					compassViewPosition={2}
 					logoEnabled={false}
-					attributionEnabled={true}
+					attributionEnabled={false}
 				>
 					<Camera
 						ref={cameraRef}
@@ -190,12 +186,6 @@ const Map = forwardRef<MapRef, MapProps>(
 						maxZoomLevel={14} // Set maximum zoom level
 						animationDuration={cameraConfig.animationDuration}
 						bounds={cameraConfig.bounds}
-					/>
-
-					<UserLocation
-						visible={true}
-						animated={true}
-						showsUserHeadingIndicator={true}
 					/>
 
 					{isValidGeoJSON && (
@@ -210,7 +200,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					)}
 
 					{/* POI Pins */}
-					{pois.map((poi) => (
+					{/* {pois.map((poi) => (
 						<PointAnnotation
 							key={poi.id}
 							id={poi.id}
@@ -227,7 +217,7 @@ const Map = forwardRef<MapRef, MapProps>(
 							</View>
 							<Callout title={poi.name} />
 						</PointAnnotation>
-					))}
+					))} */}
 				</MapView>
 			</View>
 		);

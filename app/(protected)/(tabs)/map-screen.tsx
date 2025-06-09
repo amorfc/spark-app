@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
-import { defaultTo } from "lodash";
 import Map from "@/components/map/map";
-import { useSearch, SelectedFeature } from "@/context/search-provider";
-import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
+import { SelectedFeature, useSearch } from "@/context/search-provider";
 import {
 	FeatureInfoBottomSheet,
 	BottomSheetRef,
@@ -17,12 +15,10 @@ import { usePOIData } from "@/hooks/usePOIData";
 import { POIItem, POICategory } from "@/services/poi-service";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 
-// Import the GeoJSON data
-import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 import { MaterialIcons } from "@expo/vector-icons";
-
-// Type the imported data
-const neighborhoodsData = neighborhoodsDataRaw as GeoJSON.FeatureCollection;
+import { useSafeGeoData } from "@/hooks/useSafeGeoData";
+import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
+import { defaultTo } from "lodash";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -43,12 +39,6 @@ export default function MapScreen() {
 	const featureSheetRef = useRef<BottomSheetRef>(null);
 	const filterSheetRef = useRef<MapFilterBottomSheetRef>(null);
 
-	// UI state
-	const [isFeatureBottomSheetExpanded, setIsFeatureBottomSheetExpanded] =
-		useState(false);
-	const [isFilterBottomSheetExpanded, setIsFilterBottomSheetExpanded] =
-		useState(false);
-
 	// Filter state
 	const [searchType, setSearchType] = useState<SearchType>(
 		SearchType.NEIGHBORHOOD,
@@ -58,7 +48,13 @@ export default function MapScreen() {
 	>([POICategory.RESTAURANT, POICategory.BUS_STATION]);
 
 	// Use the search context for global state management
-	const { selectedFeature, setSelectedFeatureId, clearSelection } = useSearch();
+	const {
+		selectedFeature,
+		setSelectedFeatureId,
+		clearSelection,
+		selectedCity,
+	} = useSearch();
+	const { rawGeoJsonData } = useSafeGeoData();
 
 	// Fetch POI data for Istanbul with selected categories (no bounds filtering)
 	const {
@@ -125,18 +121,7 @@ export default function MapScreen() {
 		setSelectedPOICategories(categories);
 	}, []);
 
-	const handleFeatureBottomSheetChange = useCallback((index: number) => {
-		setIsFeatureBottomSheetExpanded(index > 0);
-	}, []);
-
-	const handleFilterBottomSheetChange = useCallback((index: number) => {
-		setIsFilterBottomSheetExpanded(index > 0);
-	}, []);
-
 	const handleCloseFeatureSheet = useCallback(() => {
-		featureSheetRef.current?.collapse();
-		setIsFeatureBottomSheetExpanded(false);
-		// Delay clearing selection to allow animation to start
 		setTimeout(() => {
 			clearSelection();
 		}, 100);
@@ -144,13 +129,14 @@ export default function MapScreen() {
 
 	const handleCloseFilterSheet = useCallback(() => {
 		filterSheetRef.current?.close();
-		setIsFilterBottomSheetExpanded(false);
 	}, []);
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
-		featureSheetRef.current?.collapse();
-	}, []);
+		if (selectedFeature) {
+			featureSheetRef.current?.collapse();
+		}
+	}, [selectedFeature]);
 
 	// Center map when feature changes
 	useEffect(() => {
@@ -158,14 +144,17 @@ export default function MapScreen() {
 			featureSheetRef: featureSheetRef.current,
 		});
 
-		if (selectedFeature && !isFeatureBottomSheetExpanded) {
+		if (selectedFeature) {
 			featureSheetRef.current?.collapse();
 		}
 		// Only center if we have a selectedFeature (avoid infinite render)
 		if (selectedFeature) {
 			centerTo(selectedFeature);
+			featureSheetRef.current?.snapToIndex(0);
+		} else {
+			featureSheetRef.current?.close();
 		}
-	}, [selectedFeature, isFeatureBottomSheetExpanded, centerTo]); // Remove centerTo from dependencies
+	}, [selectedFeature, centerTo]);
 
 	// Log POI loading state and debug info
 	useEffect(() => {
@@ -240,27 +229,23 @@ export default function MapScreen() {
 
 			<Map
 				ref={mapRef}
-				location="istanbul"
-				geoJsonData={neighborhoodsData}
-				selectedFeature={selectedFeature}
 				onFeaturePress={handleFeaturePress}
 				variant="moderate"
 				pois={searchType === SearchType.PLACE ? pois : []} // Only show POIs in Place mode
 				onPOIPress={handlePOIPress}
+				selectedFeature={selectedFeature}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
 			<FeatureInfoBottomSheet
 				ref={featureSheetRef}
 				onClose={handleCloseFeatureSheet}
-				onChange={handleFeatureBottomSheetChange}
 			/>
 
 			{/* Map Filter Bottom Sheet */}
 			<MapFilterBottomSheet
 				ref={filterSheetRef}
 				onClose={handleCloseFilterSheet}
-				onChange={handleFilterBottomSheetChange}
 				searchType={searchType}
 				onSearchTypeChange={handleSearchTypeChange}
 				selectedPOICategories={selectedPOICategories}
