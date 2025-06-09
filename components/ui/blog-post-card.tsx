@@ -39,11 +39,10 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({
 				styles.container,
 				{
 					backgroundColor: isDark ? colors.dark.card : blogColors.background,
-					borderColor: isDark ? colors.dark.border : blogColors.accent,
 				},
 			]}
 			onPress={handlePress}
-			activeOpacity={0.8}
+			activeOpacity={0.9}
 		>
 			{/* Image */}
 			<View style={styles.imageContainer}>
@@ -66,16 +65,6 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({
 					{item.title}
 				</Text>
 			</View>
-
-			{/* Accent bar */}
-			<View
-				style={[
-					styles.accentBar,
-					{
-						backgroundColor: isDark ? colors.dark.primary : blogColors.primary,
-					},
-				]}
-			/>
 		</TouchableOpacity>
 	);
 };
@@ -85,16 +74,7 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		marginVertical: 8,
 		marginHorizontal: 16,
-		borderWidth: 1,
 		overflow: "hidden",
-		elevation: 3,
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 3.84,
 	},
 	imageContainer: {
 		height: 180,
@@ -111,14 +91,9 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "600",
 		lineHeight: 22,
-		marginBottom: 8,
 	},
 	date: {
 		fontSize: 12,
 		fontWeight: "400",
-	},
-	accentBar: {
-		height: 4,
-		width: "100%",
 	},
 });

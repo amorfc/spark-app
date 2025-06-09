@@ -56,6 +56,7 @@ export default function BlogScreen() {
 
 	return (
 		<SafeAreaView
+			edges={["top"]}
 			style={[
 				styles.container,
 				{
