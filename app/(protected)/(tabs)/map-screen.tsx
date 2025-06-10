@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import Map, { MapRef } from "@/components/map/map";
-import { SelectedFeature, useSearch } from "@/context/search-provider";
+import {
+	SelectedFeature,
+	SelectedFeatureId,
+	useSearch,
+} from "@/context/search-provider";
 import {
 	FeatureInfoBottomSheet,
 	BottomSheetRef,
@@ -18,6 +22,8 @@ import { useMapboxInit } from "@/hooks/useMapboxInit";
 import { MaterialIcons } from "@expo/vector-icons";
 import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
 import { defaultTo } from "lodash";
+import { useSelectedFeature } from "@/hooks/useSelectedFeature";
+import { OSMFeature } from "@/types/osm";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -32,11 +38,6 @@ export default function MapScreen() {
 
 	const featureSheetRef = useRef<BottomSheetRef>(null);
 	const filterSheetRef = useRef<MapFilterBottomSheetRef>(null);
-
-	// Filter state
-	const [searchType, setSearchType] = useState<SearchType>(
-		SearchType.NEIGHBORHOOD,
-	);
 	const [selectedPOICategories, setSelectedPOICategories] = useState<
 		POICategory[]
 	>([POICategory.RESTAURANT, POICategory.BUS_STATION]);
@@ -44,10 +45,13 @@ export default function MapScreen() {
 	// Use the search context for global state management
 	const {
 		selectedCity,
-		selectedFeature,
+		searchType,
+		setSearchType,
 		setSelectedFeatureId,
 		clearSelection,
 	} = useSearch();
+
+	const { feature } = useSelectedFeature();
 
 	// Fetch POI data for Istanbul with selected categories (no bounds filtering)
 	const {
@@ -66,10 +70,10 @@ export default function MapScreen() {
 	const originalCameraConfig = getCameraConfig(selectedCity);
 
 	const centerTo = useCallback(
-		(feature: SelectedFeature) => {
+		(feature: OSMFeature) => {
 			if (mapRef.current?.centerOnCoordinates) {
 				const target = defaultTo(
-					feature?.center,
+					feature?.center_coordinate?.coordinates,
 					originalCameraConfig.centerCoordinate,
 				);
 
@@ -80,7 +84,7 @@ export default function MapScreen() {
 	);
 
 	const handleFeaturePress = useCallback(
-		(id: string) => {
+		(id: SelectedFeatureId) => {
 			id && setSelectedFeatureId(id);
 		},
 		[setSelectedFeatureId],
@@ -99,15 +103,11 @@ export default function MapScreen() {
 	}, []);
 
 	// Handle search type change
-	const handleSearchTypeChange = useCallback(
-		(type: SearchType) => {
-			setSearchType(type);
-			// Clear feature selection when switching modes
-			clearSelection();
-			featureSheetRef.current?.close();
-		},
-		[clearSelection],
-	);
+	const handleSearchTypeChange = useCallback((type: SearchType) => {
+		setSearchType(type);
+		// Clear feature selection when switching modes
+		featureSheetRef.current?.close();
+	}, []);
 
 	// Handle POI categories change
 	const handlePOICategoriesChange = useCallback((categories: POICategory[]) => {
@@ -126,20 +126,20 @@ export default function MapScreen() {
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
-		if (selectedFeature) {
+		if (feature) {
 			featureSheetRef.current?.collapse();
 		}
-	}, [selectedFeature]);
+	}, [feature]);
 
 	// Center map when feature changes
 	useEffect(() => {
-		if (selectedFeature) {
-			centerTo(selectedFeature);
+		if (feature) {
+			centerTo(feature);
 			featureSheetRef.current?.snapToIndex(0);
 		} else {
 			featureSheetRef.current?.close();
 		}
-	}, [selectedFeature, centerTo]);
+	}, [feature, centerTo]);
 
 	// Log POI loading state and debug info
 	useEffect(() => {

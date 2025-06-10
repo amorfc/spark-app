@@ -11,7 +11,13 @@ import { View } from "react-native";
 import { ItemType } from "react-native-dropdown-picker";
 import { Select, SelectRef } from "@/components/select/select";
 import { SelectedFeature, useSearch } from "@/context/search-provider";
-import { useSafeGeoData } from "@/hooks/useSafeGeoData";
+import { useOSMFeatures } from "@/hooks/useOsmData";
+import { FeatureType } from "@/types/osm";
+
+interface FeatureSelectItem extends ItemType<number> {
+	label: string;
+	value: number;
+}
 
 interface FeatureSelectProps {
 	placeholder?: string;
@@ -35,11 +41,19 @@ export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
 		ref,
 	) => {
 		// Dropdown picker state
-		const { selectedFeatureId, clearSelection, setSelectedFeatureId } =
-			useSearch();
-		const { findProcessedFeature, processedFeature } = useSafeGeoData();
-		const [value, setValue] = useState<string | null>(null);
+		const {
+			searchType,
+			selectedFeatureId,
+			clearSelection,
+			setSelectedFeatureId,
+		} = useSearch();
+
+		const [value, setValue] = useState<number | null>(null);
 		const selectRef = useRef<SelectRef>(null);
+
+		const { data: features } = useOSMFeatures({
+			featureType: searchType as FeatureType,
+		});
 
 		// Sync dropdown value with context selectedFeatureId
 		useEffect(() => {
@@ -58,28 +72,28 @@ export const FeatureSelect = forwardRef<FeatureSelectRef, FeatureSelectProps>(
 		);
 
 		const dropdownItems = useMemo(() => {
-			if (!processedFeature) return [];
-			return processedFeature.map((feature) => ({
-				label: feature?.place_name,
-				value: feature?.id,
-				...feature, // Include all neighborhood data for easy access
+			if (!features) return [];
+			return features.map((feature) => ({
+				label: feature?.name || feature?.name_tr || feature?.name_en || "Label",
+				value: feature?.ref_id,
 			}));
-		}, [processedFeature]);
+		}, [features]);
 
 		// Local state for dropdown items
-		const [items, setItems] = useState<ItemType<string>[]>(dropdownItems);
+		const [items, setItems] = useState<FeatureSelectItem[]>(dropdownItems);
 
 		// Handle location selection
 		const handleSelectItem = useCallback(
-			(selectedItem: ItemType<string>) => {
-				const selectedFeature = findProcessedFeature(selectedItem.value || "");
-
-				if (selectedFeature) {
-					onSelect?.(selectedFeature);
-					setSelectedFeatureId(selectedFeature.id);
+			(selectedItem: FeatureSelectItem) => {
+				const feature = features?.find(
+					(feature) => feature.ref_id === selectedItem.value,
+				);
+				if (feature) {
+					onSelect?.(feature as unknown as SelectedFeature);
+					setSelectedFeatureId(feature.ref_id);
 				}
 			},
-			[findProcessedFeature, setSelectedFeatureId, onSelect],
+			[features, onSelect, setSelectedFeatureId],
 		);
 
 		const handleSelectClear = useCallback(() => {

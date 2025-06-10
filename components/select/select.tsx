@@ -12,13 +12,13 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
 
-interface SelectProps {
+interface SelectProps<T> {
 	open?: boolean;
-	value: string | null;
-	originalItems: ItemType<string>[];
+	value: string | number | null;
+	originalItems: T[];
 	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-	setValue: React.Dispatch<React.SetStateAction<string | null>>;
-	onSelectItem?: (item: ItemType<string>) => void;
+	setValue: React.Dispatch<React.SetStateAction<T | null>>;
+	onSelectItem?: (item: T) => void;
 	onClear?: () => void;
 	placeholder?: string;
 	searchable?: boolean;
@@ -45,7 +45,7 @@ export interface SelectRef {
 	closeDropdown: () => void;
 }
 
-export const Select = React.forwardRef<SelectRef, SelectProps>(
+export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 	(
 		{
 			value,

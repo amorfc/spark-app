@@ -13,16 +13,24 @@ import { Select, SelectRef } from "@/components/select/select";
 export enum SearchType {
 	NEIGHBORHOOD = "neighborhood",
 	PLACE = "place",
+	DISTRICT = "district",
 }
 
 export const SEARCH_TYPE_OPTIONS: ItemType<string>[] = [
 	{
+		label: "🏘️ Districts",
+		value: SearchType.DISTRICT,
+		key: 1,
+	},
+	{
 		label: "🏘️ Neighborhoods",
 		value: SearchType.NEIGHBORHOOD,
+		key: 2,
 	},
 	{
 		label: "📍 Places (POIs)",
 		value: SearchType.PLACE,
+		key: 3,
 	},
 ];
 

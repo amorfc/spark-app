@@ -1,5 +1,5 @@
 import { CityNames } from "@/components/map/map";
-import { useGeoData } from "@/hooks/useGeoData";
+import { SearchType } from "@/components/select/filter-search-type-select";
 import React, {
 	createContext,
 	useContext,
@@ -33,12 +33,13 @@ export type NeigborhoodFeature = NeighborhoodResult & {
 export type SelectedFeature = NeigborhoodFeature | null;
 
 interface SearchContextType {
-	selectedFeature: SelectedFeature;
 	selectedCity: CityNames;
+	selectedCountry: string;
 	selectedFeatureId: SelectedFeatureId;
 	setSelectedFeatureId: (featureId: SelectedFeatureId) => void;
+	searchType: SearchType;
+	setSearchType: (searchType: SearchType) => void;
 	clearSelection: () => void;
-	selectedFeatureType: FeatureType;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -47,39 +48,26 @@ interface SearchProviderProps {
 	children: ReactNode;
 }
 
-type SelectedFeatureId = string | null;
+export type SelectedFeatureId = number | null;
 
 export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 	const [selectedFeatureId, setSelectedFeatureId] =
 		useState<SelectedFeatureId>(null);
-	const [selectedFeatureType] = useState<FeatureType>(FeatureType.Neighborhood);
+	const [searchType, setSearchType] = useState<SearchType>(SearchType.DISTRICT);
 	const [selectedCity] = useState<CityNames>(CityNames.Istanbul);
-
-	const { findProcessedFeature } = useGeoData({
-		city: selectedCity,
-		featureType: selectedFeatureType,
-	});
-
-	const selectedFeature = useMemo(() => {
-		if (!selectedFeatureId) return null;
-
-		const processedFeatureData = findProcessedFeature(selectedFeatureId);
-		if (!processedFeatureData) return null;
-
-		return processedFeatureData;
-	}, [selectedFeatureId, findProcessedFeature]);
 
 	const clearSelection = useCallback(() => {
 		setSelectedFeatureId(null);
 	}, []);
 
 	const value: SearchContextType = {
-		selectedFeature,
 		selectedCity,
+		selectedCountry: "Turkey",
 		selectedFeatureId,
 		setSelectedFeatureId,
 		clearSelection,
-		selectedFeatureType,
+		searchType,
+		setSearchType,
 	};
 
 	return (

@@ -5,6 +5,7 @@ import {
 	IstanbulLocationConfig,
 } from "@/constants/geo";
 import { SelectedFeature } from "@/context/search-provider";
+import { OSMFeature } from "@/types/osm";
 
 let isInitialized = false;
 
@@ -69,13 +70,15 @@ const calculateBoundingBoxArea = (bbox: number[]) => {
 };
 
 export const calculateZoomLevel = (
-	feature: SelectedFeature,
+	feature: OSMFeature,
 	areaThreshold: number = 0.01,
 ) => {
 	let zoomLevel = 12; // default zoom
 
-	if (feature?.bbox) {
-		const area = calculateBoundingBoxArea(feature.bbox);
+	if (feature?.center_coordinate?.coordinates) {
+		const area = calculateBoundingBoxArea(
+			feature.center_coordinate.coordinates,
+		);
 
 		if (area > areaThreshold) {
 			zoomLevel = 10; // zoom out for larger areas

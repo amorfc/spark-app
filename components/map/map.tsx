@@ -1,5 +1,5 @@
 import { useCallback, useRef, forwardRef, useImperativeHandle } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import Mapbox, {
 	MapView,
 	Camera,
@@ -10,7 +10,7 @@ import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPre
 import { getCameraConfig } from "@/lib/mapbox";
 import {
 	FeatureType,
-	SelectedFeature,
+	SelectedFeatureId,
 	useSearch,
 } from "@/context/search-provider";
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
@@ -21,7 +21,7 @@ import {
 	CameraBounds,
 	POI_CATEGORY_CONFIG,
 } from "@/services/poi-service";
-import { useSafeGeoData } from "@/hooks/useSafeGeoData";
+import { useOSMMapData } from "@/hooks/useOsmData";
 
 export enum CityNames {
 	Istanbul = "istanbul",
@@ -50,7 +50,7 @@ export interface MapRef {
 }
 
 interface MapProps {
-	onFeaturePress: (id: string) => void;
+	onFeaturePress: (id: SelectedFeatureId) => void;
 	onMapLoad?: () => void;
 	variant?: "subtle" | "moderate" | "vibrant";
 	pois?: POIItem[];
@@ -66,8 +66,10 @@ const Map = forwardRef<MapRef, MapProps>(
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
-		const { rawGeoJsonData } = useSafeGeoData();
-		const { selectedCity, selectedFeature } = useSearch();
+		const { selectedCity, selectedFeature, searchType } = useSearch();
+		const { data: geoJsonData, isLoading } = useOSMMapData(
+			searchType as unknown as FeatureType,
+		);
 
 		// Get camera configuration for the specified location
 		const cameraConfig = getCameraConfig(selectedCity);
@@ -117,9 +119,9 @@ const Map = forwardRef<MapRef, MapProps>(
 
 		// Validate GeoJSON data
 		const isValidGeoJSON =
-			rawGeoJsonData &&
-			rawGeoJsonData.type === "FeatureCollection" &&
-			Array.isArray(rawGeoJsonData.features);
+			geoJsonData &&
+			geoJsonData?.type === "FeatureCollection" &&
+			Array.isArray(geoJsonData?.features);
 
 		const handlePOIPress = useCallback(
 			(poi: POIItem) => {
@@ -136,6 +138,14 @@ const Map = forwardRef<MapRef, MapProps>(
 		const getPinColor = useCallback((poi: POIItem) => {
 			return POI_CATEGORY_CONFIG[poi.type]?.color || "#DDA0DD";
 		}, []);
+
+		if (isLoading) {
+			return (
+				<View style={styles.loadingContainer}>
+					<ActivityIndicator size="large" color="#3B82F6" />
+				</View>
+			);
+		}
 
 		return (
 			<View style={styles.container}>
@@ -162,7 +172,7 @@ const Map = forwardRef<MapRef, MapProps>(
 						<ShapeSource
 							key={`feature-source-${selectedFeature?.id || "none"}`}
 							id="feature-source"
-							shape={rawGeoJsonData}
+							shape={geoJsonData}
 							onPress={onShapePress}
 						>
 							<FillLayer id="feature-fill" style={polygonStyle} />

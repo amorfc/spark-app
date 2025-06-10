@@ -1,11 +1,19 @@
-import React, { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
-import { View, TouchableOpacity } from "react-native";
+import React, {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+} from "react";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 import { BottomSheet, BottomSheetProps, BottomSheetRef } from "./bottom-sheet";
 import { useSearch } from "@/context/search-provider";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
+import { useOSMFeatureByRefId } from "@/hooks/useOsmData";
+import { useSelectedFeature } from "@/hooks/useSelectedFeature";
 
 interface FeatureInfoBottomSheetProps
 	extends Omit<BottomSheetProps, "children"> {}
@@ -15,7 +23,8 @@ export const FeatureInfoBottomSheet = forwardRef<
 	FeatureInfoBottomSheetProps
 >(({ ...bottomSheetProps }, ref) => {
 	const { colorScheme } = useColorScheme();
-	const { selectedFeature: feature } = useSearch();
+	const { feature, isLoading, isError } = useSelectedFeature();
+
 	const isDark = colorScheme === "dark";
 	const snapPoints = useMemo(() => ["16%"], []);
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
@@ -33,6 +42,12 @@ export const FeatureInfoBottomSheet = forwardRef<
 		? colors.dark.mutedForeground
 		: colors.light.mutedForeground;
 
+	useEffect(() => {
+		if (isError) {
+			bottomSheetRef.current?.close();
+		}
+	}, [isError]);
+
 	return (
 		<BottomSheet
 			ref={bottomSheetRef}
@@ -42,6 +57,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 			scrollable={true}
 			{...bottomSheetProps}
 		>
+			{isLoading && <ActivityIndicator size="large" color="#3B82F6" />}
 			{feature && (
 				<View className="flex-1">
 					<View className="flex-1">
@@ -55,7 +71,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 										className="text-sm text-muted-foreground"
 										numberOfLines={1}
 									>
-										{feature.place_name}
+										{feature.name}
 									</Text>
 								</View>
 								<TouchableOpacity
@@ -78,7 +94,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 									<View className="ml-3 flex-1">
 										<Text className="text-sm font-medium">Type</Text>
 										<Text className="text-sm text-muted-foreground capitalize">
-											{feature.type}
+											{feature.feature_type}
 										</Text>
 									</View>
 								</View>
@@ -88,19 +104,19 @@ export const FeatureInfoBottomSheet = forwardRef<
 									<View className="ml-3 flex-1">
 										<Text className="text-sm font-medium">Location</Text>
 										<Text className="text-sm text-muted-foreground">
-											{feature.center[1].toFixed(6)},{" "}
-											{feature.center[0].toFixed(6)}
+											{feature.center_coordinate?.coordinates[1]?.toFixed(6)},{" "}
+											{feature.center_coordinate?.coordinates[0]?.toFixed(6)}
 										</Text>
 									</View>
 								</View>
 
-								{feature.properties?.place_id && (
+								{feature.ref_id && (
 									<View className="flex-row items-start mb-4 px-1">
 										<MaterialIcons name="info" size={20} color={iconColor} />
 										<View className="ml-3 flex-1">
 											<Text className="text-sm font-medium">Place ID</Text>
 											<Text className="text-sm text-muted-foreground">
-												{feature.properties.place_id}
+												{feature.ref_id}
 											</Text>
 										</View>
 									</View>
@@ -112,12 +128,12 @@ export const FeatureInfoBottomSheet = forwardRef<
 									Additional Details
 								</Text>
 
-								{feature.properties?.address && (
+								{feature.full_address && (
 									<View className="mb-5 px-1">
 										<Text className="text-sm font-medium mb-2">
 											Address Information
 										</Text>
-										{Object.entries(feature.properties.address).map(
+										{Object.entries(feature.full_address).map(
 											([key, value]) => (
 												<View key={key} className="flex-row mb-1">
 													<Text className="text-sm text-muted-foreground capitalize">
@@ -133,21 +149,19 @@ export const FeatureInfoBottomSheet = forwardRef<
 								<View className="px-1">
 									<Text className="text-sm font-medium mb-2">Properties</Text>
 									<View className="bg-gray-50 p-3 rounded-lg max-h-48">
-										{Object.entries(feature.properties || {}).map(
-											([key, value]) => {
-												if (key === "address") return null;
-												return (
-													<View key={key} className="flex-row mb-1 flex-wrap">
-														<Text className="text-xs text-muted-foreground">
-															{key}:
-														</Text>
-														<Text className="text-xs ml-2" numberOfLines={2}>
-															{String(value)}
-														</Text>
-													</View>
-												);
-											},
-										)}
+										{Object.entries(feature || {}).map(([key, value]) => {
+											if (key === "address") return null;
+											return (
+												<View key={key} className="flex-row mb-1 flex-wrap">
+													<Text className="text-xs text-muted-foreground">
+														{key}:
+													</Text>
+													<Text className="text-xs ml-2" numberOfLines={2}>
+														{String(value)}
+													</Text>
+												</View>
+											);
+										})}
 									</View>
 								</View>
 							</View>

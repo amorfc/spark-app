@@ -10,7 +10,9 @@
 		"clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd .. && npx expo run:ios",
 		"clean:android": "cd android && ./gradlew clean && cd .. && npx expo run:android",
 		"lint": "eslint . --fix",
-		"generate-colors": "node ./scripts/generate-colors.js && eslint ./constants/colors.ts --fix"
+		"generate-colors": "node ./scripts/generate-colors.js && eslint ./constants/colors.ts --fix",
+		"process-osm": "tsx scripts/process-osm-data.ts",
+		"setup-osm-db": "psql $DATABASE_URL -f scripts/create-osm-schema.sql"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "^14.1.0",
@@ -24,6 +26,7 @@
 		"@rn-primitives/types": "^1.1.0",
 		"@rnmapbox/maps": "^10.1.39",
 		"@supabase/supabase-js": "^2.49.4",
+		"@turf/turf": "^7.1.0",
 		"aes-js": "^3.1.2",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -60,11 +63,13 @@
 		"@types/aes-js": "^3.1.4",
 		"@types/lodash": "^4.17.17",
 		"@types/react": "~19.0.10",
+		"@types/node": "^22.9.1",
 		"eslint": "^9.0.0",
 		"eslint-config-expo": "~9.2.0",
 		"eslint-config-prettier": "^10.1.2",
 		"eslint-plugin-prettier": "^5.2.6",
 		"prettier": "^3.5.3",
+		"tsx": "^4.19.2",
 		"typescript": "~5.8.3"
 	},
 	"expo": {

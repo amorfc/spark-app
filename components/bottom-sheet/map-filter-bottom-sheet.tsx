@@ -142,7 +142,8 @@ export const MapFilterBottomSheet = forwardRef<
 					</View>
 
 					{/* Conditional Content Based on Search Type */}
-					{searchType === SearchType.NEIGHBORHOOD && (
+					{searchType === SearchType.NEIGHBORHOOD ||
+					searchType === SearchType.DISTRICT ? (
 						<View className="mb-4">
 							<Text className="text-sm font-semibold text-gray-700 mb-2">
 								Search Neighborhoods
@@ -154,7 +155,7 @@ export const MapFilterBottomSheet = forwardRef<
 								useModal={true}
 							/>
 						</View>
-					)}
+					) : null}
 
 					{searchType === SearchType.PLACE && (
 						<View className="mb-4">
