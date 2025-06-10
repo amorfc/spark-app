@@ -5,6 +5,7 @@ import {
 	IstanbulLocationConfig,
 } from "@/constants/geo";
 import { SelectedFeature } from "@/hooks/useSelectedFeature";
+import { SearchType } from "@/components/select/filter-search-type-select";
 
 let isInitialized = false;
 
@@ -70,8 +71,13 @@ const calculateBoundingBoxArea = (bbox: number[]) => {
 
 export const calculateZoomLevel = (
 	feature: SelectedFeature,
+	searchType: SearchType,
 	areaThreshold: number = 0.01,
 ) => {
+	if (searchType === SearchType.DISTRICT) {
+		return 10;
+	}
+
 	let zoomLevel = 12; // default zoom
 
 	if (feature?.center_coordinate?.coordinates) {

@@ -74,10 +74,13 @@ export default function MapScreen() {
 					originalCameraConfig.centerCoordinate,
 				);
 
-				mapRef.current.centerOnCoordinates(target, calculateZoomLevel(feature));
+				mapRef.current.centerOnCoordinates(
+					target,
+					calculateZoomLevel(feature, searchType),
+				);
 			}
 		},
-		[originalCameraConfig],
+		[originalCameraConfig, searchType],
 	);
 
 	const handleFeaturePress = useCallback(
