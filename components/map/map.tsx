@@ -22,6 +22,7 @@ import {
 	POI_CATEGORY_CONFIG,
 } from "@/services/poi-service";
 import { useOSMMapData } from "@/hooks/useOsmData";
+import { useSelectedFeature } from "@/hooks/useSelectedFeature";
 
 export enum CityNames {
 	Istanbul = "istanbul",
@@ -66,14 +67,18 @@ const Map = forwardRef<MapRef, MapProps>(
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
-		const { selectedCity, selectedFeature, searchType } = useSearch();
+		const { selectedCity, searchType } = useSearch();
 		const { data: geoJsonData, isLoading } = useOSMMapData(
 			searchType as unknown as FeatureType,
 		);
+		const { feature: selectedFeature } = useSelectedFeature();
 
 		// Get camera configuration for the specified location
 		const cameraConfig = getCameraConfig(selectedCity);
-		const polygonStyle = usePolygonStyle({ selectedFeature, variant });
+		const polygonStyle = usePolygonStyle({
+			selectedFeature: selectedFeature || null,
+			variant,
+		});
 
 		const handleMapLoad = useCallback(() => {
 			onMapLoad?.();
@@ -82,7 +87,8 @@ const Map = forwardRef<MapRef, MapProps>(
 		const onShapePress = useCallback(
 			(event: OnPressEvent) => {
 				const feature = event.features[0];
-				onFeaturePress(feature.properties?.place_id?.toString() || "unknown");
+				const featureId = feature?.properties?.ref_id || -1;
+				onFeaturePress(featureId);
 			},
 			[onFeaturePress],
 		);
@@ -123,21 +129,21 @@ const Map = forwardRef<MapRef, MapProps>(
 			geoJsonData?.type === "FeatureCollection" &&
 			Array.isArray(geoJsonData?.features);
 
-		const handlePOIPress = useCallback(
-			(poi: POIItem) => {
-				onPOIPress?.(poi);
-			},
-			[onPOIPress],
-		);
+		// const handlePOIPress = useCallback(
+		// 	(poi: POIItem) => {
+		// 		onPOIPress?.(poi);
+		// 	},
+		// 	[onPOIPress],
+		// );
 
-		// Get pin styling from POI_CATEGORY_CONFIG
-		const getPinIcon = useCallback((poi: POIItem) => {
-			return POI_CATEGORY_CONFIG[poi.type]?.icon || "📍";
-		}, []);
+		// // Get pin styling from POI_CATEGORY_CONFIG
+		// const getPinIcon = useCallback((poi: POIItem) => {
+		// 	return POI_CATEGORY_CONFIG[poi.type]?.icon || "📍";
+		// }, []);
 
-		const getPinColor = useCallback((poi: POIItem) => {
-			return POI_CATEGORY_CONFIG[poi.type]?.color || "#DDA0DD";
-		}, []);
+		// const getPinColor = useCallback((poi: POIItem) => {
+		// 	return POI_CATEGORY_CONFIG[poi.type]?.color || "#DDA0DD";
+		// }, []);
 
 		if (isLoading) {
 			return (
@@ -170,7 +176,7 @@ const Map = forwardRef<MapRef, MapProps>(
 
 					{isValidGeoJSON && (
 						<ShapeSource
-							key={`feature-source-${selectedFeature?.id || "none"}`}
+							key={`feature-source-${selectedFeature?.ref_id || "none"}`}
 							id="feature-source"
 							shape={geoJsonData}
 							onPress={onShapePress}

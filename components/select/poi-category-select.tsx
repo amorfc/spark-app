@@ -1,12 +1,4 @@
-import React, {
-	useState,
-	useEffect,
-	useCallback,
-	useMemo,
-	useRef,
-	forwardRef,
-	useImperativeHandle,
-} from "react";
+import React, { useCallback, forwardRef, useImperativeHandle } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { POICategory, POI_CATEGORY_CONFIG } from "@/services/poi-service";
 

@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import Map, { MapRef } from "@/components/map/map";
-import {
-	SelectedFeature,
-	SelectedFeatureId,
-	useSearch,
-} from "@/context/search-provider";
+import { SelectedFeatureId, useSearch } from "@/context/search-provider";
 import {
 	FeatureInfoBottomSheet,
 	BottomSheetRef,
@@ -103,11 +99,14 @@ export default function MapScreen() {
 	}, []);
 
 	// Handle search type change
-	const handleSearchTypeChange = useCallback((type: SearchType) => {
-		setSearchType(type);
-		// Clear feature selection when switching modes
-		featureSheetRef.current?.close();
-	}, []);
+	const handleSearchTypeChange = useCallback(
+		(type: SearchType) => {
+			setSearchType(type);
+			// Clear feature selection when switching modes
+			featureSheetRef.current?.close();
+		},
+		[setSearchType],
+	);
 
 	// Handle POI categories change
 	const handlePOICategoriesChange = useCallback((categories: POICategory[]) => {

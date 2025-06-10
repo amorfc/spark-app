@@ -9,14 +9,11 @@ import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 import { BottomSheet, BottomSheetProps, BottomSheetRef } from "./bottom-sheet";
-import { useSearch } from "@/context/search-provider";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
-import { useOSMFeatureByRefId } from "@/hooks/useOsmData";
 import { useSelectedFeature } from "@/hooks/useSelectedFeature";
 
-interface FeatureInfoBottomSheetProps
-	extends Omit<BottomSheetProps, "children"> {}
+type FeatureInfoBottomSheetProps = Omit<BottomSheetProps, "children">;
 
 export const FeatureInfoBottomSheet = forwardRef<
 	BottomSheetRef,
