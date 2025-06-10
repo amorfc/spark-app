@@ -1,5 +1,8 @@
 import { useSearch } from "@/context/search-provider";
 import { useOSMFeatureByRefId } from "@/hooks/useOsmData";
+import { OSMFeature } from "@/types/osm";
+
+export type SelectedFeature = OSMFeature | null;
 
 export const useSelectedFeature = () => {
 	const { selectedFeatureId } = useSearch();

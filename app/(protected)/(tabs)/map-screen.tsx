@@ -18,13 +18,14 @@ import { useMapboxInit } from "@/hooks/useMapboxInit";
 import { MaterialIcons } from "@expo/vector-icons";
 import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
 import { defaultTo } from "lodash";
-import { useSelectedFeature } from "@/hooks/useSelectedFeature";
-import { OSMFeature } from "@/types/osm";
+import {
+	SelectedFeature,
+	useSelectedFeature,
+} from "@/hooks/useSelectedFeature";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
 	const {
-		data: _mapboxInitialized,
 		isLoading: isMapboxLoading,
 		isError: isMapboxError,
 		error: mapboxError,
@@ -66,7 +67,7 @@ export default function MapScreen() {
 	const originalCameraConfig = getCameraConfig(selectedCity);
 
 	const centerTo = useCallback(
-		(feature: OSMFeature) => {
+		(feature: SelectedFeature) => {
 			if (mapRef.current?.centerOnCoordinates) {
 				const target = defaultTo(
 					feature?.center_coordinate?.coordinates,

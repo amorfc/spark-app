@@ -29,8 +29,6 @@ export type NeigborhoodFeature = NeighborhoodResult & {
 	originalFeature: GeoJSON.Feature<GeoJSON.Geometry>;
 };
 
-export type SelectedFeature = NeigborhoodFeature | null;
-
 interface SearchContextType {
 	selectedCity: CityNames;
 	selectedCountry: string;

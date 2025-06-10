@@ -16,11 +16,7 @@ import {
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
 import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
 import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
-import {
-	POIItem,
-	CameraBounds,
-	POI_CATEGORY_CONFIG,
-} from "@/services/poi-service";
+import { POIItem, CameraBounds } from "@/services/poi-service";
 import { useOSMMapData } from "@/hooks/useOsmData";
 import { useSelectedFeature } from "@/hooks/useSelectedFeature";
 

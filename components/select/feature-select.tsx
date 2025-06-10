@@ -10,9 +10,10 @@ import React, {
 import { View } from "react-native";
 import { ItemType } from "react-native-dropdown-picker";
 import { Select, SelectRef } from "@/components/select/select";
-import { SelectedFeature, useSearch } from "@/context/search-provider";
+import { useSearch } from "@/context/search-provider";
 import { useOSMFeatures } from "@/hooks/useOsmData";
 import { FeatureType } from "@/types/osm";
+import { SelectedFeature } from "@/hooks/useSelectedFeature";
 
 interface FeatureSelectItem extends ItemType<number> {
 	label: string;

@@ -4,7 +4,7 @@ import {
 	MapCameraConfig,
 	IstanbulLocationConfig,
 } from "@/constants/geo";
-import { OSMFeature } from "@/types/osm";
+import { SelectedFeature } from "@/hooks/useSelectedFeature";
 
 let isInitialized = false;
 
@@ -69,7 +69,7 @@ const calculateBoundingBoxArea = (bbox: number[]) => {
 };
 
 export const calculateZoomLevel = (
-	feature: OSMFeature,
+	feature: SelectedFeature,
 	areaThreshold: number = 0.01,
 ) => {
 	let zoomLevel = 12; // default zoom

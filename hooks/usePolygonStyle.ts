@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { OSMFeature } from "@/types/osm";
+import { SelectedFeature } from "@/hooks/useSelectedFeature";
 
 /**
  * Props for the usePolygonStyle hook
  */
 export interface UsePolygonStyleProps {
-	selectedFeature: OSMFeature | null;
+	selectedFeature: SelectedFeature | null;
 	/**
 	 * Visual variant for styling intensity
 	 * - subtle: Low visual impact (light colors, low opacity)
