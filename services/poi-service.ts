@@ -306,7 +306,6 @@ export class POIService {
 		options: POIFetchOptions,
 	): Promise<POIItem[]> {
 		const {
-			city,
 			bounds,
 			zoomLevel,
 			categories = [POICategory.RESTAURANT, POICategory.BUS_STATION],

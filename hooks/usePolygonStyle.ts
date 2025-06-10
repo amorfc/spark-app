@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { SelectedFeature } from "@/context/search-provider";
+import { OSMFeature } from "@/types/osm";
 
 /**
  * Props for the usePolygonStyle hook
  */
 export interface UsePolygonStyleProps {
-	selectedFeature: SelectedFeature | null;
+	selectedFeature: OSMFeature | null;
 	/**
 	 * Visual variant for styling intensity
 	 * - subtle: Low visual impact (light colors, low opacity)
@@ -67,25 +67,18 @@ export const usePolygonStyle = ({
 }: UsePolygonStyleProps) => {
 	return useMemo(() => {
 		const colors = colorVariants[variant];
+		const equityKey = "ref_id";
+		const equals = [
+			"==",
+			["get", equityKey],
+			selectedFeature ? selectedFeature[equityKey] : -1,
+		];
 
 		return {
-			fillColor: [
-				"case",
-				[
-					"==",
-					["get", "place_id"],
-					selectedFeature ? parseInt(selectedFeature.id) : -1,
-				],
-				colors.selected,
-				colors.unselected,
-			],
+			fillColor: ["case", equals, colors.selected, colors.unselected],
 			fillOpacity: [
 				"case",
-				[
-					"==",
-					["get", "place_id"],
-					selectedFeature ? parseInt(selectedFeature.id) : -1,
-				],
+				equals,
 				colors.selectedOpacity,
 				colors.unselectedOpacity,
 			],

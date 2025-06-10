@@ -6,7 +6,6 @@ import React, {
 	useState,
 	useCallback,
 	ReactNode,
-	useMemo,
 } from "react";
 
 // Import the SelectedFeature type from index.tsx

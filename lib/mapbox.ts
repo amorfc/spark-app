@@ -4,7 +4,6 @@ import {
 	MapCameraConfig,
 	IstanbulLocationConfig,
 } from "@/constants/geo";
-import { SelectedFeature } from "@/context/search-provider";
 import { OSMFeature } from "@/types/osm";
 
 let isInitialized = false;

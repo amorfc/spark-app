@@ -2,13 +2,13 @@
 
 // Load environment variables from .env file
 import dotenv from "dotenv";
-dotenv.config();
 
 import { createClient } from "@supabase/supabase-js";
 import * as fs from "fs";
 import * as turf from "@turf/turf";
 import { FeatureType, OSMRawFeature, ProcessedFeature } from "@/types/osm";
 import { config } from "./config";
+dotenv.config();
 
 // Configuration - Now these should work
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL!;
@@ -314,7 +314,7 @@ class OSMProcessor {
 			const center = turf.centroid(feature);
 			const [lng, lat] = center.geometry.coordinates;
 			return { lat, lng };
-		} catch (error) {
+		} catch {
 			console.warn("Could not calculate centroid, using first coordinate");
 			const coords = this.extractFirstCoordinate(geometry);
 			return { lat: coords[1], lng: coords[0] };
@@ -390,7 +390,7 @@ class OSMProcessor {
 	}
 
 	private async upsertFeature(feature: ProcessedFeature): Promise<void> {
-		const { data, error } = await supabase.rpc("upsert_osm_feature", {
+		const { error } = await supabase.rpc("upsert_osm_feature", {
 			p_ref_id: feature.ref_id,
 			p_name: feature.name,
 			p_feature_type: feature.feature_type,
