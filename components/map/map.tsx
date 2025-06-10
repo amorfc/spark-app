@@ -19,10 +19,7 @@ import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
 import { POIItem, CameraBounds } from "@/services/poi-service";
 import { useOSMMapData } from "@/hooks/useOsmData";
 import { useSelectedFeature } from "@/hooks/useSelectedFeature";
-
-export enum CityNames {
-	Istanbul = "istanbul",
-}
+import { CityNames } from "@/constants/geo";
 
 export const CityGeoJson: Record<
 	CityNames,

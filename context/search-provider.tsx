@@ -1,4 +1,3 @@
-import { CityNames } from "@/components/map/map";
 import { SearchType } from "@/components/select/filter-search-type-select";
 import React, {
 	createContext,
@@ -7,6 +6,7 @@ import React, {
 	useCallback,
 	ReactNode,
 } from "react";
+import { CityNames } from "@/constants/geo";
 
 // Import the SelectedFeature type from index.tsx
 export interface NeighborhoodResult {

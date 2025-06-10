@@ -1,3 +1,6 @@
+export enum CityNames {
+	Istanbul = "istanbul",
+}
 export interface LocationConfig {
 	ne1: number; // Northeast longitude
 	ne2: number; // Northeast latitude
