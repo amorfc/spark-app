@@ -31,13 +31,7 @@ BEGIN
                         'country', feature_data.country,
                         'admin_level', feature_data.admin_level
                     ),
-                    'geometry', json_build_object(
-                        'type', 'Point',
-                        'coordinates', json_build_array(
-                            feature_data.lng,
-                            feature_data.lat
-                        )
-                    )
+                    'geometry', ST_AsGeoJSON(f.geometry)::json
                 )
             ), '[]'::json)
         )
@@ -53,8 +47,10 @@ BEGIN
                 f.city,
                 f.country,
                 f.admin_level,
-                ST_X(f.center_coordinate) as lng,
-                ST_Y(f.center_coordinate) as lat
+                json_build_object(
+                    'type', 'Point', 
+                    'coordinates', [f.geometry[0], f.geometry[1]]
+                ) as geometry
             FROM osm_features f
             WHERE ST_Intersects(
                 f.geometry,
