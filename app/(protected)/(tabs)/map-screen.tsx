@@ -11,8 +11,7 @@ import {
 	MapFilterBottomSheetRef,
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
 import { SearchType } from "@/components/select/filter-search-type-select";
-import { usePOIData } from "@/hooks/usePOIData";
-import { POIItem, POICategory } from "@/services/poi-service";
+import { POICategory } from "@/services/poi-service";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -50,19 +49,6 @@ export default function MapScreen() {
 
 	const { feature } = useSelectedFeature();
 
-	// Fetch POI data for Istanbul with selected categories (no bounds filtering)
-	const {
-		pois,
-		isLoading: poisLoading,
-		isError: poisError,
-		error: poisErrorMessage,
-		isEmpty: poisEmpty,
-	} = usePOIData({
-		city: "istanbul",
-		categories: searchType === SearchType.PLACE ? selectedPOICategories : [], // Only fetch POIs when in Place mode
-		enabled: true,
-	});
-
 	// Get the original camera configuration for Istanbul
 	const originalCameraConfig = getCameraConfig(selectedCity);
 
@@ -89,18 +75,6 @@ export default function MapScreen() {
 		},
 		[setSelectedFeatureId],
 	);
-
-	const handlePOIPress = useCallback((poi: POIItem) => {
-		console.log("POI selected:", poi.name, poi.type);
-
-		// Center map on POI with maximum zoom
-		if (mapRef.current?.centerOnCoordinates) {
-			mapRef.current.centerOnCoordinates(poi.coordinates, 14);
-		}
-
-		// You can extend this to show POI details in bottom sheet
-		// or navigate to a POI detail screen
-	}, []);
 
 	// Handle search type change
 	const handleSearchTypeChange = useCallback(
@@ -143,26 +117,6 @@ export default function MapScreen() {
 			featureSheetRef.current?.close();
 		}
 	}, [feature, centerTo]);
-
-	// Log POI loading state and debug info
-	useEffect(() => {
-		if (searchType === SearchType.PLACE && poisLoading) {
-			console.log("Loading POIs...");
-		} else if (searchType === SearchType.PLACE && poisError) {
-			console.error("Error loading POIs:", poisErrorMessage);
-		} else if (searchType === SearchType.PLACE && poisEmpty) {
-			console.log("No POIs found");
-		} else if (searchType === SearchType.PLACE && pois.length > 0) {
-			console.log(`Displaying ${pois.length} POIs`);
-		}
-	}, [
-		searchType,
-		poisLoading,
-		poisError,
-		poisErrorMessage,
-		poisEmpty,
-		pois.length,
-	]);
 
 	// Show loading indicator while Mapbox is initializing
 	if (isMapboxLoading) {
@@ -219,8 +173,6 @@ export default function MapScreen() {
 				ref={mapRef}
 				onFeaturePress={handleFeaturePress}
 				variant="moderate"
-				pois={searchType === SearchType.PLACE ? pois : []} // Only show POIs in Place mode
-				onPOIPress={handlePOIPress}
 			/>
 
 			{/* Feature Info Bottom Sheet */}

@@ -21,6 +21,7 @@ export interface NeighborhoodResult {
 export enum FeatureType {
 	Neighborhood = "neighborhood",
 	District = "district",
+	PublicTransport = "public_transport",
 }
 
 export type NeigborhoodFeature = NeighborhoodResult & {

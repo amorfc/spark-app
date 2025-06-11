@@ -157,7 +157,7 @@ export const MapFilterBottomSheet = forwardRef<
 						</View>
 					) : null}
 
-					{searchType === SearchType.PLACE && (
+					{searchType === SearchType.PUBLIC_TRANSPORT && (
 						<View className="mb-4">
 							<Text className="text-sm font-semibold text-gray-700 mb-2">
 								POI Categories

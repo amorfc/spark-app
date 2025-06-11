@@ -1,40 +1,29 @@
-import { useCallback, useRef, forwardRef, useImperativeHandle } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import {
+	useCallback,
+	useRef,
+	forwardRef,
+	useImperativeHandle,
+	useMemo,
+} from "react";
+import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
 import Mapbox, {
 	MapView,
 	Camera,
 	ShapeSource,
 	FillLayer,
+	PointAnnotation,
+	Callout,
 } from "@rnmapbox/maps";
 import type { OnPressEvent } from "@rnmapbox/maps/lib/typescript/src/types/OnPressEvent";
 import { getCameraConfig } from "@/lib/mapbox";
-import {
-	FeatureType,
-	SelectedFeatureId,
-	useSearch,
-} from "@/context/search-provider";
+import { SelectedFeatureId, useSearch } from "@/context/search-provider";
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
-import neighborhoodsDataRaw from "@/assets/geo/istanbul/neigborhoods.json";
-import districtsDataRaw from "@/assets/geo/istanbul/districts.json";
-import { POIItem, CameraBounds } from "@/services/poi-service";
+import { CameraBounds } from "@/services/poi-service";
 import { useOSMMapData } from "@/hooks/useOsmData";
 import { useSelectedFeature } from "@/hooks/useSelectedFeature";
-import { CityNames } from "@/constants/geo";
-
-export const CityGeoJson: Record<
-	CityNames,
-	{
-		[FeatureType.Neighborhood]: GeoJSON.FeatureCollection;
-		[FeatureType.District]: GeoJSON.FeatureCollection;
-	}
-> = {
-	[CityNames.Istanbul]: {
-		[FeatureType.Neighborhood]:
-			neighborhoodsDataRaw as unknown as GeoJSON.FeatureCollection,
-		[FeatureType.District]:
-			districtsDataRaw as unknown as GeoJSON.FeatureCollection,
-	},
-};
+import { SearchType } from "@/components/select/filter-search-type-select";
+import { FeatureType } from "@/types/osm";
+import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
 
 export interface MapRef {
 	centerOnCoordinates: (
@@ -47,23 +36,40 @@ interface MapProps {
 	onFeaturePress: (id: SelectedFeatureId) => void;
 	onMapLoad?: () => void;
 	variant?: "subtle" | "moderate" | "vibrant";
-	pois?: POIItem[];
-	onPOIPress?: (poi: POIItem) => void;
 	onCameraChanged?: (bounds: CameraBounds, zoomLevel: number) => void;
 }
 
+export enum MapMode {
+	FREE = "free",
+	POI = "poi",
+}
+
 const Map = forwardRef<MapRef, MapProps>(
-	(
-		{ onFeaturePress, onMapLoad, variant = "subtle", pois = [], onPOIPress },
-		ref,
-	) => {
+	({ onFeaturePress, onMapLoad, variant = "subtle" }, ref) => {
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
 		const { selectedCity, searchType } = useSearch();
+		const getOSMFeatureTypes = (searchType: SearchType): FeatureType[] => {
+			switch (searchType) {
+				case SearchType.DISTRICT:
+					return ["district"];
+				case SearchType.NEIGHBORHOOD:
+					return ["neighborhood"];
+				case SearchType.PUBLIC_TRANSPORT:
+					return [
+						"bus_stop",
+						"tram_station",
+						"ferry_terminal",
+						"metro_station",
+						"other_transport",
+					];
+			}
+		};
 		const { data: geoJsonData, isLoading } = useOSMMapData(
-			searchType as unknown as FeatureType,
+			getOSMFeatureTypes(searchType),
 		);
+
 		const { feature: selectedFeature } = useSelectedFeature();
 
 		// Get camera configuration for the specified location
@@ -72,6 +78,15 @@ const Map = forwardRef<MapRef, MapProps>(
 			selectedFeature: selectedFeature || null,
 			variant,
 		});
+
+		const mapMode = useMemo<MapMode>(() => {
+			return searchType === SearchType.PUBLIC_TRANSPORT
+				? MapMode.POI
+				: MapMode.FREE;
+		}, [searchType]);
+		const isFreeMode = useMemo(() => {
+			return mapMode === MapMode.FREE;
+		}, [mapMode]);
 
 		const handleMapLoad = useCallback(() => {
 			onMapLoad?.();
@@ -122,21 +137,23 @@ const Map = forwardRef<MapRef, MapProps>(
 			geoJsonData?.type === "FeatureCollection" &&
 			Array.isArray(geoJsonData?.features);
 
-		// const handlePOIPress = useCallback(
-		// 	(poi: POIItem) => {
-		// 		onPOIPress?.(poi);
-		// 	},
-		// 	[onPOIPress],
-		// );
-
-		// // Get pin styling from POI_CATEGORY_CONFIG
-		// const getPinIcon = useCallback((poi: POIItem) => {
-		// 	return POI_CATEGORY_CONFIG[poi.type]?.icon || "📍";
-		// }, []);
-
-		// const getPinColor = useCallback((poi: POIItem) => {
-		// 	return POI_CATEGORY_CONFIG[poi.type]?.color || "#DDA0DD";
-		// }, []);
+		// Get pin styling from POI_CATEGORY_CONFIG
+		const getPinIcon = useCallback((poi: any) => {
+			switch (poi?.properties?.feature_type) {
+				case "bus_stop":
+					return "🚌";
+				case "tram_station":
+					return "🚊";
+				case "ferry_terminal":
+					return "🚢";
+				case "metro_station":
+					return "🚇";
+				case "other_transport":
+					return "🚌";
+				default:
+					return "📍";
+			}
+		}, []);
 
 		if (isLoading) {
 			return (
@@ -167,7 +184,7 @@ const Map = forwardRef<MapRef, MapProps>(
 						bounds={cameraConfig.bounds}
 					/>
 
-					{isValidGeoJSON && (
+					{isFreeMode && isValidGeoJSON && (
 						<ShapeSource
 							key={`feature-source-${selectedFeature?.ref_id || "none"}`}
 							id="feature-source"
@@ -179,24 +196,26 @@ const Map = forwardRef<MapRef, MapProps>(
 					)}
 
 					{/* POI Pins */}
-					{/* {pois.map((poi) => (
-						<PointAnnotation
-							key={poi.id}
-							id={poi.id}
-							coordinate={poi.coordinates}
-							onSelected={() => handlePOIPress(poi)}
-						>
-							<View
-								style={[
-									styles.pinContainer,
-									{ backgroundColor: getPinColor(poi) },
-								]}
-							>
-								<Text style={styles.pinText}>{getPinIcon(poi)}</Text>
-							</View>
-							<Callout title={poi.name} />
-						</PointAnnotation>
-					))} */}
+					{
+						mapMode === MapMode.POI &&
+							geoJsonData?.features
+								.map((poi: any, index: number) => {
+									return (
+										<PointAnnotation
+											key={index.toString()}
+											id={index.toString()}
+											coordinate={poi.geometry.coordinates as Position}
+											onSelected={() => onFeaturePress(poi.properties.ref_id)}
+										>
+											<View style={[styles.pinContainer]}>
+												<Text style={styles.pinText}>{getPinIcon(poi)}</Text>
+											</View>
+											<Callout title={poi.name || ""} />
+										</PointAnnotation>
+									);
+								})
+								.filter(Boolean) // Remove null entries
+					}
 				</MapView>
 			</View>
 		);
@@ -230,21 +249,12 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 	pinContainer: {
-		width: 30,
-		height: 30,
-		borderRadius: 15,
+		width: 20,
+		height: 20,
+		borderRadius: 10,
+		backgroundColor: "transparent",
 		justifyContent: "center",
 		alignItems: "center",
-		borderWidth: 2,
-		borderColor: "white",
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-		elevation: 5,
 	},
 	pinText: {
 		fontSize: 14,

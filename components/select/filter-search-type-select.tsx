@@ -11,26 +11,23 @@ import { ItemType } from "react-native-dropdown-picker";
 import { Select, SelectRef } from "@/components/select/select";
 
 export enum SearchType {
-	NEIGHBORHOOD = "neighborhood",
-	PLACE = "place",
 	DISTRICT = "district",
+	PUBLIC_TRANSPORT = "public_transport",
+	NEIGHBORHOOD = "neighborhood",
 }
 
 export const SEARCH_TYPE_OPTIONS: ItemType<string>[] = [
 	{
 		label: "🏘️ Districts",
 		value: SearchType.DISTRICT,
-		key: 1,
 	},
 	{
-		label: "🏘️ Neighborhoods",
+		label: "🏠 Neighborhoods",
 		value: SearchType.NEIGHBORHOOD,
-		key: 2,
 	},
 	{
-		label: "📍 Places (POIs)",
-		value: SearchType.PLACE,
-		key: 3,
+		label: "🚌 Public Transport",
+		value: SearchType.PUBLIC_TRANSPORT,
 	},
 ];
 
