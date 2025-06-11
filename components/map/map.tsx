@@ -106,9 +106,17 @@ const Map = forwardRef<MapRef, MapProps>(
 			data: geoJsonData,
 			isLoading,
 			refetch,
-		} = useOSMBoundingBoxSearch(bounds as BoundingBox, {
-			feature_types: searchOSMFeatureTypes,
-		});
+		} = useOSMBoundingBoxSearch(
+			{
+				east: 29.085173375436426,
+				north: 41.093553602621085,
+				south: 40.894280669820205,
+				west: 28.95024753447146,
+			} as BoundingBox,
+			{
+				feature_types: searchOSMFeatureTypes,
+			},
+		);
 
 		const { feature: selectedFeature } = useSelectedFeature();
 

@@ -11,8 +11,7 @@
 		"clean:android": "cd android && ./gradlew clean && cd .. && npx expo run:android",
 		"lint": "eslint . --fix",
 		"generate-colors": "node ./scripts/generate-colors.js && eslint ./constants/colors.ts --fix",
-		"process-osm": "tsx scripts/process-osm-data.ts",
-		"setup-osm-db": "psql $DATABASE_URL -f scripts/create-osm-schema.sql"
+		"process-osm": "tsx scripts/process-osm-data.ts"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "^14.1.0",
