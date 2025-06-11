@@ -56,10 +56,8 @@ const Map = forwardRef<MapRef, MapProps>(
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
-		// State for manual transport data fetching
-		const [currentBounds, setCurrentBounds] = useState<BoundingBox | null>(
-			null,
-		);
+		// Use ref for bounds to avoid re-renders
+		const boundsRef = useRef<BoundingBox | null>(null);
 
 		const { selectedCity, searchType } = useSearch();
 		const searchOSMFeatureTypes: FeatureType[] = useMemo(() => {
@@ -99,9 +97,9 @@ const Map = forwardRef<MapRef, MapProps>(
 				};
 				return istanbulBounds;
 			} else {
-				return currentBounds;
+				return boundsRef.current;
 			}
-		}, [isFreeMode, currentBounds]);
+		}, [isFreeMode]);
 
 		const {
 			data: geoJsonData,
@@ -137,7 +135,7 @@ const Map = forwardRef<MapRef, MapProps>(
 		const centerOnCoordinates = useCallback(
 			(coordinates: [number, number], zoomLevel: number = 14) => {
 				// Enforce maximum zoom level
-				const clampedZoomLevel = isFreeMode ? Math.min(zoomLevel, 14) : 22;
+				const clampedZoomLevel = isFreeMode ? Math.min(zoomLevel, 14) : 16;
 
 				if (cameraRef.current) {
 					try {
@@ -168,17 +166,31 @@ const Map = forwardRef<MapRef, MapProps>(
 			console.log("handleRefreshTransport");
 			if (mapRef.current && !isFreeMode) {
 				const visibleBounds = await mapRef.current.getVisibleBounds();
-				const bounds: BoundingBox = {
+				const newBounds: BoundingBox = {
 					north: visibleBounds[0][1], // northeast lat
 					east: visibleBounds[0][0], // northeast lng
 					south: visibleBounds[1][1], // southwest lat
 					west: visibleBounds[1][0], // southwest lng
 				};
 
-				setCurrentBounds(bounds);
+				// Update bounds ref and refetch
+				boundsRef.current = newBounds;
+				console.log({ newBounds });
+
 				refetch();
 			}
 		}, [isFreeMode, refetch]);
+
+		// Update bounds ref when camera changes (without triggering re-render)
+		const handleCameraChanged = useCallback(async (event: any) => {
+			const bounds = event.properties.bounds;
+			boundsRef.current = {
+				north: bounds.ne[1],
+				east: bounds.ne[0],
+				south: bounds.sw[1],
+				west: bounds.sw[0],
+			};
+		}, []);
 
 		// Validate GeoJSON data
 		const isValidGeoJSON =
@@ -214,6 +226,17 @@ const Map = forwardRef<MapRef, MapProps>(
 
 		return (
 			<View style={styles.container}>
+				{/* Refresh button for non-free mode */}
+				{!isFreeMode && (
+					<TouchableOpacity
+						style={styles.refreshButton}
+						onPress={handleRefreshTransport}
+						activeOpacity={0.7}
+					>
+						<Text style={styles.refreshButtonText}>🔄</Text>
+					</TouchableOpacity>
+				)}
+
 				<MapView
 					ref={mapRef}
 					style={styles.map}
@@ -223,6 +246,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					compassViewPosition={2}
 					logoEnabled={false}
 					attributionEnabled={false}
+					onCameraChanged={handleCameraChanged}
 				>
 					<Camera
 						ref={cameraRef}
@@ -268,19 +292,6 @@ const Map = forwardRef<MapRef, MapProps>(
 							})
 							?.filter(Boolean)}
 				</MapView>
-
-				{/* Refresh Button - Only show in transport mode */}
-				{!isFreeMode && (
-					<TouchableOpacity
-						style={styles.refreshButton}
-						onPress={handleRefreshTransport}
-						disabled={isLoading || !currentBounds}
-					>
-						<Text style={styles.refreshButtonText}>
-							{isLoading ? "Loading..." : "Refresh Area"}
-						</Text>
-					</TouchableOpacity>
-				)}
 			</View>
 		);
 	},
@@ -325,12 +336,14 @@ const styles = StyleSheet.create({
 	},
 	refreshButton: {
 		position: "absolute",
-		top: 50,
-		right: 20,
+		top: 60,
+		left: 20,
 		backgroundColor: "#3B82F6",
-		paddingHorizontal: 16,
-		paddingVertical: 8,
-		borderRadius: 8,
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		justifyContent: "center",
+		alignItems: "center",
 		elevation: 3,
 		shadowColor: "#000",
 		shadowOffset: {
@@ -339,10 +352,11 @@ const styles = StyleSheet.create({
 		},
 		shadowOpacity: 0.25,
 		shadowRadius: 3.84,
+		zIndex: 10,
 	},
 	refreshButtonText: {
 		color: "#fff",
-		fontSize: 12,
+		fontSize: 20,
 		fontWeight: "600",
 	},
 });
