@@ -187,6 +187,8 @@ CREATE OR REPLACE FUNCTION get_features_in_bbox(
     p_bbox_east FLOAT,
     p_bbox_north FLOAT,
     p_feature_types TEXT[] DEFAULT NULL,
+    p_city TEXT DEFAULT NULL,
+    p_country TEXT DEFAULT NULL,
     p_limit INTEGER DEFAULT 100
 )
 RETURNS TABLE (
@@ -224,6 +226,8 @@ BEGIN
         ST_MakeEnvelope(p_bbox_west, p_bbox_south, p_bbox_east, p_bbox_north, 4326)
     )
     AND (p_feature_types IS NULL OR f.feature_type = ANY(p_feature_types))
+    AND (p_city IS NULL OR f.city = p_city)
+    AND (p_country IS NULL OR f.country = p_country)
     ORDER BY f.name
     LIMIT p_limit;
 END;
