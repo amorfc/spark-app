@@ -4,8 +4,15 @@ import {
 	forwardRef,
 	useImperativeHandle,
 	useMemo,
+	useState,
 } from "react";
-import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
+import {
+	View,
+	StyleSheet,
+	ActivityIndicator,
+	Text,
+	TouchableOpacity,
+} from "react-native";
 import Mapbox, {
 	MapView,
 	Camera,
@@ -19,11 +26,11 @@ import { getCameraConfig } from "@/lib/mapbox";
 import { SelectedFeatureId, useSearch } from "@/context/search-provider";
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
 import { CameraBounds } from "@/services/poi-service";
-import { useOSMMapData } from "@/hooks/useOsmData";
 import { useSelectedFeature } from "@/hooks/useSelectedFeature";
 import { SearchType } from "@/components/select/filter-search-type-select";
-import { FeatureType } from "@/types/osm";
+import { BoundingBox, FeatureType } from "@/types/osm";
 import { Position } from "@rnmapbox/maps/lib/typescript/src/types/Position";
+import { useOSMBoundingBoxSearch } from "@/hooks/useOsmData";
 
 export interface MapRef {
 	centerOnCoordinates: (
@@ -49,6 +56,11 @@ const Map = forwardRef<MapRef, MapProps>(
 		const mapRef = useRef<MapView>(null);
 		const cameraRef = useRef<Camera>(null);
 
+		// State for manual transport data fetching
+		const [currentBounds, setCurrentBounds] = useState<BoundingBox | null>(
+			null,
+		);
+
 		const { selectedCity, searchType } = useSearch();
 		const searchOSMFeatureTypes: FeatureType[] = useMemo(() => {
 			switch (searchType) {
@@ -67,9 +79,37 @@ const Map = forwardRef<MapRef, MapProps>(
 			}
 		}, [searchType]);
 
-		const { data: geoJsonData, isLoading } = useOSMMapData(
-			searchOSMFeatureTypes,
-		);
+		const mapMode = useMemo<MapMode>(() => {
+			return searchType === SearchType.PUBLIC_TRANSPORT
+				? MapMode.POI
+				: MapMode.FREE;
+		}, [searchType]);
+
+		const isFreeMode = useMemo(() => {
+			return mapMode === MapMode.FREE;
+		}, [mapMode]);
+
+		const bounds = useMemo(() => {
+			if (isFreeMode) {
+				const istanbulBounds = {
+					east: 29.113325840965217,
+					north: 41.20712871580946,
+					south: 40.808668899963436,
+					west: 28.84347415903514,
+				};
+				return istanbulBounds;
+			} else {
+				return currentBounds;
+			}
+		}, [isFreeMode, currentBounds]);
+
+		const {
+			data: geoJsonData,
+			isLoading,
+			refetch,
+		} = useOSMBoundingBoxSearch(bounds as BoundingBox, {
+			feature_types: searchOSMFeatureTypes,
+		});
 
 		const { feature: selectedFeature } = useSelectedFeature();
 
@@ -80,21 +120,12 @@ const Map = forwardRef<MapRef, MapProps>(
 			variant,
 		});
 
-		const mapMode = useMemo<MapMode>(() => {
-			return searchType === SearchType.PUBLIC_TRANSPORT
-				? MapMode.POI
-				: MapMode.FREE;
-		}, [searchType]);
-		const isFreeMode = useMemo(() => {
-			return mapMode === MapMode.FREE;
-		}, [mapMode]);
-
 		const handleMapLoad = useCallback(() => {
 			onMapLoad?.();
 		}, [onMapLoad]);
 
 		const onShapePress = useCallback(
-			(event: OnPressEvent) => {
+			async (event: OnPressEvent) => {
 				const feature = event.features[0];
 				const featureId = feature?.properties?.ref_id || -1;
 				onFeaturePress(featureId);
@@ -131,6 +162,23 @@ const Map = forwardRef<MapRef, MapProps>(
 			}),
 			[centerOnCoordinates],
 		);
+
+		// Manual refresh function for transport data
+		const handleRefreshTransport = useCallback(async () => {
+			console.log("handleRefreshTransport");
+			if (mapRef.current && !isFreeMode) {
+				const visibleBounds = await mapRef.current.getVisibleBounds();
+				const bounds: BoundingBox = {
+					north: visibleBounds[0][1], // northeast lat
+					east: visibleBounds[0][0], // northeast lng
+					south: visibleBounds[1][1], // southwest lat
+					west: visibleBounds[1][0], // southwest lng
+				};
+
+				setCurrentBounds(bounds);
+				refetch();
+			}
+		}, [isFreeMode, refetch]);
 
 		// Validate GeoJSON data
 		const isValidGeoJSON =
@@ -179,8 +227,12 @@ const Map = forwardRef<MapRef, MapProps>(
 					<Camera
 						ref={cameraRef}
 						centerCoordinate={cameraConfig.centerCoordinate}
-						zoomLevel={Math.min(cameraConfig.zoomLevel, 14)} // Enforce max zoom
-						maxZoomLevel={14} // Set maximum zoom level
+						zoomLevel={
+							isFreeMode
+								? Math.min(cameraConfig.zoomLevel, 14)
+								: cameraConfig.zoomLevel
+						}
+						maxZoomLevel={isFreeMode ? 14 : 22} // Allow zoom to 22 for transport mode
 						animationDuration={cameraConfig.animationDuration}
 						bounds={cameraConfig.bounds}
 					/>
@@ -196,28 +248,39 @@ const Map = forwardRef<MapRef, MapProps>(
 						</ShapeSource>
 					)}
 
-					{/* POI Pins */}
-					{
-						mapMode === MapMode.POI &&
-							geoJsonData?.features
-								.map((poi: any, index: number) => {
-									return (
-										<PointAnnotation
-											key={index.toString()}
-											id={index.toString()}
-											coordinate={poi.geometry.coordinates as Position}
-											onSelected={() => onFeaturePress(poi.properties.ref_id)}
-										>
-											<View style={[styles.pinContainer]}>
-												<Text style={styles.pinText}>{getPinIcon(poi)}</Text>
-											</View>
-											<Callout title={poi.name || ""} />
-										</PointAnnotation>
-									);
-								})
-								.filter(Boolean) // Remove null entries
-					}
+					{/* POI Pins for transport mode */}
+					{mapMode === MapMode.POI &&
+						geoJsonData?.features
+							?.map((poi: any, index: number) => {
+								return (
+									<PointAnnotation
+										key={`transport-${poi.properties.ref_id}-${index}`}
+										id={`transport-${poi.properties.ref_id}-${index}`}
+										coordinate={poi.geometry.coordinates as Position}
+										onSelected={() => onFeaturePress(poi.properties.ref_id)}
+									>
+										<View style={[styles.pinContainer]}>
+											<Text style={styles.pinText}>{getPinIcon(poi)}</Text>
+										</View>
+										<Callout title={poi.properties.name || "Transport Stop"} />
+									</PointAnnotation>
+								);
+							})
+							?.filter(Boolean)}
 				</MapView>
+
+				{/* Refresh Button - Only show in transport mode */}
+				{!isFreeMode && (
+					<TouchableOpacity
+						style={styles.refreshButton}
+						onPress={handleRefreshTransport}
+						disabled={isLoading || !currentBounds}
+					>
+						<Text style={styles.refreshButtonText}>
+							{isLoading ? "Loading..." : "Refresh Area"}
+						</Text>
+					</TouchableOpacity>
+				)}
 			</View>
 		);
 	},
@@ -259,6 +322,28 @@ const styles = StyleSheet.create({
 	},
 	pinText: {
 		fontSize: 14,
+	},
+	refreshButton: {
+		position: "absolute",
+		top: 50,
+		right: 20,
+		backgroundColor: "#3B82F6",
+		paddingHorizontal: 16,
+		paddingVertical: 8,
+		borderRadius: 8,
+		elevation: 3,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+	},
+	refreshButtonText: {
+		color: "#fff",
+		fontSize: 12,
+		fontWeight: "600",
 	},
 });
 
