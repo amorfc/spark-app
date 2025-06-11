@@ -17,6 +17,8 @@ web-build/
 # For now
 osm/
 
+assets/geo
+
 ios/
 android/
 

@@ -70,6 +70,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					return [
 						"bus_stop",
 						"tram_station",
+						"train_station",
 						"ferry_terminal",
 						"metro_station",
 						"other_transport",

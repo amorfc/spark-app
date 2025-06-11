@@ -28,7 +28,7 @@
 				"dark": "./assets/icon-dark.png",
 				"light": "./assets/icon.png"
 			},
-			"bundleIdentifier": "com.sparkcompanytr.spark-app",
+			"bundleIdentifier": "com.sparkcompanytr.sparkapp",
 			"infoPlist": {
 				"NSLocationWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
 				"NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
