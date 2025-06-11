@@ -50,7 +50,7 @@ const Map = forwardRef<MapRef, MapProps>(
 		const cameraRef = useRef<Camera>(null);
 
 		const { selectedCity, searchType } = useSearch();
-		const getOSMFeatureTypes = (searchType: SearchType): FeatureType[] => {
+		const searchOSMFeatureTypes: FeatureType[] = useMemo(() => {
 			switch (searchType) {
 				case SearchType.DISTRICT:
 					return ["district"];
@@ -65,9 +65,10 @@ const Map = forwardRef<MapRef, MapProps>(
 						"other_transport",
 					];
 			}
-		};
+		}, [searchType]);
+
 		const { data: geoJsonData, isLoading } = useOSMMapData(
-			getOSMFeatureTypes(searchType),
+			searchOSMFeatureTypes,
 		);
 
 		const { feature: selectedFeature } = useSelectedFeature();
@@ -105,7 +106,7 @@ const Map = forwardRef<MapRef, MapProps>(
 		const centerOnCoordinates = useCallback(
 			(coordinates: [number, number], zoomLevel: number = 14) => {
 				// Enforce maximum zoom level
-				const clampedZoomLevel = Math.min(zoomLevel, 14);
+				const clampedZoomLevel = isFreeMode ? Math.min(zoomLevel, 14) : 22;
 
 				if (cameraRef.current) {
 					try {
@@ -119,7 +120,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					}
 				}
 			},
-			[],
+			[isFreeMode],
 		);
 
 		// Expose methods to parent via ref
