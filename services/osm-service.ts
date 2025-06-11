@@ -13,57 +13,20 @@ export class OSMService {
 	static async searchByBoundingBox(
 		bbox: BoundingBox,
 		filters?: Omit<SearchFilters, "bbox">,
-	): Promise<OSMFeature[]> {
-		let query = supabase
-			.from("osm_features")
-			.select("*")
-			.filter(
-				"geometry",
-				"overlaps",
-				`POLYGON((${bbox.west} ${bbox.south}, ${bbox.east} ${bbox.south}, ${bbox.east} ${bbox.north}, ${bbox.west} ${bbox.north}, ${bbox.west} ${bbox.south}))`,
-			);
+	): Promise<any> {
+		const { data, error } = await supabase.rpc("get_features_in_bbox", {
+			p_bbox_west: bbox.west,
+			p_bbox_south: bbox.south,
+			p_bbox_east: bbox.east,
+			p_bbox_north: bbox.north,
+			p_feature_types: filters?.feature_types || null,
+			p_city: filters?.city || null,
+			p_country: filters?.country || null,
+			p_limit: filters?.limit || 300,
+		});
 
-		// Apply filters
-		if (filters?.feature_types?.length) {
-			query = query.in("feature_type", filters.feature_types);
-		}
-
-		if (filters?.search_text) {
-			query = query.or(
-				`name.ilike.%${filters.search_text}%,full_address.ilike.%${filters.search_text}%,city.ilike.%${filters.search_text}%`,
-			);
-		}
-
-		if (filters?.city) {
-			query = query.eq("city", filters.city);
-		}
-
-		if (filters?.country) {
-			query = query.eq("country", filters.country);
-		}
-
-		if (filters?.admin_level) {
-			query = query.eq("admin_level", filters.admin_level);
-		}
-
-		if (filters?.limit) {
-			query = query.limit(filters.limit);
-		}
-
-		if (filters?.offset) {
-			query = query.range(
-				filters.offset,
-				filters.offset + (filters.limit || 50) - 1,
-			);
-		}
-
-		const { data, error } = await query;
-
-		if (error) {
-			throw new Error(`Failed to search features: ${error.message}`);
-		}
-
-		return data || [];
+		if (error) throw error;
+		return data || { type: "FeatureCollection", features: [] };
 	}
 
 	/**
@@ -74,6 +37,7 @@ export class OSMService {
 		bbox?: BoundingBox,
 		featureTypes?: FeatureType[],
 		limit: number = 50,
+		filters?: Omit<SearchFilters, "bbox">,
 	): Promise<OSMFeature[]> {
 		let query = supabase
 			.from("osm_features")
@@ -82,6 +46,14 @@ export class OSMService {
 				type: "websearch",
 				config: "turkish",
 			});
+
+		if (filters?.city) {
+			query = query.eq("city", filters.city);
+		}
+
+		if (filters?.country) {
+			query = query.eq("country", filters.country);
+		}
 
 		if (bbox) {
 			query = query.filter(
@@ -107,41 +79,12 @@ export class OSMService {
 	}
 
 	/**
-	 * Find nearby features within distance (in meters)
-	 */
-	static async findNearby(
-		lat: number,
-		lng: number,
-		radiusMeters: number,
-		featureTypes?: FeatureType[],
-		limit: number = 20,
-	): Promise<OSMFeature[]> {
-		const point = `POINT(${lng} ${lat})`;
-
-		let query = supabase
-			.from("osm_features")
-			.select("*")
-			.filter("center_coordinate", "dwithin", [point, radiusMeters]);
-
-		if (featureTypes?.length) {
-			query = query.in("feature_type", featureTypes);
-		}
-
-		query = query.limit(limit);
-
-		const { data, error } = await query;
-
-		if (error) {
-			throw new Error(`Nearby search failed: ${error.message}`);
-		}
-
-		return data || [];
-	}
-
-	/**
 	 * Get districts for dropdown/autocomplete
 	 */
-	static async getDistricts(searchText?: string): Promise<OSMFeature[]> {
+	static async getDistricts(
+		filters?: Omit<SearchFilters, "bbox">,
+		searchText?: string,
+	): Promise<OSMFeature[]> {
 		let query = supabase
 			.from("osm_features")
 			.select("*")
@@ -164,38 +107,30 @@ export class OSMService {
 	/**
 	 * Get neighborhoods for a specific district
 	 */
-	static async getNeighborhoods(): Promise<OSMFeature[]> {
-		const { data, error } = await supabase
+	static async getNeighborhoods(
+		filters?: Omit<SearchFilters, "bbox">,
+	): Promise<OSMFeature[]> {
+		let query = supabase
 			.from("osm_features")
 			.select("*")
 			.eq("feature_type", "neighborhood")
 			.order("name");
+
+		if (filters?.city) {
+			query = query.eq("city", filters.city);
+		}
+
+		if (filters?.country) {
+			query = query.eq("country", filters.country);
+		}
+
+		const { data, error } = await query;
 
 		if (error) {
 			throw new Error(`Failed to get neighborhoods: ${error.message}`);
 		}
 
 		return data || [];
-	}
-
-	/**
-	 * Get feature by ID
-	 */
-	static async getFeatureById(supabaseId: string): Promise<OSMFeature | null> {
-		const { data, error } = await supabase
-			.from("osm_features")
-			.select("*")
-			.eq("supabase_id", supabaseId)
-			.single();
-
-		if (error) {
-			if (error.code === "PGRST116") {
-				return null; // Not found
-			}
-			throw new Error(`Failed to get feature: ${error.message}`);
-		}
-
-		return data;
 	}
 
 	/**
@@ -216,74 +151,5 @@ export class OSMService {
 		}
 
 		return data;
-	}
-
-	/**
-	 * Get transportation stops within a bounding box
-	 */
-	static async getTransportationStops(
-		bbox: BoundingBox,
-	): Promise<OSMFeature[]> {
-		return this.searchByBoundingBox(bbox, {
-			feature_types: [
-				"bus_stop",
-				"tram_station",
-				"ferry_terminal",
-				"metro_station",
-				"other_transport",
-			],
-		});
-	}
-
-	/**
-	 * Get map initialization data with GeoJSON format
-	 */
-	static async getMapInitData(
-		featureTypes: FeatureType[] = ["district", "neighborhood"],
-	): Promise<any> {
-		const { data, error } = await supabase
-			.from("osm_features")
-			.select(
-				"supabase_id, ref_id, name, name_tr, name_en, feature_type, geometry, center_coordinate, city, country, admin_level",
-			)
-			.in("feature_type", featureTypes)
-			.not("geometry", "is", null)
-			.order("name");
-
-		if (error) {
-			throw new Error(`Failed to get map data: ${error.message}`);
-		}
-
-		// Convert to GeoJSON format
-		const geoJson = {
-			type: "FeatureCollection",
-			features: data.map((feature) => ({
-				type: "Feature",
-				id: feature.supabase_id,
-				properties: {
-					id: feature.supabase_id,
-					ref_id: feature.ref_id,
-					name: feature.name,
-					name_tr: feature.name_tr,
-					name_en: feature.name_en,
-					feature_type: feature.feature_type,
-					city: feature.city,
-					country: feature.country,
-					admin_level: feature.admin_level,
-				},
-				geometry: feature.geometry,
-			})),
-		};
-
-		return geoJson;
-	}
-
-	/**
-	 * Get filtered map data by search type
-	 */
-	static async getMapDataByType(searchTypes: FeatureType[]): Promise<any> {
-		const featureTypes: FeatureType[] = searchTypes;
-
-		return this.getMapInitData(featureTypes);
 	}
 }
