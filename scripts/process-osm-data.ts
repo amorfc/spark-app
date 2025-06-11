@@ -14,6 +14,7 @@ dotenv.config();
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.EXPO_PUBLIC_SUPABASE_SERVICE_KEY!;
 const BATCH_SIZE = 100;
+const MAX_CONCURRENT_BATCHES = 5; // Process max 5 batches simultaneously
 
 // Debug: Check if env vars are loaded
 console.log("🔧 Environment Check:");
@@ -53,6 +54,16 @@ class OSMProcessor {
 		skipReasons: {},
 	};
 
+	private readonly statsLock = {
+		processed: 0,
+		errors: 0,
+		skipped: 0,
+		districts: 0,
+		neighborhoods: 0,
+		transport_stops: 0,
+		skipReasons: {} as Record<string, number>,
+	};
+
 	async processFile(filePath: string): Promise<void> {
 		console.log(`📖 Reading file: ${filePath}`);
 
@@ -66,23 +77,9 @@ class OSMProcessor {
 		this.stats.total = geoJson.features.length;
 		console.log(`🔍 Found ${this.stats.total} features to process`);
 
-		// Process features in batches
+		// Process features in batches with controlled concurrency
 		const batches = this.createBatches(geoJson.features, BATCH_SIZE);
-
-		for (let i = 0; i < batches.length; i++) {
-			const batch = batches[i];
-			console.log(
-				`⚡ Processing batch ${i + 1}/${batches.length} (${batch.length} features)`,
-			);
-
-			await this.processBatch(batch as OSMRawFeature[]);
-
-			// Progress update
-			const progress = (((i + 1) / batches.length) * 100).toFixed(1);
-			console.log(
-				`📊 Progress: ${progress}% (${this.stats.processed + this.stats.skipped}/${this.stats.total})`,
-			);
-		}
+		await this.processBatchesInParallel(batches as OSMRawFeature[][]);
 
 		this.printStats();
 	}
@@ -93,6 +90,46 @@ class OSMProcessor {
 			batches.push(array.slice(i, i + batchSize));
 		}
 		return batches;
+	}
+
+	private async processBatchesInParallel(
+		batches: OSMRawFeature[][],
+	): Promise<void> {
+		let processedBatches = 0;
+		const totalBatches = batches.length;
+
+		console.log(
+			`🚀 Processing ${totalBatches} batches with max ${MAX_CONCURRENT_BATCHES} concurrent batches`,
+		);
+
+		// Process batches in chunks with controlled concurrency
+		for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
+			const batchChunk = batches.slice(i, i + MAX_CONCURRENT_BATCHES);
+
+			// Process this chunk of batches in parallel
+			const batchPromises = batchChunk.map(async (batch, chunkIndex) => {
+				const batchNumber = i + chunkIndex + 1;
+				console.log(
+					`⚡ Starting batch ${batchNumber}/${totalBatches} (${batch.length} features)`,
+				);
+
+				try {
+					await this.processBatch(batch);
+					console.log(`✅ Completed batch ${batchNumber}/${totalBatches}`);
+				} catch (error) {
+					console.error(`❌ Error in batch ${batchNumber}:`, error);
+				}
+			});
+
+			// Wait for all batches in this chunk to complete
+			await Promise.all(batchPromises);
+
+			processedBatches += batchChunk.length;
+			const progress = ((processedBatches / totalBatches) * 100).toFixed(1);
+			console.log(
+				`📊 Progress: ${progress}% (${processedBatches}/${totalBatches} batches completed)`,
+			);
+		}
 	}
 
 	private async processBatch(features: OSMRawFeature[]): Promise<void> {
@@ -266,39 +303,64 @@ class OSMProcessor {
 			return "district";
 		}
 
-		// Transportation stops
-		if (
-			props.public_transport === "stop_position" ||
-			props.public_transport === "platform" ||
-			props.highway === "bus_stop"
-		) {
-			return "bus_stop";
-		}
+		// Transportation stops - More specific rules
 
+		// Metro station: public_transport = "station" or "stop_position" AND subway=yes
 		if (
-			props.railway === "tram_stop" ||
-			props.public_transport === "stop_area"
-		) {
-			return "tram_station";
-		}
-
-		if (props.amenity === "ferry_terminal") {
-			return "ferry_terminal";
-		}
-
-		if (
-			props.railway === "station" &&
-			(props.subway === "yes" || props.metro === "yes")
+			(props.public_transport === "station" ||
+				props.public_transport === "stop_position") &&
+			props.subway === "yes"
 		) {
 			return "metro_station";
 		}
 
-		// Other transport-related features
+		// Tram station: public_transport = "station" or "stop_position" AND tram=yes
+		if (
+			(props.public_transport === "station" ||
+				props.public_transport === "stop_position") &&
+			props.tram === "yes"
+		) {
+			return "tram_station";
+		}
+
+		// Train station: public_transport = "station" or "stop_position" AND train=yes
+		if (
+			(props.public_transport === "station" ||
+				props.public_transport === "stop_position") &&
+			props.train === "yes"
+		) {
+			return "train_station";
+		}
+
+		// Bus stop: only highway === "bus_stop"
+		if (props.highway === "bus_stop") {
+			return "bus_stop";
+		}
+
+		// Ferry terminal
+		if (props.amenity === "ferry_terminal") {
+			return "ferry_terminal";
+		}
+
+		// Other transport-related features - with name validation
 		if (
 			props.public_transport ||
 			props.railway ||
 			props.amenity?.includes("transport")
 		) {
+			// Check if there's a valid name
+			const name = props.name || props["name:tr"] || props["name:en"];
+
+			// Skip if no name or name is only a single number
+			if (!name) {
+				return null;
+			}
+
+			// Check if name is only a number (single digit or multiple digits)
+			if (/^\d+$/.test(name.trim())) {
+				return null;
+			}
+
 			return "other_transport";
 		}
 
@@ -370,6 +432,7 @@ class OSMProcessor {
 			case "tram_station":
 			case "ferry_terminal":
 			case "metro_station":
+			case "train_station":
 			case "other_transport":
 				this.stats.transport_stops++;
 				break;

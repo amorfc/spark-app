@@ -12,6 +12,7 @@ CREATE TYPE feature_type AS ENUM (
     'tram_station',
     'ferry_terminal',
     'metro_station',
+    'train_station',
     'other_transport'
 );
 

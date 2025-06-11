@@ -5,6 +5,7 @@ export type FeatureType =
 	| "tram_station"
 	| "ferry_terminal"
 	| "metro_station"
+	| "train_station"
 	| "other_transport";
 
 export interface OSMFeature {
