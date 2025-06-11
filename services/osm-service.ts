@@ -281,13 +281,8 @@ export class OSMService {
 	/**
 	 * Get filtered map data by search type
 	 */
-	static async getMapDataByType(searchType: FeatureType): Promise<any> {
-		const featureTypes: FeatureType[] =
-			searchType === "district"
-				? ["district"]
-				: searchType === "neighborhood"
-					? ["neighborhood"]
-					: [searchType]; // for transport types
+	static async getMapDataByType(searchTypes: FeatureType[]): Promise<any> {
+		const featureTypes: FeatureType[] = searchTypes;
 
 		return this.getMapInitData(featureTypes);
 	}

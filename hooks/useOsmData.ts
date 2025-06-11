@@ -49,13 +49,16 @@ export const useOSMFeatures = ({
  * Hook for filtered map data by search type
  */
 export const useOSMMapData = (
-	searchType: FeatureType,
-	options?: Omit<UseQueryOptions<any>, "queryKey" | "queryFn">,
+	searchTypes: FeatureType[],
+	options?: Omit<
+		UseQueryOptions<GeoJSON.FeatureCollection>,
+		"queryKey" | "queryFn"
+	>,
 ) => {
 	return useQuery({
-		queryKey: ["osm-map-data", searchType],
-		queryFn: () => OSMService.getMapDataByType(searchType),
-		enabled: !!searchType,
+		queryKey: ["osm-map-data", searchTypes],
+		queryFn: () => OSMService.getMapDataByType(searchTypes),
+		enabled: !!searchTypes,
 		staleTime: Infinity,
 		...options,
 	});
