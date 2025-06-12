@@ -7,7 +7,8 @@ import {
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 import { useMapSearch } from "@/hooks/useMapSearch";
-import { calculateBoundsFromFeature } from "@/lib/geometry";
+import { calculateBoundsFromFeature, findPolygonAsync } from "@/lib/geometry";
+import { useDistricts } from "@/hooks/useDistricts";
 import { POICategoryDefinition } from "@/services/poi-service";
 import { useAmenities } from "@/hooks/useAmenities";
 import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-bottom-sheet";
@@ -35,7 +36,9 @@ export default function MapScreen() {
 		selectedFeature,
 		clearSelectedFeature,
 		updateSelectedFeature,
+		updateDistrict,
 	} = useMapSearch();
+	const { data: districts } = useDistricts();
 
 	// User location hook
 	const {
@@ -101,10 +104,6 @@ export default function MapScreen() {
 
 	const handlePOICategoriesChange = useCallback(
 		(categories: POICategoryDefinition[]) => {
-			console.log({
-				categories,
-			});
-
 			updateCategoryGroups(categories);
 		},
 		[updateCategoryGroups],
@@ -112,34 +111,58 @@ export default function MapScreen() {
 
 	// Handle user location button press
 	const handleUserLocationPress = useCallback(async () => {
-		if (!hasPermission) {
-			// The hook will handle permission request
-			await getCurrentLocation();
-			return;
-		}
-
-		if (userLocation) {
-			let loc = userLocation;
+		updateMapLoading(true);
+		try {
+			let location = userLocation;
 			if (process.env.NODE_ENV === "development") {
-				loc = {
+				location = {
 					latitude: 40.99,
 					longitude: 29.028,
 					timestamp: Date.now(),
 				};
 			}
+
+			if (!hasPermission) {
+				// The hook will handle permission request
+				await getCurrentLocation();
+				return;
+			}
+
+			if (!location) {
+				await getCurrentLocation();
+			}
+
+			if (!location) {
+				return;
+			}
+
 			// Center map on existing location
-			mapRef.current?.centerOnCoordinates([loc.longitude, loc.latitude], 14);
-		} else {
-			// Get current location and center on it
-			const location = await getCurrentLocation();
-			if (location) {
+			const closestFeature = await findPolygonAsync(
+				districts?.features ?? [],
+				location.longitude,
+				location.latitude,
+			);
+			if (closestFeature) {
+				updateDistrict(closestFeature);
+			}
+			{
 				mapRef.current?.centerOnCoordinates(
 					[location.longitude, location.latitude],
-					16,
+					14,
 				);
 			}
+		} catch {
+		} finally {
+			updateMapLoading(false);
 		}
-	}, [hasPermission, userLocation, getCurrentLocation]);
+	}, [
+		updateMapLoading,
+		userLocation,
+		hasPermission,
+		districts?.features,
+		getCurrentLocation,
+		updateDistrict,
+	]);
 
 	// Show loading indicator while Mapbox is initializing
 	if (isMapboxLoading || !mapReady) {

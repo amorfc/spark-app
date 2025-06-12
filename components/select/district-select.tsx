@@ -32,7 +32,16 @@ export const DistrictSelect = forwardRef<SelectRef, DistrictSelectProps>(
 		const selectRef = useRef<SelectRef>(null);
 
 		const { data } = useDistricts();
-		const { resetMap, updateDistrict } = useMapSearch();
+		const { resetMap, updateDistrict, district } = useMapSearch();
+
+		// Sync value with current district
+		useEffect(() => {
+			if (district?.properties?.id) {
+				setValue(district.properties.id);
+			} else {
+				setValue(null);
+			}
+		}, [district]);
 
 		// Expose methods to parent
 		useImperativeHandle(
@@ -44,8 +53,6 @@ export const DistrictSelect = forwardRef<SelectRef, DistrictSelectProps>(
 			}),
 			[],
 		);
-
-		// Local state for dropdown items
 
 		// Handle location selection
 		const handleSelectItem = useCallback(
@@ -65,6 +72,7 @@ export const DistrictSelect = forwardRef<SelectRef, DistrictSelectProps>(
 			resetMap();
 			setValue(null);
 		}, [resetMap]);
+
 		const dropdownItems: ItemType<ValueType>[] = useMemo(() => {
 			if (!data) return [];
 			return mapFeatureCollectionToDropdownItems<ValueType>(data);
