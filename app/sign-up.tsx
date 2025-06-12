@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 import * as z from "zod";
 
 import { SafeAreaView } from "@/components/safe-area-view";
@@ -9,6 +9,9 @@ import { Form, FormField, FormInput } from "@/components/ui/form";
 import { Text } from "@/components/ui/text";
 import { H1 } from "@/components/ui/typography";
 import { useAuth } from "@/context/supabase-provider";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { router } from "expo-router";
 
 const formSchema = z
 	.object({
@@ -31,6 +34,12 @@ const formSchema = z
 				"Your password must have at least one special character.",
 			),
 		confirmPassword: z.string().min(8, "Please enter at least 8 characters."),
+		isFemale: z.boolean().refine((val) => val === true, {
+			message: "Spark is currently available for female users only.",
+		}),
+		acceptTerms: z.boolean().refine((val) => val === true, {
+			message: "You must accept the Terms and Conditions to continue.",
+		}),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		message: "Your passwords do not match.",
@@ -46,6 +55,8 @@ export default function SignUp() {
 			email: "",
 			password: "",
 			confirmPassword: "",
+			isFemale: false,
+			acceptTerms: false,
 		},
 	});
 
@@ -58,6 +69,8 @@ export default function SignUp() {
 			console.error(error.message);
 		}
 	}
+
+	const handleTermsPress = () => router.push("/tos");
 
 	return (
 		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
@@ -106,6 +119,63 @@ export default function SignUp() {
 									secureTextEntry
 									{...field}
 								/>
+							)}
+						/>
+
+						{/* Female Only Switch */}
+						<FormField
+							control={form.control}
+							name="isFemale"
+							render={({ field }) => (
+								<View className="flex-row items-center justify-between">
+									<Text className="text-base font-medium">
+										I confirm I am female
+									</Text>
+									<Switch
+										checked={field.value}
+										onCheckedChange={(checked: boolean) => {
+											field.onChange(checked);
+										}}
+									/>
+								</View>
+							)}
+						/>
+						{form.formState.errors.isFemale && (
+							<Text className="text-sm text-destructive">
+								{form.formState.errors.isFemale.message}
+							</Text>
+						)}
+
+						{/* Terms and Conditions Checkbox */}
+						<FormField
+							control={form.control}
+							name="acceptTerms"
+							render={({ field }) => (
+								<View className="mt-2">
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={(checked: boolean) => {
+											field.onChange(checked);
+										}}
+										renderLabel={() => (
+											<View className="flex-row items-center gap-1">
+												<Text className="text-sm text-foreground">
+													I accept the
+												</Text>{" "}
+												<Pressable onPress={handleTermsPress}>
+													<Text className="text-blue-500 text-sm underline">
+														Terms and Condition and Privacy Policy
+													</Text>
+												</Pressable>
+											</View>
+										)}
+									/>
+									{form.formState.errors.acceptTerms && (
+										<Text className="text-sm text-destructive mt-1">
+											{form.formState.errors.acceptTerms.message}
+										</Text>
+									)}
+								</View>
 							)}
 						/>
 					</View>

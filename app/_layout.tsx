@@ -52,6 +52,25 @@ export default function AppLayout() {
 									}}
 								/>
 								<Stack.Screen
+									name="tos"
+									options={{
+										presentation: "modal",
+										headerShown: true,
+										headerTitle: "Terms of Service and Privacy Policy",
+										headerStyle: {
+											backgroundColor:
+												colorScheme === "dark"
+													? colors.dark.background
+													: colors.light.background,
+										},
+										headerTintColor:
+											colorScheme === "dark"
+												? colors.dark.foreground
+												: colors.light.foreground,
+										gestureEnabled: true,
+									}}
+								/>
+								<Stack.Screen
 									name="sign-in"
 									options={{
 										presentation: "modal",

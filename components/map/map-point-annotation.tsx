@@ -27,7 +27,7 @@ const MapPointAnnotation = ({ poi, id, ...props }: MapPointAnnotationProps) => {
 			{...props}
 		>
 			<View style={[styles.pinContainer]}>
-				<Text style={styles.pinText}>{icon}</Text>
+				<Text style={styles.iconText}>{icon}</Text>
 			</View>
 			<Callout title={poi.properties?.name || "Transport Stop"} />
 		</PointAnnotation>
@@ -36,15 +36,17 @@ const MapPointAnnotation = ({ poi, id, ...props }: MapPointAnnotationProps) => {
 
 const styles = StyleSheet.create({
 	pinContainer: {
-		width: 60,
-		height: 60,
+		minWidth: 60,
+		minHeight: 60,
 		borderRadius: 10,
-		backgroundColor: "transparent",
+		backgroundColor: "rgba(255, 255, 255, 0.8)",
 		justifyContent: "center",
 		alignItems: "center",
+		padding: 4,
 	},
-	pinText: {
+	iconText: {
 		fontSize: 24,
+		textAlign: "center",
 	},
 });
 

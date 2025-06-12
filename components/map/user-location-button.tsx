@@ -1,8 +1,8 @@
 import React from "react";
 import { Pressable, PressableProps, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { twMerge } from "tailwind-merge";
 import { ClassNameProps } from "@/types/common";
+import { cn } from "@/lib/utils";
 
 interface UserLocationButtonProps extends ClassNameProps, PressableProps {
 	isLoading?: boolean;
@@ -16,7 +16,7 @@ const UserLocationButton: React.FC<UserLocationButtonProps> = ({
 	disabled,
 	...props
 }) => {
-	const buttonClassName = twMerge(
+	const buttonClassName = cn(
 		"bg-white rounded-full p-3 shadow-lg",
 		"shadow-lg shadow-black/25",
 		"elevation-5",
