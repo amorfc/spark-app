@@ -2,7 +2,8 @@ import { OverPassCategory } from "@/services/overpass-service";
 
 export interface POICategoryDefinition {
 	label: string;
-	icon: string;
+	icon?: string;
+	value: OverPassCategory;
 	key: OverPassCategory;
 }
 
@@ -11,15 +12,15 @@ export interface POICategoryGroupType {
 	TRANSPORTATION: POICategoryDefinition;
 }
 
-export const POICategoryGroup: POICategoryGroupType = {
-	FOOD_AND_DRINK: {
-		label: "Food & Drink",
-		icon: "🍽️",
+export const POICategories: POICategoryDefinition[] = [
+	{
+		label: "🍽️ Food & Drink",
+		value: OverPassCategory.FOOD_AND_DRINK,
 		key: OverPassCategory.FOOD_AND_DRINK,
 	},
-	TRANSPORTATION: {
-		label: "Transportation",
-		icon: "🚌",
+	{
+		label: "🚌 Transportation",
+		value: OverPassCategory.TRANSPORTATION,
 		key: OverPassCategory.TRANSPORTATION,
 	},
-};
+];

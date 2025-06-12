@@ -26,9 +26,9 @@ interface MapProps {
 	currentBounds: BoundingBox;
 	shape: GeoJSON.Feature | null | undefined;
 	pois: GeoJSON.FeatureCollection | null | undefined;
-	onFeaturePress: (id: string) => void;
 	onMapLoad?: () => void;
 	variant?: "subtle" | "moderate" | "vibrant";
+	onShapePress?: (payload: GeoJSON.Feature) => void;
 	onPointPress: (payload: GeoJSON.Feature) => void;
 }
 
@@ -44,7 +44,7 @@ const Map = forwardRef<MapRef, MapProps>(
 			currentBounds,
 			shape,
 			pois,
-			onFeaturePress,
+			onShapePress,
 			onPointPress,
 			onMapLoad,
 			variant = "subtle",
@@ -140,7 +140,7 @@ const Map = forwardRef<MapRef, MapProps>(
 					/>
 
 					{/* Filling Layer Shape if presented */}
-					{shape && <MapPolygon shape={shape} />}
+					{shape && <MapPolygon shape={shape} variant={variant} />}
 
 					{/* POI Pins for transport mode */}
 					{pois && <MapPois pois={pois.features} onPointPress={onPointPress} />}

@@ -2,7 +2,6 @@ import React, {
 	forwardRef,
 	useEffect,
 	useImperativeHandle,
-	useMemo,
 	useRef,
 } from "react";
 import { View, TouchableOpacity } from "react-native";
@@ -24,7 +23,6 @@ export const FeatureInfoBottomSheet = forwardRef<
 	const { colorScheme } = useColorScheme();
 
 	const isDark = colorScheme === "dark";
-	const snapPoints = useMemo(() => ["20%"], []);
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const { icon, label } = useFeatureMetadata(feature);
 
@@ -94,7 +92,10 @@ export const FeatureInfoBottomSheet = forwardRef<
 		content: string;
 	}) => {
 		return (
-			<View className="flex-row items-center px-2 py-2 rounded bg-muted">
+			<View
+				key={`${header}-${content}`}
+				className="flex-row items-center px-2 py-2 rounded bg-muted"
+			>
 				<Text className="text-xl font-medium">{icon}</Text>
 				<View className="ml-2">
 					<Text className="text-sm font-medium">{header}</Text>
@@ -109,14 +110,14 @@ export const FeatureInfoBottomSheet = forwardRef<
 	return (
 		<BottomSheet
 			ref={bottomSheetRef}
-			snapPoints={snapPoints}
-			initialSnapIndex={0}
-			containerStyle={{ zIndex: 2000 }}
-			scrollable={true}
+			scrollable={false}
+			enablePanDownToClose={false}
+			style={{ zIndex: 2000 }}
+			index={0}
 			{...bottomSheetProps}
 		>
 			{feature && (
-				<View className="flex-1">
+				<View className="flex-1 pb-4">
 					<View className="flex-1">
 						<View className="pb-3 border-b border-gray-200 mb-3">
 							<View className="flex-row justify-between">

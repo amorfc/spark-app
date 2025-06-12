@@ -6,14 +6,15 @@ import {
 	MapFilterBottomSheetRef,
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
-
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMapSearch } from "@/hooks/useMapSearch";
 import { calculateBoundsFromFeature } from "@/lib/geometry";
-import { POICategoryGroupType } from "@/services/poi-service";
+import { POICategoryDefinition } from "@/services/poi-service";
 import { useAmenities } from "@/hooks/useAmenities";
 import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-bottom-sheet";
 import { BottomSheetRef } from "@/components/bottom-sheet/bottom-sheet";
+import { useDistricts } from "@/hooks/useDistricts";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -65,13 +66,6 @@ export default function MapScreen() {
 	// 	}
 	// }, [feature, centerTo]);
 
-	const handleCategoryGroupsChange = useCallback(
-		(categories: POICategoryGroupType[]) => {
-			updateCategoryGroups(categories);
-		},
-		[updateCategoryGroups],
-	);
-
 	const currentCameraBounds = useMemo(() => {
 		return (
 			calculateBoundsFromFeature(district as GeoJSON.Feature) ?? currentBounds
@@ -88,9 +82,22 @@ export default function MapScreen() {
 				const coordinates = payload.geometry?.coordinates as [number, number];
 				mapRef.current?.centerOnCoordinates(coordinates, 15);
 				updateSelectedFeature(payload);
+				filterSheetRef.current?.close();
+				featureSheetRef.current?.expand();
 			}
 		},
 		[updateSelectedFeature],
+	);
+
+	const handlePOICategoriesChange = useCallback(
+		(categories: POICategoryDefinition[]) => {
+			console.log({
+				categories,
+			});
+
+			updateCategoryGroups(categories);
+		},
+		[updateCategoryGroups],
 	);
 
 	// Show loading indicator while Mapbox is initializing
@@ -141,13 +148,12 @@ export default function MapScreen() {
 					elevation: 5,
 				}}
 			>
-				<MaterialIcons name="filter-list" size={24} color="#374151" />
+				<AntDesign name="filter" size={24} color="#374151" />
 			</Pressable>
 
 			<Map
 				ref={mapRef}
-				variant="moderate"
-				onFeaturePress={() => {}}
+				variant="subtle"
 				isLoading={isMapboxLoading || isAmenitiesLoading}
 				shape={district}
 				pois={pois}
@@ -170,7 +176,7 @@ export default function MapScreen() {
 				ref={filterSheetRef}
 				// onClose={handleCloseFilterSheet}
 				selectedPOICategories={categoryGroups}
-				onPOICategoriesChange={handleCategoryGroupsChange}
+				onPOICategoriesChange={handlePOICategoriesChange}
 			/>
 		</View>
 	);

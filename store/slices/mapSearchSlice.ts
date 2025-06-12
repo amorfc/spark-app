@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BoundingBox } from "@/types/osm";
-import { POICategoryGroupType } from "@/services/poi-service";
+import { POICategoryDefinition } from "@/services/poi-service";
 
 export interface MapSearchState {
 	selectedFeatureId: string | null;
@@ -10,7 +10,7 @@ export interface MapSearchState {
 	currentBounds: BoundingBox;
 	isLoading: boolean;
 	districts: GeoJSON.Feature[];
-	categoryGroups: POICategoryGroupType[];
+	categoryGroups: POICategoryDefinition[];
 	selectedFeature: GeoJSON.Feature | null;
 }
 
@@ -67,7 +67,7 @@ const mapSearchSlice = createSlice({
 		},
 		setCategoryGroups: (
 			state,
-			action: PayloadAction<POICategoryGroupType[]>,
+			action: PayloadAction<POICategoryDefinition[]>,
 		) => {
 			state.categoryGroups = action.payload;
 		},

@@ -8,6 +8,7 @@ import React, {
 import { StyleSheet } from "react-native";
 import BottomSheetLib, {
 	BottomSheetView,
+	BottomSheetProps as RNBottomSheetProps,
 	BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { useColorScheme } from "@/lib/useColorScheme";
@@ -20,36 +21,27 @@ export interface BottomSheetRef {
 	collapse: () => void;
 }
 
-export interface BottomSheetProps {
+export interface BottomSheetProps extends RNBottomSheetProps {
 	children: React.ReactNode;
-	snapPoints?: (string | number)[];
-	initialSnapIndex?: number;
-	enablePanDownToClose?: boolean;
-	enableDrag?: boolean;
 	scrollable?: boolean;
 	onClose?: () => void;
 	onChange?: (index: number) => void;
 	onAnimate?: () => void;
 	backgroundStyle?: any;
 	handleIndicatorStyle?: any;
-	containerStyle?: any;
 }
 
 export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 	(
 		{
 			children,
-			snapPoints = ["30%", "90%"],
-			initialSnapIndex = 0,
-			enablePanDownToClose = true,
-			enableDrag = true,
 			scrollable = true,
 			onClose,
 			onChange,
 			onAnimate,
 			backgroundStyle,
 			handleIndicatorStyle,
-			containerStyle,
+			...props
 		},
 		ref,
 	) => {
@@ -57,10 +49,6 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 		const bottomSheetRef = useRef<BottomSheetLib>(null);
 		const isDark = colorScheme === "dark";
 
-		// Memoize snap points to prevent unnecessary re-renders
-		const memoizedSnapPoints = useMemo(() => snapPoints, [snapPoints]);
-
-		// Callbacks
 		const handleSheetChanges = useCallback(
 			(index: number) => {
 				onChange?.(index);
@@ -70,10 +58,6 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 			},
 			[onChange, onClose],
 		);
-
-		const handleAnimate = useCallback(() => {
-			onAnimate?.();
-		}, [onAnimate]);
 
 		const snapToIndex = useCallback((index: number) => {
 			bottomSheetRef.current?.snapToIndex(index);
@@ -130,19 +114,15 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 		return (
 			<BottomSheetLib
 				ref={bottomSheetRef}
-				index={initialSnapIndex}
-				snapPoints={memoizedSnapPoints}
+				{...props}
 				onChange={handleSheetChanges}
-				onAnimate={handleAnimate}
-				enablePanDownToClose={enablePanDownToClose}
-				enableHandlePanningGesture={enableDrag}
-				enableContentPanningGesture={enableDrag}
 				backgroundStyle={dynamicBackgroundStyle}
 				handleIndicatorStyle={dynamicHandleIndicatorStyle}
-				style={containerStyle}
 				keyboardBehavior="extend"
 				keyboardBlurBehavior="restore"
 				android_keyboardInputMode="adjustResize"
+				enableHandlePanningGesture={true}
+				enableContentPanningGesture={true}
 			>
 				<ContentContainer
 					style={styles.contentContainer}

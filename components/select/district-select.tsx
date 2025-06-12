@@ -32,14 +32,7 @@ export const DistrictSelect = forwardRef<SelectRef, DistrictSelectProps>(
 		const selectRef = useRef<SelectRef>(null);
 
 		const { data } = useDistricts();
-
 		const { resetMap, updateDistrict } = useMapSearch();
-		const dropdownItems = useMemo(() => {
-			if (!data) return [];
-			return mapFeatureCollectionToDropdownItems<ValueType>(data);
-		}, [data]);
-
-		const [items, setItems] = useState<ItemType<ValueType>[]>(dropdownItems);
 
 		// Expose methods to parent
 		useImperativeHandle(
@@ -72,24 +65,20 @@ export const DistrictSelect = forwardRef<SelectRef, DistrictSelectProps>(
 			resetMap();
 			setValue(null);
 		}, [resetMap]);
-
-		// Update items when dropdownItems changes
-		useEffect(() => {
-			setItems(dropdownItems);
-		}, [dropdownItems]);
+		const dropdownItems: ItemType<ValueType>[] = useMemo(() => {
+			if (!data) return [];
+			return mapFeatureCollectionToDropdownItems<ValueType>(data);
+		}, [data]);
 
 		return (
 			<Select
 				ref={selectRef}
 				value={value}
-				originalItems={items}
+				originalItems={dropdownItems}
 				setValue={setValue}
 				onSelectItem={handleSelectItem}
 				onClear={handleSelectClear}
-				searchPlaceholder="Type to search..."
 				searchable={true}
-				listMode={useModal ? "MODAL" : "FLATLIST"}
-				debounceOnSearch={false}
 				{...props}
 			/>
 		);

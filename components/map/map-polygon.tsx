@@ -1,5 +1,6 @@
 import { ShapeSource, FillLayer, LineLayer } from "@rnmapbox/maps";
 import { usePolygonStyle } from "@/hooks/usePolygonStyle";
+import { useCallback } from "react";
 
 export interface MapRef {
 	centerOnCoordinates: (
@@ -10,20 +11,30 @@ export interface MapRef {
 
 interface MapPolygonProps {
 	shape: GeoJSON.Feature;
+	onPolygonPress?: (payload: GeoJSON.Feature) => void;
 	variant?: "subtle" | "moderate" | "vibrant";
 }
 
-const MapPolygon = ({ shape, variant = "subtle" }: MapPolygonProps) => {
+const MapPolygon = ({
+	shape,
+	onPolygonPress,
+	variant = "subtle",
+}: MapPolygonProps) => {
 	const polygonStyle = usePolygonStyle({
 		id: shape?.id || "none",
 		variant,
 	});
+
+	const handleOnPolygonPress = useCallback(() => {
+		onPolygonPress?.(shape);
+	}, [onPolygonPress, shape]);
 
 	return (
 		<ShapeSource
 			key={`feature-source-${shape?.id || "none"}`}
 			id="feature-source"
 			shape={shape}
+			onPress={handleOnPolygonPress}
 		>
 			<FillLayer id="feature-fill" style={polygonStyle} />
 			<LineLayer

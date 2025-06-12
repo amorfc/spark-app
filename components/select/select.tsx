@@ -57,7 +57,7 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 			placeholder = "Select an option...",
 			searchable = false,
 			searchPlaceholder = "Type to search...",
-			listMode = "FLATLIST",
+			listMode = "MODAL",
 			modalTitle,
 			disabled = false,
 			multiple = false,

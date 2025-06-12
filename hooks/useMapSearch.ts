@@ -1,4 +1,4 @@
-import { POICategoryGroupType } from "@/services/poi-service";
+import { POICategoryDefinition } from "@/services/poi-service";
 import { useAppDispatch, useAppSelector } from "@/store/index";
 import {
 	resetMapState,
@@ -32,7 +32,7 @@ export const useMapSearch = () => {
 		dispatch(setDistrict(district));
 	};
 
-	const updateCategoryGroups = (groups: POICategoryGroupType[]) => {
+	const updateCategoryGroups = (groups: POICategoryDefinition[]) => {
 		dispatch(setCategoryGroups(groups));
 	};
 

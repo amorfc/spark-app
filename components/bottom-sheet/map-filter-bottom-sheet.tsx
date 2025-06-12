@@ -12,7 +12,7 @@ import {
 	POICategorySelect,
 	POICategorySelectRef,
 } from "@/components/select/poi-category-select";
-import { POICategoryGroupType } from "@/services/poi-service";
+import { POICategoryDefinition } from "@/services/poi-service";
 import { useMapSearch } from "@/hooks/useMapSearch";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { BottomSheetProps } from "@/components/bottom-sheet/bottom-sheet";
@@ -23,8 +23,8 @@ export interface MapFilterBottomSheetRef extends BottomSheetRef {
 }
 
 interface MapFilterBottomSheetProps extends Omit<BottomSheetProps, "children"> {
-	selectedPOICategories: POICategoryGroupType[];
-	onPOICategoriesChange: (categories: POICategoryGroupType[]) => void;
+	selectedPOICategories: POICategoryDefinition[];
+	onPOICategoriesChange: (categories: POICategoryDefinition[]) => void;
 }
 
 export const MapFilterBottomSheet = forwardRef<
@@ -41,11 +41,6 @@ export const MapFilterBottomSheet = forwardRef<
 		// Refs for child components
 		const poiCategoryGroupSelectRef = useRef<POICategorySelectRef>(null);
 		const bottomSheetRef = useRef<BottomSheetRef>(null);
-
-		// Dynamic snap points based on search type
-		const snapPoints = useMemo(() => {
-			return ["35%", "80%"];
-		}, []);
 
 		const clearFilters = useCallback(() => {
 			onPOICategoriesChange([]);
@@ -73,12 +68,12 @@ export const MapFilterBottomSheet = forwardRef<
 		return (
 			<BottomSheet
 				ref={bottomSheetRef}
-				snapPoints={snapPoints}
-				initialSnapIndex={0}
+				index={0}
 				containerStyle={{ zIndex: 1500 }}
+				scrollable={false}
 				{...bottomSheetProps}
 			>
-				<View className="flex-1">
+				<View className="flex-1 pb-4">
 					{/* Header */}
 					<View className="flex-row justify-between items-center pb-4 border-b border-gray-200 mb-4">
 						<View className="flex-1">
@@ -114,26 +109,9 @@ export const MapFilterBottomSheet = forwardRef<
 						</Text>
 						<DistrictSelect
 							placeholder="Select district..."
-							useModal={true}
 							searchable={true}
 						/>
 					</View>
-
-					{/* Conditional Content Based on Search Type */}
-					{/* {searchType === SearchType.NEIGHBORHOOD ||
-					searchType === SearchType.DISTRICT ? (
-						<View className="mb-4">
-							<Text className="text-sm font-semibold text-gray-700 mb-2">
-								Search Neighborhoods
-							</Text>
-							<FeatureSelect
-								ref={featureSelectRef}
-								onSelect={closeBottomSheet}
-								placeholder="Search neighborhoods in Istanbul..."
-								useModal={true}
-							/>
-						</View>
-					) : null} */}
 
 					{district && (
 						<POICategorySelect
@@ -142,17 +120,6 @@ export const MapFilterBottomSheet = forwardRef<
 							onCategoriesChange={onPOICategoriesChange}
 						/>
 					)}
-
-					{/* Info Section */}
-					<View className="mt-auto pt-4 border-t border-gray-200">
-						<View className="flex-row items-start gap-3">
-							<MaterialIcons name="info" size={16} color={iconColor} />
-							<Text className="text-xs text-gray-500 flex-1">
-								Select POI categories to display on the map. POIs will appear
-								when you zoom in (level 12+).
-							</Text>
-						</View>
-					</View>
 				</View>
 			</BottomSheet>
 		);
