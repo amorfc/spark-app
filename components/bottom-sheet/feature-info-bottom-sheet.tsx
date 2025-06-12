@@ -11,6 +11,9 @@ import { BottomSheet, BottomSheetProps, BottomSheetRef } from "./bottom-sheet";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFeatureMetadata } from "@/hooks/useFeatureMetadata";
+import { useFeatureReviewsInfinite } from "@/hooks/useReviews";
+import { UpsertReviewBottomSheet } from "@/components/bottom-sheet/upsert-review-bottom-sheet";
+import { router } from "expo-router";
 
 type FeatureInfoBottomSheetProps = Omit<BottomSheetProps, "children"> & {
 	feature: GeoJSON.Feature;
@@ -21,10 +24,14 @@ export const FeatureInfoBottomSheet = forwardRef<
 	FeatureInfoBottomSheetProps
 >(({ feature, ...bottomSheetProps }, ref) => {
 	const { colorScheme } = useColorScheme();
-
+	const upsertReviewBottomSheetRef = useRef<BottomSheetRef>(null);
 	const isDark = colorScheme === "dark";
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const { icon, label } = useFeatureMetadata(feature);
+	const { data: reviews } = useFeatureReviewsInfinite(
+		feature.properties?.ref_id,
+	);
+	console.log({ reviews });
 
 	// Expose methods to parent via ref
 	useImperativeHandle(
@@ -129,6 +136,12 @@ export const FeatureInfoBottomSheet = forwardRef<
 								</View>
 								<TouchableOpacity
 									className="px-1"
+									onPress={() => router.push(`/review-upsert-screen`)}
+								>
+									<MaterialIcons name="edit" size={24} color={iconColor} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									className="px-1"
 									onPress={() => bottomSheetRef.current?.close()}
 								>
 									<MaterialIcons name="close" size={24} color={iconColor} />
@@ -143,6 +156,13 @@ export const FeatureInfoBottomSheet = forwardRef<
 						</View>
 					</View>
 				</View>
+			)}
+			{feature?.properties?.ref_id && (
+				<UpsertReviewBottomSheet
+					ref={upsertReviewBottomSheetRef}
+					featureRefId={feature.properties.ref_id}
+					// onClose={() => bottomSheetRef.current?.close()}
+				/>
 			)}
 		</BottomSheet>
 	);
