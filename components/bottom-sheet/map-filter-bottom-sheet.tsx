@@ -5,6 +5,8 @@ import React, {
 	useRef,
 	useImperativeHandle,
 } from "react";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheet, BottomSheetRef } from "@/components/bottom-sheet";
@@ -37,15 +39,21 @@ export const MapFilterBottomSheet = forwardRef<
 	) => {
 		const { colorScheme } = useColorScheme();
 		const isDark = colorScheme === "dark";
-		const { district } = useMapSearch();
+		const { district, clearSelectedFeature, updateDistrict } = useMapSearch();
 		// Refs for child components
 		const poiCategoryGroupSelectRef = useRef<POICategorySelectRef>(null);
 		const bottomSheetRef = useRef<BottomSheetRef>(null);
 
-		const clearFilters = useCallback(() => {
-			onPOICategoriesChange([]);
+		const clearPOICategories = useCallback(() => {
 			poiCategoryGroupSelectRef.current?.clearSelection();
+			onPOICategoriesChange([]);
 		}, [onPOICategoriesChange]);
+
+		const clearFilters = useCallback(() => {
+			clearSelectedFeature();
+			updateDistrict(null);
+			clearPOICategories();
+		}, [clearPOICategories, clearSelectedFeature, updateDistrict]);
 
 		// Expose methods to parent via ref
 		useImperativeHandle(
@@ -90,7 +98,7 @@ export const MapFilterBottomSheet = forwardRef<
 								onPress={clearFilters}
 								className="p-2 rounded-lg bg-gray-100"
 							>
-								<MaterialIcons name="clear-all" size={20} color={iconColor} />
+								<MaterialCommunityIcons name="broom" size={20} color="red" />
 							</TouchableOpacity>
 							{/* Close button */}
 							<TouchableOpacity
@@ -118,6 +126,7 @@ export const MapFilterBottomSheet = forwardRef<
 							ref={poiCategoryGroupSelectRef}
 							selectedCategories={selectedPOICategories}
 							onCategoriesChange={onPOICategoriesChange}
+							onClear={clearPOICategories}
 						/>
 					)}
 				</View>

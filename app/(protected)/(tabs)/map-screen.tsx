@@ -1,18 +1,19 @@
 import { useCallback, useMemo, useRef } from "react";
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import Map, { MapRef } from "@/components/map/map";
 import {
 	MapFilterBottomSheet,
 	MapFilterBottomSheetRef,
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useMapSearch } from "@/hooks/useMapSearch";
 import { calculateBoundsFromFeature } from "@/lib/geometry";
 import { POICategoryDefinition } from "@/services/poi-service";
 import { useAmenities } from "@/hooks/useAmenities";
 import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-bottom-sheet";
 import { BottomSheetRef } from "@/components/bottom-sheet/bottom-sheet";
+
+import MapFilterButton from "@/components/map/map-filter-button";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -135,19 +136,10 @@ export default function MapScreen() {
 	return (
 		<View className="flex-1">
 			{/* Filter Button - Top Right */}
-			<Pressable
+			<MapFilterButton
+				className="absolute top-20 right-4 z-10"
 				onPress={openFilterSheet}
-				className="absolute top-20 right-4 z-10 bg-white rounded-full p-3 shadow-lg"
-				style={{
-					shadowColor: "#000",
-					shadowOffset: { width: 0, height: 2 },
-					shadowOpacity: 0.25,
-					shadowRadius: 3.84,
-					elevation: 5,
-				}}
-			>
-				<AntDesign name="filter" size={24} color="#374151" />
-			</Pressable>
+			/>
 
 			<Map
 				ref={mapRef}
