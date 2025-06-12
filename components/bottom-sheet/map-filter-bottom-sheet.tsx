@@ -79,6 +79,7 @@ export const MapFilterBottomSheet = forwardRef<
 				index={0}
 				containerStyle={{ zIndex: 1500 }}
 				scrollable={false}
+				showBackdrop={false}
 				{...bottomSheetProps}
 			>
 				<View className="flex-1 pb-4">

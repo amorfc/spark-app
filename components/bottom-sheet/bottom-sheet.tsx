@@ -10,10 +10,20 @@ import BottomSheetLib, {
 	BottomSheetView,
 	BottomSheetProps as RNBottomSheetProps,
 	BottomSheetScrollView,
+	BottomSheetBackdrop,
+	BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 
+const renderBackdrop = (props: BottomSheetBackdropProps) => (
+	<BottomSheetBackdrop
+		{...props}
+		appearsOnIndex={0}
+		disappearsOnIndex={-1}
+		pressBehavior="none" // <- prevent closing or background touches
+	/>
+);
 export interface BottomSheetRef {
 	snapToIndex: (index: number) => void;
 	close: () => void;
@@ -24,6 +34,7 @@ export interface BottomSheetRef {
 export interface BottomSheetProps extends RNBottomSheetProps {
 	children: React.ReactNode;
 	scrollable?: boolean;
+	showBackdrop?: boolean;
 	onClose?: () => void;
 	onChange?: (index: number) => void;
 	onAnimate?: () => void;
@@ -36,6 +47,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 		{
 			children,
 			scrollable = true,
+			showBackdrop = true,
 			onClose,
 			onChange,
 			onAnimate,
@@ -123,6 +135,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 				android_keyboardInputMode="adjustResize"
 				enableHandlePanningGesture={true}
 				enableContentPanningGesture={true}
+				backdropComponent={showBackdrop ? renderBackdrop : undefined}
 			>
 				<ContentContainer
 					style={styles.contentContainer}

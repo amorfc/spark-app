@@ -114,6 +114,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 			enablePanDownToClose={false}
 			style={{ zIndex: 2000 }}
 			index={0}
+			showBackdrop={false}
 			{...bottomSheetProps}
 		>
 			{feature && (
