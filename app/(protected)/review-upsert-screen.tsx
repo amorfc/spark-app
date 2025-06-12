@@ -8,7 +8,6 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { StarRating } from "@/components/reviews/star-rating";
-import { ShieldRating } from "@/components/reviews/shield-rating";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useUserReview, useDeleteReview } from "@/hooks/useReviews";
@@ -149,7 +148,7 @@ export default function ReviewUpsertScreen() {
 					<Text className="text-sm font-medium mb-3">Current Ratings</Text>
 					<View className="flex-row justify-between items-center">
 						<View className="flex-row items-center space-x-2">
-							<ShieldRating
+							<StarRating
 								rating={Math.round(
 									(userReview.safety_rating + userReview.quality_rating) / 2,
 								)}
