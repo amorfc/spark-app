@@ -14,6 +14,8 @@ import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-b
 import { BottomSheetRef } from "@/components/bottom-sheet/bottom-sheet";
 
 import MapFilterButton from "@/components/map/map-filter-button";
+import UserLocationButton from "@/components/map/user-location-button";
+import { useUserLocation } from "@/hooks/useUserLocation";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -34,6 +36,15 @@ export default function MapScreen() {
 		clearSelectedFeature,
 		updateSelectedFeature,
 	} = useMapSearch();
+
+	// User location hook
+	const {
+		location: userLocation,
+		isLoading: isLocationLoading,
+		error: locationError,
+		hasPermission,
+		getCurrentLocation,
+	} = useUserLocation();
 
 	const mapRef = useRef<MapRef>(null);
 
@@ -99,6 +110,37 @@ export default function MapScreen() {
 		[updateCategoryGroups],
 	);
 
+	// Handle user location button press
+	const handleUserLocationPress = useCallback(async () => {
+		if (!hasPermission) {
+			// The hook will handle permission request
+			await getCurrentLocation();
+			return;
+		}
+
+		if (userLocation) {
+			let loc = userLocation;
+			if (process.env.NODE_ENV === "development") {
+				loc = {
+					latitude: 40.99,
+					longitude: 29.028,
+					timestamp: Date.now(),
+				};
+			}
+			// Center map on existing location
+			mapRef.current?.centerOnCoordinates([loc.longitude, loc.latitude], 14);
+		} else {
+			// Get current location and center on it
+			const location = await getCurrentLocation();
+			if (location) {
+				mapRef.current?.centerOnCoordinates(
+					[location.longitude, location.latitude],
+					16,
+				);
+			}
+		}
+	}, [hasPermission, userLocation, getCurrentLocation]);
+
 	// Show loading indicator while Mapbox is initializing
 	if (isMapboxLoading || !mapReady) {
 		return (
@@ -136,10 +178,16 @@ export default function MapScreen() {
 	return (
 		<View className="flex-1">
 			{/* Filter Button - Top Right */}
-			<MapFilterButton
-				className="absolute top-20 right-4 z-10"
-				onPress={openFilterSheet}
-			/>
+			<View className="absolute top-20 right-4 z-10 flex-col gap-2">
+				<MapFilterButton onPress={openFilterSheet} />
+
+				{/* User Location Button - Top Right, below filter button */}
+				<UserLocationButton
+					onPress={handleUserLocationPress}
+					isLoading={isLocationLoading}
+					hasPermission={hasPermission}
+				/>
+			</View>
 
 			<Map
 				ref={mapRef}
@@ -150,6 +198,7 @@ export default function MapScreen() {
 				onMapLoad={handleMapLoad}
 				onPointPress={handlePointPress}
 				currentBounds={currentCameraBounds}
+				showUserLocation={true}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
