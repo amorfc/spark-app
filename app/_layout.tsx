@@ -3,15 +3,16 @@ import "../global.css";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { Provider as ReduxProvider } from "react-redux";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { ErrorFallback } from "@/components/app-error-fallback";
 
 import { AuthProvider } from "@/context/supabase-provider";
-import { SearchProvider } from "@/context/search-provider";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { setupLogBox } from "@/utils/ignoreLogs";
 import { queryClient } from "@/lib/query-client";
+import { store } from "@/store";
 
 setupLogBox();
 
@@ -20,9 +21,9 @@ export default function AppLayout() {
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
-			<QueryClientProvider client={queryClient}>
-				<AuthProvider>
-					<SearchProvider>
+			<ReduxProvider store={store}>
+				<QueryClientProvider client={queryClient}>
+					<AuthProvider>
 						<ErrorBoundary
 							fallback={({ error }) => <ErrorFallback error={error} />}
 						>
@@ -71,9 +72,9 @@ export default function AppLayout() {
 								/>
 							</Stack>
 						</ErrorBoundary>
-					</SearchProvider>
-				</AuthProvider>
-			</QueryClientProvider>
+					</AuthProvider>
+				</QueryClientProvider>
+			</ReduxProvider>
 		</GestureHandlerRootView>
 	);
 }

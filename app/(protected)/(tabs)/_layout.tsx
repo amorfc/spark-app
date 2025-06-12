@@ -4,9 +4,11 @@ import { Tabs } from "expo-router";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useProtectedAppInit } from "@/hooks/useProtectedAppInit";
 
 export default function TabsLayout() {
 	const { colorScheme } = useColorScheme();
+	useProtectedAppInit();
 
 	return (
 		<Tabs

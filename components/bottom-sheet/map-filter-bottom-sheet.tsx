@@ -9,33 +9,22 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheet, BottomSheetRef } from "@/components/bottom-sheet";
 import {
-	FilterSearchTypeSelect,
-	FilterSearchTypeSelectRef,
-	SearchType,
-} from "@/components/select/filter-search-type-select";
-import {
-	FeatureSelect,
-	FeatureSelectRef,
-} from "@/components/select/feature-select";
-import {
 	POICategorySelect,
 	POICategorySelectRef,
 } from "@/components/select/poi-category-select";
-import { POICategory } from "@/services/poi-service";
+import { POICategoryGroupType } from "@/services/poi-service";
+import { useMapSearch } from "@/hooks/useMapSearch";
 import { useColorScheme } from "@/lib/useColorScheme";
-import { colors } from "@/constants/colors";
 import { BottomSheetProps } from "@/components/bottom-sheet/bottom-sheet";
-
+import { colors } from "@/constants/colors";
+import { DistrictSelect } from "@/components/select/district-select";
 export interface MapFilterBottomSheetRef extends BottomSheetRef {
 	clearFilters: () => void;
 }
 
 interface MapFilterBottomSheetProps extends Omit<BottomSheetProps, "children"> {
-	// Filter state
-	searchType: SearchType;
-	onSearchTypeChange: (type: SearchType) => void;
-	selectedPOICategories: POICategory[];
-	onPOICategoriesChange: (categories: POICategory[]) => void;
+	selectedPOICategories: POICategoryGroupType[];
+	onPOICategoriesChange: (categories: POICategoryGroupType[]) => void;
 }
 
 export const MapFilterBottomSheet = forwardRef<
@@ -43,22 +32,14 @@ export const MapFilterBottomSheet = forwardRef<
 	MapFilterBottomSheetProps
 >(
 	(
-		{
-			searchType,
-			onSearchTypeChange,
-			selectedPOICategories,
-			onPOICategoriesChange,
-			...bottomSheetProps
-		},
+		{ selectedPOICategories, onPOICategoriesChange, ...bottomSheetProps },
 		ref,
 	) => {
 		const { colorScheme } = useColorScheme();
 		const isDark = colorScheme === "dark";
-
+		const { district } = useMapSearch();
 		// Refs for child components
-		const filterTypeSelectRef = useRef<FilterSearchTypeSelectRef>(null);
-		const featureSelectRef = useRef<FeatureSelectRef>(null);
-		const poiCategorySelectRef = useRef<POICategorySelectRef>(null);
+		const poiCategoryGroupSelectRef = useRef<POICategorySelectRef>(null);
 		const bottomSheetRef = useRef<BottomSheetRef>(null);
 
 		// Dynamic snap points based on search type
@@ -68,8 +49,7 @@ export const MapFilterBottomSheet = forwardRef<
 
 		const clearFilters = useCallback(() => {
 			onPOICategoriesChange([]);
-			poiCategorySelectRef.current?.clearSelection();
-			featureSelectRef.current?.closeDropdown();
+			poiCategoryGroupSelectRef.current?.clearSelection();
 		}, [onPOICategoriesChange]);
 
 		// Expose methods to parent via ref
@@ -130,19 +110,17 @@ export const MapFilterBottomSheet = forwardRef<
 					{/* Search Type Selection */}
 					<View className="mb-4">
 						<Text className="text-sm font-semibold text-gray-700 mb-2">
-							Search Type
+							Search district
 						</Text>
-						<FilterSearchTypeSelect
-							ref={filterTypeSelectRef}
-							value={searchType}
-							onValueChange={onSearchTypeChange}
-							placeholder="Select search type..."
+						<DistrictSelect
+							placeholder="Select district..."
 							useModal={true}
+							searchable={true}
 						/>
 					</View>
 
 					{/* Conditional Content Based on Search Type */}
-					{searchType === SearchType.NEIGHBORHOOD ||
+					{/* {searchType === SearchType.NEIGHBORHOOD ||
 					searchType === SearchType.DISTRICT ? (
 						<View className="mb-4">
 							<Text className="text-sm font-semibold text-gray-700 mb-2">
@@ -155,24 +133,14 @@ export const MapFilterBottomSheet = forwardRef<
 								useModal={true}
 							/>
 						</View>
-					) : null}
+					) : null} */}
 
-					{searchType === SearchType.PUBLIC_TRANSPORT && (
-						<View className="mb-4">
-							<Text className="text-sm font-semibold text-gray-700 mb-2">
-								POI Categories
-							</Text>
-							<Text className="text-xs text-gray-500 mb-3">
-								Select up to 5 categories to show on the map
-							</Text>
-							<POICategorySelect
-								ref={poiCategorySelectRef}
-								selectedCategories={selectedPOICategories}
-								onCategoriesChange={onPOICategoriesChange}
-								maxSelections={5}
-								placeholder="Select POI categories"
-							/>
-						</View>
+					{district && (
+						<POICategorySelect
+							ref={poiCategoryGroupSelectRef}
+							selectedCategories={selectedPOICategories}
+							onCategoriesChange={onPOICategoriesChange}
+						/>
 					)}
 
 					{/* Info Section */}
@@ -180,9 +148,8 @@ export const MapFilterBottomSheet = forwardRef<
 						<View className="flex-row items-start gap-3">
 							<MaterialIcons name="info" size={16} color={iconColor} />
 							<Text className="text-xs text-gray-500 flex-1">
-								{searchType === SearchType.NEIGHBORHOOD
-									? "Search and select neighborhoods to explore. The map will center on your selection."
-									: "Select POI categories to display on the map. POIs will appear when you zoom in (level 12+)."}
+								Select POI categories to display on the map. POIs will appear
+								when you zoom in (level 12+).
 							</Text>
 						</View>
 					</View>

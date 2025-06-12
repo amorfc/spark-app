@@ -12,7 +12,7 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
 
-interface SelectProps<T> {
+export interface SelectProps<T> {
 	open?: boolean;
 	value: string | number | null;
 	originalItems: T[];
@@ -37,6 +37,7 @@ interface SelectProps<T> {
 	minSearchLength?: number;
 	maxResults?: number;
 	debounceMs?: number;
+	debounceOnSearch?: boolean;
 	initialItemsCount?: number;
 	clearable?: boolean;
 }
@@ -70,6 +71,7 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 			minSearchLength = 3,
 			maxResults = 10,
 			debounceMs = 300,
+			debounceOnSearch = true,
 			initialItemsCount = 50,
 			clearable = true,
 		},
@@ -194,9 +196,15 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 				setIsLoading(true);
 			}
 
-			debounceRef.current = setTimeout(() => {
+			if (debounceOnSearch) {
+				// Use debounce
+				debounceRef.current = setTimeout(() => {
+					performSearch(text);
+				}, debounceMs);
+			} else {
+				// Execute immediately without debounce
 				performSearch(text);
-			}, debounceMs);
+			}
 		};
 
 		const getDisplayValue = () => {

@@ -4,6 +4,11 @@ import osmtogeojson from "osmtogeojson";
 
 export type OverpassCategory = "food_drink" | "public_transports";
 
+export enum OverPassCategory {
+	FOOD_AND_DRINK = "food_drink",
+	TRANSPORTATION = "public_transports",
+}
+
 export interface BaseLocationParams {
 	country: string; // e.g., "Türkiye"
 	city: string; // e.g., "İstanbul"
@@ -32,11 +37,13 @@ export class OverpassApiService {
 		return this.executeQuery(query);
 	}
 
-	static async fetchDistricts(
+	public static async fetchDistricts(
 		params: DistrictQueryParams,
 	): Promise<GeoJSON.FeatureCollection> {
 		const query = this.buildDistrictQuery(params);
-		return this.executeQuery(query);
+		console.log({ query });
+
+		return await this.executeQuery(query);
 	}
 
 	static async fetchNeighborhoods(
@@ -94,14 +101,18 @@ export class OverpassApiService {
 		return `${this.header}\n${areaDef}\n${body}`;
 	}
 
-	private static buildDistrictQuery({ city }: DistrictQueryParams): string {
+	private static buildDistrictQuery({
+		city,
+		country,
+	}: DistrictQueryParams): string {
 		return `
       ${this.header}
-      area["name"="${city}"]["admin_level"="6"]->.cityArea;
-      relation["admin_level"="8"]["boundary"="administrative"](area.cityArea);
+	  area["name"="${country}"]["admin_level"="2"]->.country;
+      area["name"="${city}"]["admin_level"="4"](area.country)->.city;
+      relation["admin_level"="6"]["boundary"="administrative"](area.city);
       out body;
       >;
-      out skel qt;
+      out skel;
     `;
 	}
 

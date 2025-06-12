@@ -1,26 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import Map, { MapRef } from "@/components/map/map";
-import { SelectedFeatureId, useSearch } from "@/context/search-provider";
-import {
-	FeatureInfoBottomSheet,
-	BottomSheetRef,
-} from "@/components/bottom-sheet";
 import {
 	MapFilterBottomSheet,
 	MapFilterBottomSheetRef,
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
-import { SearchType } from "@/components/select/filter-search-type-select";
-import { POICategory } from "@/services/poi-service";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 
 import { MaterialIcons } from "@expo/vector-icons";
-import { calculateZoomLevel, getCameraConfig } from "@/lib/mapbox";
-import { defaultTo } from "lodash";
-import {
-	SelectedFeature,
-	useSelectedFeature,
-} from "@/hooks/useSelectedFeature";
+import { useMapSearch } from "@/hooks/useMapSearch";
+import { calculateBoundsFromFeature } from "@/lib/geometry";
+import { POICategoryGroupType } from "@/services/poi-service";
+import { useAmenities } from "@/hooks/useAmenities";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -30,72 +21,26 @@ export default function MapScreen() {
 		error: mapboxError,
 	} = useMapboxInit();
 
+	const {
+		mapReady,
+		currentBounds,
+		district,
+		categoryGroups,
+		updateCategoryGroups,
+		updateMapLoading,
+	} = useMapSearch();
+
 	const mapRef = useRef<MapRef>(null);
 
-	const featureSheetRef = useRef<BottomSheetRef>(null);
+	// const featureSheetRef = useRef<BottomSheetRef>(null);
 	const filterSheetRef = useRef<MapFilterBottomSheetRef>(null);
-	const [selectedPOICategories, setSelectedPOICategories] = useState<
-		POICategory[]
-	>([POICategory.RESTAURANT, POICategory.BUS_STATION]);
+	const { data: pois, isLoading: isAmenitiesLoading } = useAmenities();
 
-	// Use the search context for global state management
-	const {
-		selectedCity,
-		searchType,
-		setSearchType,
-		setSelectedFeatureId,
-		clearSelection,
-	} = useSearch();
-
-	const { feature } = useSelectedFeature();
-
-	// Get the original camera configuration for Istanbul
-	const originalCameraConfig = getCameraConfig(selectedCity);
-
-	const centerTo = useCallback(
-		(feature: SelectedFeature) => {
-			if (mapRef.current?.centerOnCoordinates) {
-				const target = defaultTo(
-					feature?.center_coordinate?.coordinates,
-					originalCameraConfig.centerCoordinate,
-				);
-
-				mapRef.current.centerOnCoordinates(
-					target,
-					calculateZoomLevel(feature, searchType),
-				);
-			}
-		},
-		[originalCameraConfig, searchType],
-	);
-
-	const handleFeaturePress = useCallback(
-		(id: SelectedFeatureId) => {
-			id && setSelectedFeatureId(id);
-		},
-		[setSelectedFeatureId],
-	);
-
-	// Handle search type change
-	const handleSearchTypeChange = useCallback(
-		(type: SearchType) => {
-			setSearchType(type);
-			// Clear feature selection when switching modes
-			featureSheetRef.current?.close();
-		},
-		[setSearchType],
-	);
-
-	// Handle POI categories change
-	const handlePOICategoriesChange = useCallback((categories: POICategory[]) => {
-		setSelectedPOICategories(categories);
-	}, []);
-
-	const handleCloseFeatureSheet = useCallback(() => {
-		setTimeout(() => {
-			clearSelection();
-		}, 100);
-	}, [clearSelection]);
+	// const handleCloseFeatureSheet = useCallback(() => {
+	// 	setTimeout(() => {
+	// 		clearSelection();
+	// 	}, 100);
+	// }, [clearSelection]);
 
 	const handleCloseFilterSheet = useCallback(() => {
 		// filterSheetRef.current?.close();
@@ -103,23 +48,38 @@ export default function MapScreen() {
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
-		if (feature) {
-			featureSheetRef.current?.collapse();
-		}
-	}, [feature]);
+		// featureSheetRef.current?.collapse();
+	}, []);
 
 	// Center map when feature changes
-	useEffect(() => {
-		if (feature) {
-			centerTo(feature);
-			featureSheetRef.current?.snapToIndex(0);
-		} else {
-			featureSheetRef.current?.close();
-		}
-	}, [feature, centerTo]);
+	// useEffect(() => {
+	// 	if (feature) {
+	// 		centerTo(feature);
+	// 		featureSheetRef.current?.snapToIndex(0);
+	// 	} else {
+	// 		featureSheetRef.current?.close();
+	// 	}
+	// }, [feature, centerTo]);
+
+	const handleCategoryGroupsChange = useCallback(
+		(categories: POICategoryGroupType[]) => {
+			updateCategoryGroups(categories);
+		},
+		[updateCategoryGroups],
+	);
+
+	const currentCameraBounds = useMemo(() => {
+		return (
+			calculateBoundsFromFeature(district as GeoJSON.Feature) ?? currentBounds
+		);
+	}, [currentBounds, district]);
+
+	const handleMapLoad = useCallback(() => {
+		updateMapLoading(false);
+	}, [updateMapLoading]);
 
 	// Show loading indicator while Mapbox is initializing
-	if (isMapboxLoading) {
+	if (isMapboxLoading || !mapReady) {
 		return (
 			<View className="flex-1 justify-center items-center bg-gray-50">
 				<ActivityIndicator size="large" color="#3B82F6" />
@@ -171,24 +131,27 @@ export default function MapScreen() {
 
 			<Map
 				ref={mapRef}
-				onFeaturePress={handleFeaturePress}
 				variant="moderate"
+				onFeaturePress={() => {}}
+				isLoading={isMapboxLoading || isAmenitiesLoading}
+				shape={district}
+				pois={pois}
+				onMapLoad={handleMapLoad}
+				currentBounds={currentCameraBounds}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
-			<FeatureInfoBottomSheet
+			{/* <FeatureInfoBottomSheet
 				ref={featureSheetRef}
 				onClose={handleCloseFeatureSheet}
-			/>
+			/> */}
 
 			{/* Map Filter Bottom Sheet */}
 			<MapFilterBottomSheet
 				ref={filterSheetRef}
 				onClose={handleCloseFilterSheet}
-				searchType={searchType}
-				onSearchTypeChange={handleSearchTypeChange}
-				selectedPOICategories={selectedPOICategories}
-				onPOICategoriesChange={handlePOICategoriesChange}
+				selectedPOICategories={categoryGroups}
+				onPOICategoriesChange={handleCategoryGroupsChange}
 			/>
 		</View>
 	);

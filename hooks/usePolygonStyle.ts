@@ -1,11 +1,10 @@
 import { useMemo } from "react";
-import { SelectedFeature } from "@/hooks/useSelectedFeature";
 
 /**
  * Props for the usePolygonStyle hook
  */
 export interface UsePolygonStyleProps {
-	selectedFeature: SelectedFeature | null;
+	id: string | number;
 	/**
 	 * Visual variant for styling intensity
 	 * - subtle: Low visual impact (light colors, low opacity)
@@ -31,28 +30,28 @@ export interface ColorVariant {
  */
 export type StyleVariant = "subtle" | "moderate" | "vibrant";
 
-// Define color variants from design perspective (static data)
+// Define color variants from design perspective (static data) - Yellow to Brown palette
 const colorVariants: Record<StyleVariant, ColorVariant> = {
 	subtle: {
-		selected: "#E6F3FF", // Very light blue
-		unselected: "#F8F9FA", // Almost white
-		selectedOpacity: 0.5,
+		selected: "#FEF3C7", // Very light yellow (yellow-50)
+		unselected: "#FFFBEB", // Cream white (amber-50)
+		selectedOpacity: 0.25,
 		unselectedOpacity: 0.1,
-		outlineColor: "#B0C4DE", // Light steel blue
+		outlineColor: "#D97706", // Amber-600
 	},
 	moderate: {
-		selected: "#FFB6C1", // Light pink
-		unselected: "#F0F8FF", // Alice blue
-		selectedOpacity: 0.7,
+		selected: "#FCD34D", // Medium yellow (amber-300)
+		unselected: "#FEF3C7", // Light yellow (yellow-100)
+		selectedOpacity: 0.5,
 		unselectedOpacity: 0.2,
-		outlineColor: "#FF1493", // Deep pink
+		outlineColor: "#92400E", // Amber-800
 	},
 	vibrant: {
-		selected: "#FF6B6B", // Coral red
-		unselected: "#FFF5F5", // Very light pink
-		selectedOpacity: 0.8,
+		selected: "#F59E0B", // Bright amber (amber-500)
+		unselected: "#FDE68A", // Light amber (amber-200)
+		selectedOpacity: 0.7,
 		unselectedOpacity: 0.3,
-		outlineColor: "#DC143C", // Crimson
+		outlineColor: "#78350F", // Amber-900 (dark brown)
 	},
 };
 
@@ -62,17 +61,13 @@ const colorVariants: Record<StyleVariant, ColorVariant> = {
  * @returns MapBox-compatible style object for polygon layers
  */
 export const usePolygonStyle = ({
-	selectedFeature,
+	id,
 	variant = "moderate",
 }: UsePolygonStyleProps) => {
 	return useMemo(() => {
 		const colors = colorVariants[variant];
-		const equityKey = "ref_id";
-		const equals = [
-			"==",
-			["get", equityKey],
-			selectedFeature ? selectedFeature[equityKey] : -1,
-		];
+		const equityKey = "id"; // THIS IS THE KEY THAT MAPBOX USES TO MATCH THE POLYGON TO THE FEATURE
+		const equals = ["==", ["get", equityKey], id ? id : "none"];
 
 		return {
 			fillColor: ["case", equals, colors.selected, colors.unselected],
@@ -84,5 +79,5 @@ export const usePolygonStyle = ({
 			],
 			fillOutlineColor: colors.outlineColor,
 		};
-	}, [selectedFeature, variant]);
+	}, [id, variant]);
 };
