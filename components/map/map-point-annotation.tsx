@@ -16,7 +16,11 @@ export interface MapPointAnnotationProps {
 	onSelected: (payload: any) => void;
 }
 
-const MapPointAnnotation = ({ poi, id, ...props }: MapPointAnnotationProps) => {
+const MapPointAnnotation = ({
+	poi,
+	id,
+	onSelected,
+}: MapPointAnnotationProps) => {
 	const pointGeometry = poi.geometry as GeoJSON.Point;
 	const { icon } = useFeatureMetadata(poi);
 
@@ -24,10 +28,10 @@ const MapPointAnnotation = ({ poi, id, ...props }: MapPointAnnotationProps) => {
 		<PointAnnotation
 			id={id}
 			coordinate={pointGeometry.coordinates as [number, number]}
-			{...props}
+			onSelected={onSelected}
 		>
 			<View style={[styles.pinContainer]}>
-				<Text style={styles.iconText}>{icon}</Text>
+				<Text style={styles.pinText}>{icon}</Text>
 			</View>
 			<Callout title={poi.properties?.name || "Transport Stop"} />
 		</PointAnnotation>
@@ -36,17 +40,15 @@ const MapPointAnnotation = ({ poi, id, ...props }: MapPointAnnotationProps) => {
 
 const styles = StyleSheet.create({
 	pinContainer: {
-		minWidth: 60,
-		minHeight: 60,
+		width: 60,
+		height: 60,
 		borderRadius: 10,
-		backgroundColor: "rgba(255, 255, 255, 0.8)",
+		backgroundColor: "transparent",
 		justifyContent: "center",
 		alignItems: "center",
-		padding: 4,
 	},
-	iconText: {
+	pinText: {
 		fontSize: 24,
-		textAlign: "center",
 	},
 });
 
