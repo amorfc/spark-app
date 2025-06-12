@@ -7,14 +7,12 @@ import {
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useMapSearch } from "@/hooks/useMapSearch";
 import { calculateBoundsFromFeature } from "@/lib/geometry";
 import { POICategoryDefinition } from "@/services/poi-service";
 import { useAmenities } from "@/hooks/useAmenities";
 import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-bottom-sheet";
 import { BottomSheetRef } from "@/components/bottom-sheet/bottom-sheet";
-import { useDistricts } from "@/hooks/useDistricts";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
