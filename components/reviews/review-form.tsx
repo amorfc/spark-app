@@ -141,7 +141,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 								<Text className="font-semibold">Comment (Optional)</Text>
 								<Textarea
 									placeholder="Share your experience..."
-									{...field}
+									value={field.value || ""}
+									onChangeText={field.onChange}
+									onBlur={field.onBlur}
 									className="min-h-20"
 								/>
 								<FormMessage />

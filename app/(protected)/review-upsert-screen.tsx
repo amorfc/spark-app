@@ -10,14 +10,13 @@ import { ReviewForm } from "@/components/reviews/review-form";
 import { StarRating } from "@/components/reviews/star-rating";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
-import { useUserReview, useDeleteReview } from "@/hooks/useReviews";
+import { useUserReview } from "@/hooks/useReviews";
 import { useMapSearch } from "@/hooks/useMapSearch";
 
 export default function ReviewUpsertScreen() {
 	const router = useRouter();
 	const { selectedFeature } = useMapSearch();
 	const featureRefId = selectedFeature?.id as string;
-	console.log({ selectedFeature });
 
 	const { colorScheme } = useColorScheme();
 	const isDark = colorScheme === "dark";
@@ -26,8 +25,6 @@ export default function ReviewUpsertScreen() {
 	// Fetch user's existing review and stats
 	const { data: userReview, isLoading: userReviewLoading } =
 		useUserReview(featureRefId);
-
-	const deleteReviewMutation = useDeleteReview();
 
 	const iconColor = isDark
 		? colors.dark.mutedForeground
@@ -59,33 +56,6 @@ export default function ReviewUpsertScreen() {
 	const handleFormCancel = () => {
 		if (isSubmitting) return;
 		handleClose();
-	};
-
-	const handleDeleteReview = () => {
-		Alert.alert(
-			"Delete Review",
-			"Are you sure you want to delete your review? This action cannot be undone.",
-			[
-				{ text: "Cancel", style: "cancel" },
-				{
-					text: "Delete",
-					style: "destructive",
-					onPress: async () => {
-						try {
-							await deleteReviewMutation.mutateAsync({ featureRefId });
-							Alert.alert("Success", "Your review has been deleted.", [
-								{ text: "OK", onPress: () => router.back() },
-							]);
-						} catch (error) {
-							Alert.alert(
-								"Error",
-								"Failed to delete review. Please try again.",
-							);
-						}
-					},
-				},
-			],
-		);
 	};
 
 	const isEditing = !!userReview;
