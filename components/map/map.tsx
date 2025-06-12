@@ -8,11 +8,11 @@ import {
 } from "react";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
 import Mapbox, { MapView, Camera } from "@rnmapbox/maps";
-import { getCameraBounds, CameraBounds } from "@/lib/mapbox";
+import { getCameraBounds } from "@/lib/mapbox";
 
 import { BoundingBox } from "@/types/osm";
 import MapPolygon from "@/components/map/map-polygon";
-import MapPointAnnotation from "./map-point-annotation";
+import { MapPois } from "@/components/map/map-pois";
 
 export interface MapRef {
 	centerOnCoordinates: (
@@ -29,7 +29,7 @@ interface MapProps {
 	onFeaturePress: (id: string) => void;
 	onMapLoad?: () => void;
 	variant?: "subtle" | "moderate" | "vibrant";
-	onCameraChanged?: (bounds: CameraBounds, zoomLevel: number) => void;
+	onPointPress: (payload: GeoJSON.Feature) => void;
 }
 
 export enum MapMode {
@@ -45,6 +45,7 @@ const Map = forwardRef<MapRef, MapProps>(
 			shape,
 			pois,
 			onFeaturePress,
+			onPointPress,
 			onMapLoad,
 			variant = "subtle",
 		},
@@ -80,7 +81,7 @@ const Map = forwardRef<MapRef, MapProps>(
 						cameraRef.current.setCamera({
 							centerCoordinate: coordinates,
 							zoomLevel: clampedZoomLevel,
-							animationDuration: 1000,
+							animationDuration: 400,
 						});
 					} catch (error) {
 						console.error("Error setting camera:", error);
@@ -106,7 +107,7 @@ const Map = forwardRef<MapRef, MapProps>(
 						cameraBounds.ne,
 						cameraBounds.sw,
 						10,
-						500,
+						400,
 					);
 				});
 			}
@@ -138,27 +139,11 @@ const Map = forwardRef<MapRef, MapProps>(
 						bounds={cameraBounds}
 					/>
 
+					{/* Filling Layer Shape if presented */}
 					{shape && <MapPolygon shape={shape} />}
 
 					{/* POI Pins for transport mode */}
-
-					{pois?.features
-						?.filter(Boolean)
-						?.filter((poi: GeoJSON.Feature) => {
-							// Only show Point geometries with coordinates
-							return poi.geometry?.type === "Point" && poi.geometry.coordinates;
-						})
-						?.map((poi: GeoJSON.Feature, index: number) => {
-							return (
-								<MapPointAnnotation
-									key={`transport-${poi.properties?.ref_id}-${index}`}
-									poi={poi}
-									index={index}
-									onFeaturePress={onFeaturePress}
-									isLast={index === pois.features.length - 1}
-								/>
-							);
-						})}
+					{pois && <MapPois pois={pois.features} onPointPress={onPointPress} />}
 				</MapView>
 			</View>
 		);

@@ -11,6 +11,7 @@ export interface MapSearchState {
 	isLoading: boolean;
 	districts: GeoJSON.Feature[];
 	categoryGroups: POICategoryGroupType[];
+	selectedFeature: GeoJSON.Feature | null;
 }
 
 const defaultBounds: BoundingBox = {
@@ -29,13 +30,14 @@ const initialState: MapSearchState = {
 	isLoading: false,
 	districts: [],
 	categoryGroups: [],
+	selectedFeature: null,
 };
 
 const mapSearchSlice = createSlice({
 	name: "mapSearch",
 	initialState,
 	reducers: {
-		setSelectedFeature: (state, action: PayloadAction<string | null>) => {
+		setSelectedFeatureId: (state, action: PayloadAction<string | null>) => {
 			state.selectedFeatureId = action.payload;
 		},
 		setCountry: (state, action: PayloadAction<string>) => {
@@ -69,11 +71,18 @@ const mapSearchSlice = createSlice({
 		) => {
 			state.categoryGroups = action.payload;
 		},
+		setSelectedFeature: (
+			state,
+			action: PayloadAction<GeoJSON.Feature | null>,
+		) => {
+			state.selectedFeature = action.payload;
+		},
 	},
 });
 
 export const {
 	setSelectedFeature,
+	setSelectedFeatureId,
 	setCurrentBounds,
 	setCountry,
 	setCity,

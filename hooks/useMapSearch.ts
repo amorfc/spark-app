@@ -5,12 +5,20 @@ import {
 	setDistrict,
 	setMapLoading,
 	setCategoryGroups,
+	setSelectedFeature,
 } from "@/store/slices/mapSearchSlice";
 
 export const useMapSearch = () => {
 	const dispatch = useAppDispatch();
-	const { country, city, district, currentBounds, isLoading, categoryGroups } =
-		useAppSelector((state) => state.mapSearch);
+	const {
+		country,
+		city,
+		district,
+		currentBounds,
+		isLoading,
+		categoryGroups,
+		selectedFeature,
+	} = useAppSelector((state) => state.mapSearch);
 
 	const updateMapLoading = (loading: boolean) => {
 		dispatch(setMapLoading(loading));
@@ -28,16 +36,27 @@ export const useMapSearch = () => {
 		dispatch(setCategoryGroups(groups));
 	};
 
+	const updateSelectedFeature = (feature: GeoJSON.Feature) => {
+		dispatch(setSelectedFeature(feature));
+	};
+
+	const clearSelectedFeature = () => {
+		dispatch(setSelectedFeature(null));
+	};
+
 	return {
-		country,
-		city,
-		district,
-		currentBounds,
-		updateMapLoading,
 		resetMap,
+		city,
+		country,
+		currentBounds,
+		selectedFeature,
+		updateSelectedFeature,
+		clearSelectedFeature,
+		district,
 		updateDistrict,
 		mapReady: !isLoading,
-		updateCategoryGroups,
+		updateMapLoading,
 		categoryGroups,
+		updateCategoryGroups,
 	};
 };

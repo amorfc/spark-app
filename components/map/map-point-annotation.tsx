@@ -1,6 +1,7 @@
 import { PointAnnotation, Callout } from "@rnmapbox/maps";
 import { Text, View, StyleSheet } from "react-native";
-import { useMemo } from "react";
+
+import { useFeatureMetadata } from "@/hooks/useFeatureMetadata";
 
 export interface MapRef {
 	centerOnCoordinates: (
@@ -9,59 +10,27 @@ export interface MapRef {
 	) => void;
 }
 
-interface MapPointAnnotationProps {
+export interface MapPointAnnotationProps {
 	poi: GeoJSON.Feature;
-	isLast: boolean;
-	index: number;
-	onFeaturePress: (id: string) => void;
+	id: string;
+	onSelected: (payload: any) => void;
 }
 
-const MapPointAnnotation = ({
-	poi,
-	isLast,
-	index,
-	onFeaturePress,
-}: MapPointAnnotationProps) => {
+const MapPointAnnotation = ({ poi, id, ...props }: MapPointAnnotationProps) => {
 	const pointGeometry = poi.geometry as GeoJSON.Point;
-
-	const pinIcon = useMemo(() => {
-		const props = poi?.properties ?? {};
-
-		if (props.highway === "bus_stop") return "🚌";
-		if (props.railway === "tram_stop") return "🚊";
-		if (props.railway === "station") return "🚉";
-		if (props.railway === "subway_entrance") return "🚇";
-		if (props.amenity === "ferry_terminal") return "🚢";
-		if (props.amenity === "bus_station") return "🚌";
-		if (
-			props.public_transport === "platform" ||
-			props.public_transport === "stop_position"
-		)
-			return "🚏";
-
-		return "📍";
-	}, [poi]);
+	const { icon } = useFeatureMetadata(poi);
 
 	return (
-		<View
-			onLayout={() => {
-				if (isLast) {
-					console.log("Last", poi);
-				}
-			}}
+		<PointAnnotation
+			id={id}
+			coordinate={pointGeometry.coordinates as [number, number]}
+			{...props}
 		>
-			<PointAnnotation
-				key={`transport-${poi.properties?.ref_id}-${index}`}
-				id={`transport-${poi.properties?.ref_id}-${index}`}
-				coordinate={pointGeometry.coordinates as [number, number]}
-				onSelected={() => onFeaturePress(poi.properties?.ref_id || -1)}
-			>
-				<View style={[styles.pinContainer]}>
-					<Text style={styles.pinText}>{pinIcon}</Text>
-				</View>
-				<Callout title={poi.properties?.name || "Transport Stop"} />
-			</PointAnnotation>
-		</View>
+			<View style={[styles.pinContainer]}>
+				<Text style={styles.pinText}>{icon}</Text>
+			</View>
+			<Callout title={poi.properties?.name || "Transport Stop"} />
+		</PointAnnotation>
 	);
 };
 

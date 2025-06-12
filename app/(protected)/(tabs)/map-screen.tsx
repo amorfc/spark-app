@@ -12,6 +12,8 @@ import { useMapSearch } from "@/hooks/useMapSearch";
 import { calculateBoundsFromFeature } from "@/lib/geometry";
 import { POICategoryGroupType } from "@/services/poi-service";
 import { useAmenities } from "@/hooks/useAmenities";
+import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-bottom-sheet";
+import { BottomSheetRef } from "@/components/bottom-sheet/bottom-sheet";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -28,23 +30,25 @@ export default function MapScreen() {
 		categoryGroups,
 		updateCategoryGroups,
 		updateMapLoading,
+		selectedFeature,
+		clearSelectedFeature,
+		updateSelectedFeature,
 	} = useMapSearch();
 
 	const mapRef = useRef<MapRef>(null);
 
-	// const featureSheetRef = useRef<BottomSheetRef>(null);
+	const featureSheetRef = useRef<BottomSheetRef>(null);
 	const filterSheetRef = useRef<MapFilterBottomSheetRef>(null);
 	const { data: pois, isLoading: isAmenitiesLoading } = useAmenities();
 
-	// const handleCloseFeatureSheet = useCallback(() => {
-	// 	setTimeout(() => {
-	// 		clearSelection();
-	// 	}, 100);
-	// }, [clearSelection]);
+	const handleCloseFeatureSheet = useCallback(() => {
+		featureSheetRef.current?.close();
+		clearSelectedFeature();
+	}, [clearSelectedFeature]);
 
-	const handleCloseFilterSheet = useCallback(() => {
-		// filterSheetRef.current?.close();
-	}, []);
+	// const handleCloseFilterSheet = useCallback(() => {
+	// 	filterSheetRef.current?.close();
+	// }, []);
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
@@ -77,6 +81,17 @@ export default function MapScreen() {
 	const handleMapLoad = useCallback(() => {
 		updateMapLoading(false);
 	}, [updateMapLoading]);
+
+	const handlePointPress = useCallback(
+		(payload: GeoJSON.Feature) => {
+			if (payload.geometry?.type === "Point" && payload.geometry?.coordinates) {
+				const coordinates = payload.geometry?.coordinates as [number, number];
+				mapRef.current?.centerOnCoordinates(coordinates, 15);
+				updateSelectedFeature(payload);
+			}
+		},
+		[updateSelectedFeature],
+	);
 
 	// Show loading indicator while Mapbox is initializing
 	if (isMapboxLoading || !mapReady) {
@@ -137,19 +152,23 @@ export default function MapScreen() {
 				shape={district}
 				pois={pois}
 				onMapLoad={handleMapLoad}
+				onPointPress={handlePointPress}
 				currentBounds={currentCameraBounds}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
-			{/* <FeatureInfoBottomSheet
-				ref={featureSheetRef}
-				onClose={handleCloseFeatureSheet}
-			/> */}
+			{selectedFeature && (
+				<FeatureInfoBottomSheet
+					ref={featureSheetRef}
+					onClose={handleCloseFeatureSheet}
+					feature={selectedFeature}
+				/>
+			)}
 
 			{/* Map Filter Bottom Sheet */}
 			<MapFilterBottomSheet
 				ref={filterSheetRef}
-				onClose={handleCloseFilterSheet}
+				// onClose={handleCloseFilterSheet}
 				selectedPOICategories={categoryGroups}
 				onPOICategoriesChange={handleCategoryGroupsChange}
 			/>
