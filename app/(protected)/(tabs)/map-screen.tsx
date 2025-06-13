@@ -62,7 +62,7 @@ export default function MapScreen() {
 
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
-		featureSheetRef.current?.collapse();
+		featureSheetRef.current?.close();
 	}, []);
 
 	const currentCameraBounds = useMemo(() => {
