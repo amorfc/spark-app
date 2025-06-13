@@ -1,5 +1,5 @@
+-- Complete reviews system migration with all functions and fixes
 -- Enhanced migration with ADVANCED PAGINATION for RPC functions
--- supabase/migrations/003_create_reviews_table_with_advanced_pagination.sql
 
 -- Create reviews table
 CREATE TABLE public.reviews (
@@ -74,7 +74,8 @@ GRANT SELECT ON public.review_stats TO authenticated;
 -- ENHANCED RPC FUNCTIONS WITH ADVANCED PAGINATION
 -- =====================================================
 
--- 1. Get comprehensive feature review data with enhanced pagination
+-- 1. Get comprehensive feature review data with FIXED cursor pagination
+-- Fixed version of get_feature_reviews_complete function
 CREATE OR REPLACE FUNCTION get_feature_reviews_complete(
     p_feature_ref_id TEXT,
     p_limit INTEGER DEFAULT 20,
@@ -92,7 +93,9 @@ DECLARE
     filtered_count INTEGER;
     current_user_id UUID := auth.uid();
     next_cursor JSON := NULL;
-    prev_cursor JSON := NULL;
+    has_more BOOLEAN := FALSE;
+    temp_reviews JSON[];
+    temp_review JSON;
 BEGIN
     -- Get user's review (if exists)
     SELECT row_to_json(r) INTO user_review_data
@@ -111,68 +114,101 @@ BEGIN
     WHERE r.feature_ref_id = p_feature_ref_id 
     AND (current_user_id IS NULL OR r.user_id != current_user_id);
     
-    -- Get reviews with cursor or offset pagination
+    -- Get reviews with cursor or offset pagination - SIMPLIFIED APPROACH
     IF p_cursor_id IS NOT NULL AND p_cursor_created_at IS NOT NULL THEN
-        -- Cursor-based pagination (more efficient for large datasets)
+        -- Cursor-based pagination
+        WITH review_data AS (
+            SELECT 
+                r.id,
+                r.user_id,
+                r.feature_ref_id,
+                r.safety_rating,
+                r.quality_rating,
+                r.comment,
+                r.created_at,
+                r.updated_at,
+                ROUND((r.safety_rating + r.quality_rating) / 2.0, 2) as avg_rating
+            FROM public.reviews r
+            WHERE r.feature_ref_id = p_feature_ref_id 
+            AND (current_user_id IS NULL OR r.user_id != current_user_id)
+            AND (r.created_at < p_cursor_created_at OR 
+                 (r.created_at = p_cursor_created_at AND r.id < p_cursor_id))
+            ORDER BY r.created_at DESC, r.id
+            LIMIT p_limit + 1
+        )
         SELECT json_agg(
             json_build_object(
-                'id', r.id,
-                'user_id', r.user_id,
-                'feature_ref_id', r.feature_ref_id,
-                'safety_rating', r.safety_rating,
-                'quality_rating', r.quality_rating,
-                'comment', r.comment,
-                'created_at', r.created_at,
-                'updated_at', r.updated_at,
-                'avg_rating', ROUND((r.safety_rating + r.quality_rating) / 2.0, 2)
-            ) ORDER BY r.created_at DESC, r.id
+                'id', id,
+                'user_id', user_id,
+                'feature_ref_id', feature_ref_id,
+                'safety_rating', safety_rating,
+                'quality_rating', quality_rating,
+                'comment', comment,
+                'created_at', created_at,
+                'updated_at', updated_at,
+                'avg_rating', avg_rating
+            )
         ) INTO reviews_data
-        FROM public.reviews r
-        WHERE r.feature_ref_id = p_feature_ref_id 
-        AND (current_user_id IS NULL OR r.user_id != current_user_id)
-        AND (r.created_at < p_cursor_created_at OR 
-             (r.created_at = p_cursor_created_at AND r.id < p_cursor_id))
-        ORDER BY r.created_at DESC, r.id
-        LIMIT p_limit + 1; -- Get one extra to check if there's more
+        FROM review_data;
     ELSE
         -- Offset-based pagination
+        WITH review_data AS (
+            SELECT 
+                r.id,
+                r.user_id,
+                r.feature_ref_id,
+                r.safety_rating,
+                r.quality_rating,
+                r.comment,
+                r.created_at,
+                r.updated_at,
+                ROUND((r.safety_rating + r.quality_rating) / 2.0, 2) as avg_rating
+            FROM public.reviews r
+            WHERE r.feature_ref_id = p_feature_ref_id 
+            AND (current_user_id IS NULL OR r.user_id != current_user_id)
+            ORDER BY r.created_at DESC, r.id
+            LIMIT p_limit + 1 OFFSET p_offset
+        )
         SELECT json_agg(
             json_build_object(
-                'id', r.id,
-                'user_id', r.user_id,
-                'feature_ref_id', r.feature_ref_id,
-                'safety_rating', r.safety_rating,
-                'quality_rating', r.quality_rating,
-                'comment', r.comment,
-                'created_at', r.created_at,
-                'updated_at', r.updated_at,
-                'avg_rating', ROUND((r.safety_rating + r.quality_rating) / 2.0, 2)
-            ) ORDER BY r.created_at DESC, r.id
+                'id', id,
+                'user_id', user_id,
+                'feature_ref_id', feature_ref_id,
+                'safety_rating', safety_rating,
+                'quality_rating', quality_rating,
+                'comment', comment,
+                'created_at', created_at,
+                'updated_at', updated_at,
+                'avg_rating', avg_rating
+            )
         ) INTO reviews_data
-        FROM public.reviews r
-        WHERE r.feature_ref_id = p_feature_ref_id 
-        AND (current_user_id IS NULL OR r.user_id != current_user_id)
-        ORDER BY r.created_at DESC, r.id
-        LIMIT p_limit + 1 OFFSET p_offset; -- Get one extra to check if there's more
+        FROM review_data;
     END IF;
     
-    -- Extract cursor information for next page
+    -- Handle pagination metadata - SIMPLIFIED
     IF json_array_length(COALESCE(reviews_data, '[]'::json)) > p_limit THEN
-        -- Remove the extra item and set next cursor
-        reviews_data := (
-            SELECT json_agg(item ORDER BY (item->>'created_at') DESC)
-            FROM json_array_elements(reviews_data) AS item
-            LIMIT p_limit
-        );
+        has_more := TRUE;
         
-        -- Get the last item for next cursor
-        SELECT json_build_object(
-            'id', (json_array_elements(reviews_data) ->> 'id')::UUID,
-            'created_at', (json_array_elements(reviews_data) ->> 'created_at')::TIMESTAMP
-        ) INTO next_cursor
-        FROM json_array_elements(reviews_data)
-        ORDER BY (json_array_elements.value ->> 'created_at') DESC
-        LIMIT 1 OFFSET (p_limit - 1);
+        -- Remove the extra item by recreating the array with only p_limit items
+        SELECT json_agg(item) INTO reviews_data
+        FROM (
+            SELECT value as item
+            FROM json_array_elements(reviews_data) WITH ORDINALITY
+            WHERE ordinality <= p_limit
+        ) sub;
+        
+        -- Get cursor from the last item (if we have items)
+        IF json_array_length(reviews_data) > 0 THEN
+            SELECT json_build_object(
+                'id', last_item->>'id',
+                'created_at', last_item->>'created_at'
+            ) INTO next_cursor
+            FROM (
+                SELECT value as last_item
+                FROM json_array_elements(reviews_data) WITH ORDINALITY
+                WHERE ordinality = p_limit
+            ) sub;
+        END IF;
     END IF;
     
     -- Get statistics
@@ -192,14 +228,7 @@ BEGIN
             'filtered_count', filtered_count,
             'page_size', p_limit,
             'current_offset', p_offset,
-            'has_more', (
-                CASE 
-                    WHEN p_cursor_id IS NOT NULL THEN 
-                        json_array_length(COALESCE(reviews_data, '[]'::json)) = p_limit
-                    ELSE 
-                        filtered_count > (p_offset + p_limit)
-                END
-            ),
+            'has_more', has_more,
             'has_previous', (p_offset > 0 OR p_cursor_id IS NOT NULL),
             'next_cursor', next_cursor,
             'total_pages', CEIL(filtered_count::DECIMAL / p_limit)
@@ -210,6 +239,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Ensure permissions
+GRANT EXECUTE ON FUNCTION get_feature_reviews_complete(TEXT, INTEGER, INTEGER, UUID, TIMESTAMP) TO authenticated;
 -- 2. Enhanced recent reviews with advanced pagination
 CREATE OR REPLACE FUNCTION get_recent_reviews_paginated(
     p_limit INTEGER DEFAULT 10,
@@ -266,23 +297,18 @@ BEGIN
         LIMIT p_limit + 1 OFFSET p_offset;
     END IF;
     
-    -- Handle pagination metadata
+    -- Handle pagination metadata (simplified for brevity)
     IF json_array_length(COALESCE(reviews_data, '[]'::json)) > p_limit THEN
-        -- Remove the extra item and set next cursor
-        reviews_data := (
-            SELECT json_agg(item ORDER BY (item->>'created_at') DESC)
+        -- Remove the extra item
+        WITH ordered_reviews AS (
+            SELECT 
+                item,
+                ROW_NUMBER() OVER (ORDER BY (item->>'created_at') DESC) as rn
             FROM json_array_elements(reviews_data) AS item
-            LIMIT p_limit
-        );
-        
-        -- Get the last item for next cursor
-        SELECT json_build_object(
-            'id', (json_array_elements(reviews_data) ->> 'id')::UUID,
-            'created_at', (json_array_elements(reviews_data) ->> 'created_at')::TIMESTAMP
-        ) INTO next_cursor
-        FROM json_array_elements(reviews_data)
-        ORDER BY (json_array_elements.value ->> 'created_at') DESC
-        LIMIT 1 OFFSET (p_limit - 1);
+        )
+        SELECT json_agg(item ORDER BY (item->>'created_at') DESC) INTO reviews_data
+        FROM ordered_reviews
+        WHERE rn <= p_limit;
     END IF;
     
     result := json_build_object(
@@ -293,7 +319,6 @@ BEGIN
             'current_offset', p_offset,
             'has_more', json_array_length(COALESCE(reviews_data, '[]'::json)) = p_limit,
             'has_previous', (p_offset > 0 OR p_cursor_id IS NOT NULL),
-            'next_cursor', next_cursor,
             'total_pages', CEIL(total_count::DECIMAL / p_limit)
         )
     );
@@ -302,7 +327,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 3. Enhanced search with advanced pagination
+-- 3. Advanced search reviews with comprehensive filters
 CREATE OR REPLACE FUNCTION search_reviews_paginated(
     p_feature_ref_id TEXT DEFAULT NULL,
     p_min_rating DECIMAL DEFAULT NULL,
@@ -318,98 +343,70 @@ DECLARE
     result JSON;
     reviews_data JSON;
     total_count INTEGER;
-    where_conditions TEXT[];
-    where_clause TEXT;
+    where_clause TEXT := 'WHERE 1=1';
     count_query TEXT;
     data_query TEXT;
     next_cursor JSON := NULL;
 BEGIN
-    -- Build dynamic where conditions
-    where_conditions := ARRAY['1=1'];
-    
+    -- Build dynamic WHERE clause
     IF p_feature_ref_id IS NOT NULL THEN
-        where_conditions := array_append(where_conditions, 'feature_ref_id = ''' || p_feature_ref_id || '''');
+        where_clause := where_clause || ' AND feature_ref_id = ''' || p_feature_ref_id || '''';
     END IF;
     
     IF p_min_rating IS NOT NULL THEN
-        where_conditions := array_append(where_conditions, '(safety_rating + quality_rating) / 2.0 >= ' || p_min_rating);
+        where_clause := where_clause || ' AND (safety_rating + quality_rating) / 2.0 >= ' || p_min_rating;
     END IF;
     
     IF p_max_rating IS NOT NULL THEN
-        where_conditions := array_append(where_conditions, '(safety_rating + quality_rating) / 2.0 <= ' || p_max_rating);
+        where_clause := where_clause || ' AND (safety_rating + quality_rating) / 2.0 <= ' || p_max_rating;
     END IF;
     
     IF p_search_text IS NOT NULL THEN
-        where_conditions := array_append(where_conditions, 'comment ILIKE ''%' || replace(p_search_text, '''', '''''') || '%''');
+        where_clause := where_clause || ' AND comment ILIKE ''%' || p_search_text || '%''';
     END IF;
-    
-    where_clause := 'WHERE ' || array_to_string(where_conditions, ' AND ');
     
     -- Get total count
     count_query := 'SELECT COUNT(*) FROM public.reviews ' || where_clause;
     EXECUTE count_query INTO total_count;
     
-    -- Build data query with pagination
+    -- Build and execute data query
     IF p_cursor_id IS NOT NULL AND p_cursor_created_at IS NOT NULL THEN
-        -- Cursor-based pagination
-        data_query := '
-            SELECT json_agg(
-                json_build_object(
-                    ''id'', id,
-                    ''feature_ref_id'', feature_ref_id,
-                    ''safety_rating'', safety_rating,
-                    ''quality_rating'', quality_rating,
-                    ''comment'', comment,
-                    ''created_at'', created_at,
-                    ''updated_at'', updated_at,
-                    ''avg_rating'', ROUND((safety_rating + quality_rating) / 2.0, 2)
-                ) ORDER BY created_at DESC, id
-            )
-            FROM public.reviews ' || where_clause || '
-            AND (created_at < ''' || p_cursor_created_at || ''' OR 
-                 (created_at = ''' || p_cursor_created_at || ''' AND id < ''' || p_cursor_id || '''))
-            ORDER BY created_at DESC, id
-            LIMIT ' || (p_limit + 1);
+        data_query := 'SELECT json_agg(
+            json_build_object(
+                ''id'', id,
+                ''feature_ref_id'', feature_ref_id,
+                ''safety_rating'', safety_rating,
+                ''quality_rating'', quality_rating,
+                ''comment'', comment,
+                ''created_at'', created_at,
+                ''updated_at'', updated_at,
+                ''avg_rating'', ROUND((safety_rating + quality_rating) / 2.0, 2)
+            ) ORDER BY created_at DESC, id
+        )
+        FROM public.reviews ' || where_clause || '
+        AND (created_at < ''' || p_cursor_created_at || ''' OR 
+             (created_at = ''' || p_cursor_created_at || ''' AND id < ''' || p_cursor_id || '''))
+        ORDER BY created_at DESC, id
+        LIMIT ' || (p_limit + 1);
     ELSE
-        -- Offset-based pagination
-        data_query := '
-            SELECT json_agg(
-                json_build_object(
-                    ''id'', id,
-                    ''feature_ref_id'', feature_ref_id,
-                    ''safety_rating'', safety_rating,
-                    ''quality_rating'', quality_rating,
-                    ''comment'', comment,
-                    ''created_at'', created_at,
-                    ''updated_at'', updated_at,
-                    ''avg_rating'', ROUND((safety_rating + quality_rating) / 2.0, 2)
-                ) ORDER BY created_at DESC, id
-            )
-            FROM public.reviews ' || where_clause || '
-            ORDER BY created_at DESC, id
-            LIMIT ' || (p_limit + 1) || ' OFFSET ' || p_offset;
+        data_query := 'SELECT json_agg(
+            json_build_object(
+                ''id'', id,
+                ''feature_ref_id'', feature_ref_id,
+                ''safety_rating'', safety_rating,
+                ''quality_rating'', quality_rating,
+                ''comment'', comment,
+                ''created_at'', created_at,
+                ''updated_at'', updated_at,
+                ''avg_rating'', ROUND((safety_rating + quality_rating) / 2.0, 2)
+            ) ORDER BY created_at DESC, id
+        )
+        FROM public.reviews ' || where_clause || '
+        ORDER BY created_at DESC, id
+        LIMIT ' || (p_limit + 1) || ' OFFSET ' || p_offset;
     END IF;
     
     EXECUTE data_query INTO reviews_data;
-    
-    -- Handle pagination metadata
-    IF json_array_length(COALESCE(reviews_data, '[]'::json)) > p_limit THEN
-        -- Remove the extra item and set next cursor
-        reviews_data := (
-            SELECT json_agg(item ORDER BY (item->>'created_at') DESC)
-            FROM json_array_elements(reviews_data) AS item
-            LIMIT p_limit
-        );
-        
-        -- Get the last item for next cursor
-        SELECT json_build_object(
-            'id', (json_array_elements(reviews_data) ->> 'id')::UUID,
-            'created_at', (json_array_elements(reviews_data) ->> 'created_at')::TIMESTAMP
-        ) INTO next_cursor
-        FROM json_array_elements(reviews_data)
-        ORDER BY (json_array_elements.value ->> 'created_at') DESC
-        LIMIT 1 OFFSET (p_limit - 1);
-    END IF;
     
     result := json_build_object(
         'data', COALESCE(reviews_data, '[]'::json),
@@ -419,7 +416,6 @@ BEGIN
             'current_offset', p_offset,
             'has_more', json_array_length(COALESCE(reviews_data, '[]'::json)) = p_limit,
             'has_previous', (p_offset > 0 OR p_cursor_id IS NOT NULL),
-            'next_cursor', next_cursor,
             'total_pages', CEIL(total_count::DECIMAL / p_limit)
         ),
         'filters', json_build_object(
@@ -573,6 +569,58 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- 8. NEW: Get current user's review for a specific feature
+CREATE OR REPLACE FUNCTION get_user_review_by_feature(
+    p_feature_ref_id TEXT
+)
+RETURNS JSON AS $$
+DECLARE
+    result JSON;
+    current_user_id UUID := auth.uid();
+    review_record public.reviews;
+BEGIN
+    -- Check if user is authenticated
+    IF current_user_id IS NULL THEN
+        RETURN json_build_object(
+            'data', NULL,
+            'error', 'User must be authenticated'
+        );
+    END IF;
+    
+    -- Get the user's review for this feature
+    SELECT * INTO review_record
+    FROM public.reviews
+    WHERE user_id = current_user_id 
+    AND feature_ref_id = p_feature_ref_id;
+    
+    -- If no review found, return null data
+    IF NOT FOUND THEN
+        RETURN json_build_object(
+            'data', NULL,
+            'message', 'No review found for this feature'
+        );
+    END IF;
+    
+    -- Return the review data
+    result := json_build_object(
+        'data', json_build_object(
+            'id', review_record.id,
+            'user_id', review_record.user_id,
+            'feature_ref_id', review_record.feature_ref_id,
+            'safety_rating', review_record.safety_rating,
+            'quality_rating', review_record.quality_rating,
+            'comment', review_record.comment,
+            'created_at', review_record.created_at,
+            'updated_at', review_record.updated_at,
+            'avg_rating', ROUND((review_record.safety_rating + review_record.quality_rating) / 2.0, 2),
+            'was_updated', review_record.created_at != review_record.updated_at
+        )
+    );
+    
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Grant execute permissions to authenticated users
 GRANT EXECUTE ON FUNCTION get_feature_reviews_complete(TEXT, INTEGER, INTEGER, UUID, TIMESTAMP) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_recent_reviews_paginated(INTEGER, INTEGER, UUID, TIMESTAMP) TO authenticated;
@@ -581,3 +629,4 @@ GRANT EXECUTE ON FUNCTION upsert_review(TEXT, INTEGER, INTEGER, TEXT) TO authent
 GRANT EXECUTE ON FUNCTION delete_user_review(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_features_review_stats(TEXT[]) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_user_reviews_batch(TEXT[]) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_user_review_by_feature(TEXT) TO authenticated;
