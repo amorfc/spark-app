@@ -4,16 +4,18 @@ import React, {
 	useImperativeHandle,
 	useRef,
 } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 import { BottomSheet, BottomSheetProps, BottomSheetRef } from "./bottom-sheet";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFeatureMetadata } from "@/hooks/useFeatureMetadata";
-import { useFeatureReviewsInfinite } from "@/hooks/useReviews";
-import { UpsertReviewBottomSheet } from "@/components/bottom-sheet/upsert-review-bottom-sheet";
+import { useFeatureReviewsInfinite, useUserReview } from "@/hooks/useReviews";
 import { router } from "expo-router";
+import { GenericFlatList } from "@/components/ui/generic-flatlist";
+import { Review } from "@/types/reviews";
+import { ReviewItem } from "@/components/reviews/review-item";
 
 type FeatureInfoBottomSheetProps = Omit<BottomSheetProps, "children"> & {
 	feature: GeoJSON.Feature;
@@ -24,14 +26,17 @@ export const FeatureInfoBottomSheet = forwardRef<
 	FeatureInfoBottomSheetProps
 >(({ feature, ...bottomSheetProps }, ref) => {
 	const { colorScheme } = useColorScheme();
-	const upsertReviewBottomSheetRef = useRef<BottomSheetRef>(null);
+
 	const isDark = colorScheme === "dark";
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const { icon, label } = useFeatureMetadata(feature);
-	const { data: reviews } = useFeatureReviewsInfinite(
-		feature.properties?.ref_id,
+	const { data: reviewsData } = useFeatureReviewsInfinite(
+		feature?.id as string,
 	);
-	console.log({ reviews });
+	const { data: userReview, isLoading: userReviewLoading } = useUserReview(
+		feature?.id as string,
+	);
+	console.log({ pages: reviewsData?.pages });
 
 	// Expose methods to parent via ref
 	useImperativeHandle(
@@ -89,6 +94,10 @@ export const FeatureInfoBottomSheet = forwardRef<
 		},
 	];
 
+	const renderReviewItem = ({ item }: { item: Review }) => {
+		return <ReviewItem review={item} />;
+	};
+
 	const renderFeatureInfo = ({
 		icon,
 		header,
@@ -138,7 +147,13 @@ export const FeatureInfoBottomSheet = forwardRef<
 									className="px-1"
 									onPress={() => router.push(`/review-upsert-screen`)}
 								>
-									<MaterialIcons name="edit" size={24} color={iconColor} />
+									{userReviewLoading ? (
+										<ActivityIndicator size="small" color={iconColor} />
+									) : userReview ? (
+										<MaterialIcons name="edit" size={24} color={iconColor} />
+									) : (
+										<MaterialIcons name="add" size={24} color={iconColor} />
+									)}
 								</TouchableOpacity>
 								<TouchableOpacity
 									className="px-1"
@@ -155,14 +170,13 @@ export const FeatureInfoBottomSheet = forwardRef<
 								.map((item) => renderFeatureInfo(item))}
 						</View>
 					</View>
+					<View className="flex-1">
+						<GenericFlatList
+							data={reviewsData?.pages[0].data.reviews ?? []}
+							renderItem={renderReviewItem}
+						/>
+					</View>
 				</View>
-			)}
-			{feature?.properties?.ref_id && (
-				<UpsertReviewBottomSheet
-					ref={upsertReviewBottomSheetRef}
-					featureRefId={feature.properties.ref_id}
-					// onClose={() => bottomSheetRef.current?.close()}
-				/>
 			)}
 		</BottomSheet>
 	);

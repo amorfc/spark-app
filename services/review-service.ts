@@ -40,12 +40,26 @@ export class ReviewService {
 			cursor?: { id: string; created_at: string };
 		},
 	): Promise<PaginatedResponse<FeatureReviewsCompleteData>> {
+		// Add validation for cursor
+		let cursorId = null;
+		let cursorCreatedAt = null;
+
+		if (options?.cursor) {
+			// Validate UUID format
+			const uuidRegex =
+				/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+			if (uuidRegex.test(options.cursor.id)) {
+				cursorId = options.cursor.id;
+				cursorCreatedAt = options.cursor.created_at;
+			}
+		}
+
 		const { data, error } = await supabase.rpc("get_feature_reviews_complete", {
 			p_feature_ref_id: featureRefId,
 			p_limit: options?.limit || 20,
 			p_offset: options?.offset || 0,
-			p_cursor_id: options?.cursor?.id || null,
-			p_cursor_created_at: options?.cursor?.created_at || null,
+			p_cursor_id: cursorId,
+			p_cursor_created_at: cursorCreatedAt,
 		});
 
 		if (error) {
@@ -146,17 +160,25 @@ export class ReviewService {
 	}
 
 	static async getReviewByFeatureId(featureRefId: string) {
-		const { data, error } = await supabase
-			.from("reviews")
-			.select("*")
-			.eq("feature_ref_id", featureRefId)
-			.single();
+		console.log({ featureRefId });
+
+		const { data, error } = await supabase.rpc("get_user_review_by_feature", {
+			p_feature_ref_id: featureRefId,
+		});
 
 		if (error) {
-			console.error("Error getting review by feature id:", error);
+			console.error(
+				"getReviewByFeatureId Error getting review by feature id:",
+				error,
+			);
 			throw new Error(error.message);
 		}
 
-		return data;
+		// The RPC function returns { data: review | null, error?: string, message?: string }
+		if (data.error) {
+			throw new Error(data.error);
+		}
+
+		return data.data; // Will be null if no review found, or the review object if found
 	}
 }

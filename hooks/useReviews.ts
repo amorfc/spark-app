@@ -72,7 +72,7 @@ export const useFeatureReviewsInfinite = (
 		queryKey: reviewKeys.featureInfinite(featureRefId, options),
 		queryFn: ({ pageParam }) =>
 			ReviewService.getFeatureReviewsComplete(featureRefId, {
-				limit: options?.limit || 20,
+				limit: options?.limit || 10,
 				cursor: pageParam || options?.initialCursor,
 			}),
 		enabled: !!featureRefId,

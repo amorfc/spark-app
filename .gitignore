@@ -24,6 +24,7 @@ android/
 
 .cursorrules
 .cursor/
+supabase/.temp
 
 # macOS
 .DS_Store
