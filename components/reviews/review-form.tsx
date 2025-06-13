@@ -74,7 +74,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 				comment: data.comment,
 			});
 
-			Alert.alert("Success", "Thank you for your review!");
 			form.reset();
 			setSafetyRating(0);
 			setQualityRating(0);

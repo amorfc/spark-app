@@ -160,8 +160,6 @@ export class ReviewService {
 	}
 
 	static async getReviewByFeatureId(featureRefId: string) {
-		console.log({ featureRefId });
-
 		const { data, error } = await supabase.rpc("get_user_review_by_feature", {
 			p_feature_ref_id: featureRefId,
 		});

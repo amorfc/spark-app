@@ -11,6 +11,7 @@ import {
 	UIManager,
 	Platform,
 	Animated,
+	ActivityIndicator,
 } from "react-native";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
@@ -105,7 +106,7 @@ export const GenericFlatList = <T,>({
 					{ color: isDark ? colors.dark.foreground : colors.light.foreground },
 				]}
 			>
-				Loading...
+				<ActivityIndicator size="small" color={colors.light.primary} />
 			</Text>
 		</View>
 	);
@@ -183,6 +184,7 @@ export const GenericFlatList = <T,>({
 					) : undefined
 				}
 				showsVerticalScrollIndicator={false}
+				ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
 				contentContainerStyle={[
 					data.length === 0 && styles.emptyContainer,
 					{
@@ -204,6 +206,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		paddingHorizontal: 6,
 		paddingVertical: 8,
+		minHeight: 100,
 	},
 	emptyContainer: {
 		flexGrow: 1,

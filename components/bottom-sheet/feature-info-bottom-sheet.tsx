@@ -30,13 +30,15 @@ export const FeatureInfoBottomSheet = forwardRef<
 	const isDark = colorScheme === "dark";
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const { icon, label } = useFeatureMetadata(feature);
-	const { data: reviewsData } = useFeatureReviewsInfinite(
-		feature?.id as string,
-	);
+	const {
+		data: reviewsData,
+		isLoading: reviewsLoading,
+		isRefetching: reviewsRefetching,
+		refetch: reviewsRefetch,
+	} = useFeatureReviewsInfinite(feature?.id as string);
 	const { data: userReview, isLoading: userReviewLoading } = useUserReview(
 		feature?.id as string,
 	);
-	console.log({ pages: reviewsData?.pages });
 
 	// Expose methods to parent via ref
 	useImperativeHandle(
@@ -131,11 +133,14 @@ export const FeatureInfoBottomSheet = forwardRef<
 			style={{ zIndex: 2000 }}
 			index={0}
 			showBackdrop={false}
+			snapPoints={["30%", "80%"]}
+			enableDynamicSizing={false}
 			{...bottomSheetProps}
 		>
 			{feature && (
-				<View className="flex-1 pb-4">
-					<View className="flex-1">
+				<View style={{ height: "100%", maxHeight: "100%" }}>
+					{/* Fixed Header Section */}
+					<View style={{ flexShrink: 0 }}>
 						<View className="pb-3 border-b border-gray-200 mb-3">
 							<View className="flex-row justify-between">
 								<View className="flex-1">
@@ -164,16 +169,29 @@ export const FeatureInfoBottomSheet = forwardRef<
 							</View>
 						</View>
 
-						<View className="flex flex-row flex-wrap gap-1">
+						<View className="flex flex-row flex-wrap gap-1 mb-3">
 							{featureInfoData
 								.filter((item) => item.content)
 								.map((item) => renderFeatureInfo(item))}
 						</View>
 					</View>
-					<View className="flex-1">
+
+					{/* Scrollable Reviews Section */}
+					<View style={{ flex: 1, minHeight: 0 }}>
 						<GenericFlatList
 							data={reviewsData?.pages[0].data.reviews ?? []}
+							loading={reviewsLoading}
+							onRefresh={reviewsRefetch}
+							refreshing={reviewsRefetching}
+							emptyStateMessage="No reviews found"
+							emptyStateSubtitle="Be the first to review this feature"
 							renderItem={renderReviewItem}
+							showsVerticalScrollIndicator={true}
+							contentContainerStyle={{
+								paddingBottom: 20,
+								flexGrow: 1,
+							}}
+							style={{ flex: 1 }}
 						/>
 					</View>
 				</View>

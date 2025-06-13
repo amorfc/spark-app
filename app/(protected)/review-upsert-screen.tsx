@@ -64,9 +64,6 @@ export default function ReviewUpsertScreen() {
 
 	const featureName = selectedFeature?.properties?.name;
 
-	// Validate feature_id
-	console.log({ featureRefId });
-
 	if (!featureRefId) {
 		return (
 			<SafeAreaView className="flex-1 justify-center items-center">

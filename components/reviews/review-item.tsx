@@ -1,5 +1,5 @@
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, ScrollView, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { StarRating } from "@/components/reviews/star-rating";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,8 @@ interface ReviewItemProps {
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
+	const [isExpanded, setIsExpanded] = useState(false);
+
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString("en-US", {
 			year: "numeric",
@@ -21,13 +23,21 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 
 	const averageRating = (review.safety_rating + review.quality_rating) / 2;
 
+	// Check if comment is long (more than 100 characters)
+	const isLongComment = review.comment && review.comment.length > 100;
+	const displayComment =
+		isLongComment && !isExpanded
+			? review.comment?.substring(0, 100) + "..."
+			: review.comment;
+
 	return (
 		<View
 			className={cn("bg-card rounded-lg p-4 border border-border", className)}
 		>
 			{/* Header with average rating and date */}
-			<View className="flex-row justify-between items-center mb-3">
-				<View className="flex-row items-center space-x-2">
+			<View className="flex-row items-center justify-between mb-3">
+				<View className="flex-row items-center gap-x-2">
+					<Text className="text-sm font-medium">Average Rating</Text>
 					<StarRating rating={averageRating} readonly size="sm" />
 					<Text className="text-sm text-muted-foreground">
 						{averageRating.toFixed(1)}
@@ -40,7 +50,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 
 			{/* Individual ratings */}
 			<View className="space-y-2 mb-3">
-				<View className="flex-row justify-between items-center">
+				<View className="flex-row items-center gap-x-2">
 					<Text className="text-sm font-medium">Safety</Text>
 					<View className="flex-row items-center space-x-1">
 						<StarRating rating={review.safety_rating} readonly size="sm" />
@@ -50,7 +60,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 					</View>
 				</View>
 
-				<View className="flex-row justify-between items-center">
+				<View className="flex-row items-center gap-x-2">
 					<Text className="text-sm font-medium">Quality</Text>
 					<View className="flex-row items-center space-x-1">
 						<StarRating rating={review.quality_rating} readonly size="sm" />
@@ -61,12 +71,19 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 				</View>
 			</View>
 
-			{/* Comment */}
+			{/* Comment with expandable functionality */}
 			{review.comment && (
 				<View className="pt-2 border-t border-border">
 					<Text className="text-sm text-foreground leading-relaxed">
-						{review.comment}
+						{displayComment}
 					</Text>
+					{isLongComment && (
+						<Pressable onPress={() => setIsExpanded(!isExpanded)}>
+							<Text className="text-xs text-primary mt-1 font-medium">
+								{isExpanded ? "Show less" : "Show more"}
+							</Text>
+						</Pressable>
+					)}
 				</View>
 			)}
 

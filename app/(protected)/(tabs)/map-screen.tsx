@@ -60,24 +60,10 @@ export default function MapScreen() {
 		clearSelectedFeature();
 	}, [clearSelectedFeature]);
 
-	// const handleCloseFilterSheet = useCallback(() => {
-	// 	filterSheetRef.current?.close();
-	// }, []);
-
 	const openFilterSheet = useCallback(() => {
 		filterSheetRef.current?.expand();
-		// featureSheetRef.current?.collapse();
+		featureSheetRef.current?.collapse();
 	}, []);
-
-	// Center map when feature changes
-	// useEffect(() => {
-	// 	if (feature) {
-	// 		centerTo(feature);
-	// 		featureSheetRef.current?.snapToIndex(0);
-	// 	} else {
-	// 		featureSheetRef.current?.close();
-	// 	}
-	// }, [feature, centerTo]);
 
 	const currentCameraBounds = useMemo(() => {
 		return (
