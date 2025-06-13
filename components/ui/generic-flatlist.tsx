@@ -202,8 +202,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		paddingHorizontal: 20,
-		paddingVertical: 40,
+		paddingHorizontal: 6,
+		paddingVertical: 8,
 	},
 	emptyContainer: {
 		flexGrow: 1,
