@@ -82,7 +82,7 @@ export default function MapScreen() {
 				mapRef.current?.centerOnCoordinates(coordinates, 15);
 				updateSelectedFeature(payload);
 				filterSheetRef.current?.close();
-				featureSheetRef.current?.expand();
+				featureSheetRef.current?.snapToIndex(0);
 			}
 		},
 		[updateSelectedFeature],

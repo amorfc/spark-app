@@ -1,7 +1,7 @@
 export interface Review {
 	id: string;
 	user_id: string;
-	feature_ref_id: number;
+	feature_ref_id: string;
 	safety_rating: number;
 	quality_rating: number;
 	comment?: string | null;

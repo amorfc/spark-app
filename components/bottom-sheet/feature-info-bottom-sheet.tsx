@@ -4,7 +4,12 @@ import React, {
 	useImperativeHandle,
 	useRef,
 } from "react";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+	View,
+	TouchableOpacity,
+	ActivityIndicator,
+	Dimensions,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 import { BottomSheet, BottomSheetProps, BottomSheetRef } from "./bottom-sheet";
@@ -131,14 +136,13 @@ export const FeatureInfoBottomSheet = forwardRef<
 			scrollable={false}
 			enablePanDownToClose={false}
 			style={{ zIndex: 2000 }}
+			snapPoints={["85%"]}
 			index={0}
 			showBackdrop={false}
-			snapPoints={["30%", "80%"]}
-			enableDynamicSizing={false}
 			{...bottomSheetProps}
 		>
 			{feature && (
-				<View style={{ height: "100%", maxHeight: "100%" }}>
+				<View style={{ flex: 1 }}>
 					{/* Fixed Header Section */}
 					<View style={{ flexShrink: 0 }}>
 						<View className="pb-3 border-b border-gray-200 mb-3">
@@ -190,6 +194,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 							contentContainerStyle={{
 								paddingBottom: 20,
 								flexGrow: 1,
+								maxHeight: Dimensions.get("window").height * 0.8 - 50,
 							}}
 							style={{ flex: 1 }}
 						/>

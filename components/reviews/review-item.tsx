@@ -1,17 +1,41 @@
 import React, { useState } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import {
+	View,
+	Pressable,
+	TouchableOpacity,
+	Alert,
+	ActivityIndicator,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import { StarRating } from "@/components/reviews/star-rating";
 import { cn } from "@/lib/utils";
 import { Review } from "@/types/reviews";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useDeleteReview } from "@/hooks/useReviews";
+import { useAuth } from "@/context/supabase-provider";
 
 interface ReviewItemProps {
 	review: Review;
 	className?: string;
+	onDeleted?: () => void;
 }
 
-const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
+const ReviewItem: React.FC<ReviewItemProps> = ({
+	review,
+	className,
+	onDeleted,
+}) => {
 	const [isExpanded, setIsExpanded] = useState(false);
+	const { mutate: deleteReview, isPending: isDeleting } = useDeleteReview();
+	const { session } = useAuth();
+	const canDelete = review.user_id === session?.user?.id;
+
+	const handleDelete = async () => {
+		await deleteReview({
+			featureRefId: review.feature_ref_id.toString(),
+		});
+		onDeleted?.();
+	};
 
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString("en-US", {
@@ -30,9 +54,28 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 			? review.comment?.substring(0, 100) + "..."
 			: review.comment;
 
+	const handleDeletePress = () => {
+		//Alert and if ok, delete the review
+		Alert.alert(
+			"Delete Review",
+			"Are you sure you want to delete this review?",
+			[
+				{ text: "Cancel", style: "cancel" },
+				{
+					text: "Delete",
+					onPress: handleDelete,
+				},
+			],
+		);
+	};
+
 	return (
 		<View
-			className={cn("bg-card rounded-lg p-4 border border-border", className)}
+			className={cn(
+				"bg-card rounded-lg p-4 border border-border relative",
+				className,
+			)}
+			style={{ position: "relative" }}
 		>
 			{/* Header with average rating and date */}
 			<View className="flex-row items-center justify-between mb-3">
@@ -43,32 +86,43 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 						{averageRating.toFixed(1)}
 					</Text>
 				</View>
-				<Text className="text-xs text-muted-foreground">
-					{formatDate(review.created_at)}
-				</Text>
+				{canDelete && (
+					<TouchableOpacity
+						onPress={handleDeletePress}
+						className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-sm"
+						activeOpacity={0.9}
+					>
+						<MaterialIcons name="delete" size={16} color="white" />
+					</TouchableOpacity>
+				)}
 			</View>
 
 			{/* Individual ratings */}
-			<View className="space-y-2 mb-3">
-				<View className="flex-row items-center gap-x-2">
-					<Text className="text-sm font-medium">Safety</Text>
-					<View className="flex-row items-center space-x-1">
-						<StarRating rating={review.safety_rating} readonly size="sm" />
-						<Text className="text-xs text-muted-foreground">
-							{review.safety_rating}/5
-						</Text>
+			<View className="flex-row justify-between items-center space-y-2 mb-3">
+				<View>
+					<View className="flex-row items-center gap-x-2">
+						<Text className="text-sm font-medium">Safety</Text>
+						<View className="flex-row items-center space-x-1">
+							<StarRating rating={review.safety_rating} readonly size="sm" />
+							<Text className="text-xs text-muted-foreground">
+								{review.safety_rating}/5
+							</Text>
+						</View>
 					</View>
-				</View>
 
-				<View className="flex-row items-center gap-x-2">
-					<Text className="text-sm font-medium">Quality</Text>
-					<View className="flex-row items-center space-x-1">
-						<StarRating rating={review.quality_rating} readonly size="sm" />
-						<Text className="text-xs text-muted-foreground">
-							{review.quality_rating}/5
-						</Text>
+					<View className="flex-row items-center gap-x-2">
+						<Text className="text-sm font-medium">Quality</Text>
+						<View className="flex-row items-center space-x-1">
+							<StarRating rating={review.quality_rating} readonly size="sm" />
+							<Text className="text-xs text-muted-foreground">
+								{review.quality_rating}/5
+							</Text>
+						</View>
 					</View>
 				</View>
+				<Text className="text-xs text-muted-foreground">
+					{formatDate(review.created_at)}
+				</Text>
 			</View>
 
 			{/* Comment with expandable functionality */}
@@ -92,6 +146,15 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, className }) => {
 				<Text className="text-xs text-muted-foreground mt-2 italic">
 					Updated {formatDate(review.updated_at)}
 				</Text>
+			)}
+
+			{/* Loading Overlay */}
+			{isDeleting && (
+				<View className="absolute inset-0 bg-gray-200/50 rounded-lg justify-center items-center z-10">
+					<View className="bg-white/90 rounded-lg p-4 shadow-md">
+						<ActivityIndicator size="small" color="#9CA3AF" />
+					</View>
+				</View>
 			)}
 		</View>
 	);

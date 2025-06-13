@@ -142,13 +142,7 @@ export const useDeleteReview = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({
-			reviewId,
-			featureRefId,
-		}: {
-			reviewId: string;
-			featureRefId: string;
-		}) => {
+		mutationFn: ({ featureRefId }: { featureRefId: string }) => {
 			return ReviewService.deleteUserReview(featureRefId);
 		},
 		onSuccess: (featureRefId) => {
