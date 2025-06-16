@@ -20,6 +20,7 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { BottomSheetProps } from "@/components/bottom-sheet/bottom-sheet";
 import { colors } from "@/constants/colors";
 import { DistrictSelect } from "@/components/select/district-select";
+import { useTranslation } from "@/lib/i18n/hooks";
 export interface MapFilterBottomSheetRef extends BottomSheetRef {
 	clearFilters: () => void;
 }
@@ -38,6 +39,7 @@ export const MapFilterBottomSheet = forwardRef<
 		ref,
 	) => {
 		const { colorScheme } = useColorScheme();
+		const { t } = useTranslation();
 		const isDark = colorScheme === "dark";
 		const { district, clearSelectedFeature, updateDistrict } = useMapSearch();
 		// Refs for child components
@@ -87,10 +89,10 @@ export const MapFilterBottomSheet = forwardRef<
 					<View className="flex-row justify-between items-center pb-4 border-b border-gray-200 mb-4">
 						<View className="flex-1">
 							<Text className="text-xl font-bold text-gray-800">
-								Map Filters
+								{t("map.filters.title")}
 							</Text>
 							<Text className="text-sm text-gray-500">
-								Choose what to search for
+								{t("map.filters.description")}
 							</Text>
 						</View>
 						<View className="flex-row gap-2">
@@ -114,10 +116,10 @@ export const MapFilterBottomSheet = forwardRef<
 					{/* Search Type Selection */}
 					<View className="mb-4">
 						<Text className="text-sm font-semibold text-gray-700 mb-2">
-							Search district
+							{t("map.filters.search_district")}
 						</Text>
 						<DistrictSelect
-							placeholder="Select district..."
+							placeholder={t("map.filters.select_district")}
 							searchable={true}
 						/>
 					</View>
@@ -127,6 +129,7 @@ export const MapFilterBottomSheet = forwardRef<
 							ref={poiCategoryGroupSelectRef}
 							selectedCategories={selectedPOICategories}
 							onCategoriesChange={onPOICategoriesChange}
+							placeholder={t("map.filters.select_category")}
 							onClear={clearPOICategories}
 						/>
 					)}

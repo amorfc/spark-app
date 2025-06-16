@@ -9,17 +9,22 @@ import { Form, FormField, FormInput } from "@/components/ui/form";
 import { Text } from "@/components/ui/text";
 import { H1 } from "@/components/ui/typography";
 import { useAuth } from "@/context/supabase-provider";
+import { useTranslation } from "@/lib/i18n/hooks";
 
-const formSchema = z.object({
-	email: z.string().email("Please enter a valid email address."),
-	password: z
-		.string()
-		.min(8, "Please enter at least 8 characters.")
-		.max(64, "Please enter fewer than 64 characters."),
-});
+const getFormSchema = (t: any) =>
+	z.object({
+		email: z.string().email(t("auth.validation.email_invalid")),
+		password: z
+			.string()
+			.min(8, t("auth.validation.confirm_password_min"))
+			.max(64, t("auth.validation.password_max_length")),
+	});
 
 export default function SignIn() {
 	const { signIn } = useAuth();
+	const { t } = useTranslation();
+
+	const formSchema = getFormSchema(t);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -42,7 +47,7 @@ export default function SignIn() {
 	return (
 		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
 			<View className="flex-1 gap-4 web:m-4">
-				<H1 className="self-start ">Sign In</H1>
+				<H1 className="self-start ">{t("auth.sign_in")}</H1>
 				<Form {...form}>
 					<View className="gap-4">
 						<FormField
@@ -50,8 +55,8 @@ export default function SignIn() {
 							name="email"
 							render={({ field }) => (
 								<FormInput
-									label="Email"
-									placeholder="Email"
+									label={t("auth.email")}
+									placeholder={t("auth.email")}
 									autoCapitalize="none"
 									autoComplete="email"
 									autoCorrect={false}
@@ -65,8 +70,8 @@ export default function SignIn() {
 							name="password"
 							render={({ field }) => (
 								<FormInput
-									label="Password"
-									placeholder="Password"
+									label={t("auth.password")}
+									placeholder={t("auth.password")}
 									autoCapitalize="none"
 									autoCorrect={false}
 									secureTextEntry
@@ -87,7 +92,7 @@ export default function SignIn() {
 				{form.formState.isSubmitting ? (
 					<ActivityIndicator size="small" />
 				) : (
-					<Text>Sign In</Text>
+					<Text>{t("auth.sign_in")}</Text>
 				)}
 			</Button>
 		</SafeAreaView>

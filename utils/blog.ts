@@ -45,30 +45,29 @@ export const getBlogPostsByCategory = (
 };
 
 /**
- * Get category display name with translation
+ * Get category translation key mapping
  * @param category - Blog category enum
- * @returns Localized display name
+ * @returns Translation key for the category
  */
-export const getCategoryDisplayName = (category: BlogCategory): string => {
-	const categoryMap: Record<BlogCategory, string> = {
-		[BlogCategory.SelfDefense]: "Self Defense / Kendini Savunma",
-		[BlogCategory.TedTalks]: "TED Talks / TED Konuşmaları",
+export const getCategoryTranslationKey = (category: BlogCategory): string => {
+	const categoryKeyMap: Record<BlogCategory, string> = {
+		[BlogCategory.SelfDefense]: "blog.categories.self_defense",
+		[BlogCategory.TedTalks]: "blog.categories.ted_talks",
 		[BlogCategory.MovieRecommendations]:
-			"Movie Recommendations / Film Önerileri",
-		[BlogCategory.BookRecommendations]:
-			"Book Recommendations / Kitap Önerileri",
-		[BlogCategory.InspiringWoman]: "Inspiring Women / İlham Verici Kadınlar",
-		[BlogCategory.WomanMurders]: "Woman Murders / Kadın Cinayetleri",
-		[BlogCategory.ToxicRelationships]: "Toxic Relationships / Toksik İlişkiler",
-		[BlogCategory.VideoEssays]: "Video Essays",
+			"blog.categories.movie_recommendations",
+		[BlogCategory.BookRecommendations]: "blog.categories.book_recommendations",
+		[BlogCategory.InspiringWoman]: "blog.categories.inspiring_women",
+		[BlogCategory.WomanMurders]: "blog.categories.woman_murders",
+		[BlogCategory.ToxicRelationships]: "blog.categories.toxic_relationships",
+		[BlogCategory.VideoEssays]: "blog.categories.video_essays",
 		[BlogCategory.WomanAnatomyAndPeriod]:
-			"Woman Anatomy & Period / Kadın Anatomisi ve Periyot",
-		[BlogCategory.Podcasts]: "Podcasts / Podkastlar",
-		[BlogCategory.SelfLove]: "Self Love / Kendini Sevmek",
-		[BlogCategory.FeminismBasics]: "Feminism 101 / Feminizm 101",
+			"blog.categories.woman_anatomy_period",
+		[BlogCategory.Podcasts]: "blog.categories.podcasts",
+		[BlogCategory.SelfLove]: "blog.categories.self_love",
+		[BlogCategory.FeminismBasics]: "blog.categories.feminism_basics",
 	};
 
-	return categoryMap[category] || category;
+	return categoryKeyMap[category] || category;
 };
 
 /**

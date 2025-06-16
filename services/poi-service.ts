@@ -7,6 +7,22 @@ export interface POICategoryDefinition {
 	key: OverPassCategory;
 }
 
+/**
+ * Get POI category translation key mapping
+ * @param category - OverPass category enum
+ * @returns Translation key for the category
+ */
+export const getPOICategoryTranslationKey = (
+	category: OverPassCategory,
+): string => {
+	const categoryKeyMap: Record<OverPassCategory, string> = {
+		[OverPassCategory.FOOD_AND_DRINK]: "map.poi_categories.food_and_drink",
+		[OverPassCategory.TRANSPORTATION]: "map.poi_categories.transportation",
+	};
+
+	return categoryKeyMap[category] || category;
+};
+
 export interface POICategoryGroupType {
 	FOOD_AND_DRINK: POICategoryDefinition;
 	TRANSPORTATION: POICategoryDefinition;
@@ -14,12 +30,32 @@ export interface POICategoryGroupType {
 
 export const POICategories: POICategoryDefinition[] = [
 	{
-		label: "🍽️ Food & Drink",
+		label: getPOICategoryTranslationKey(OverPassCategory.FOOD_AND_DRINK),
 		value: OverPassCategory.FOOD_AND_DRINK,
 		key: OverPassCategory.FOOD_AND_DRINK,
 	},
 	{
-		label: "🚌 Transportation",
+		label: getPOICategoryTranslationKey(OverPassCategory.TRANSPORTATION),
+		value: OverPassCategory.TRANSPORTATION,
+		key: OverPassCategory.TRANSPORTATION,
+	},
+];
+
+/**
+ * Get POI categories with translated labels
+ * @param t - Translation function
+ * @returns Array of POI categories with translated labels
+ */
+export const getPOICategoriesWithTranslations = (
+	t: (key: string) => string,
+): POICategoryDefinition[] => [
+	{
+		label: t(getPOICategoryTranslationKey(OverPassCategory.FOOD_AND_DRINK)),
+		value: OverPassCategory.FOOD_AND_DRINK,
+		key: OverPassCategory.FOOD_AND_DRINK,
+	},
+	{
+		label: t(getPOICategoryTranslationKey(OverPassCategory.TRANSPORTATION)),
 		value: OverPassCategory.TRANSPORTATION,
 		key: OverPassCategory.TRANSPORTATION,
 	},

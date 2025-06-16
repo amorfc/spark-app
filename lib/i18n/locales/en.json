@@ -1,0 +1,168 @@
+{
+	"translation": {
+		"common": {
+			"loading": "Loading...",
+			"searching": "Searching...",
+			"error": "Error",
+			"success": "Success!",
+			"confirm": "Confirm",
+			"cancel": "Cancel",
+			"save": "Save",
+			"edit": "Edit",
+			"add": "Add",
+			"delete": "Delete",
+			"close": "Close",
+			"submit": "Submit",
+			"update": "Update",
+			"go_back": "Go Back",
+			"ok": "OK",
+			"yes": "Yes",
+			"no": "No",
+			"submitting": "Submitting...",
+			"deleting": "Deleting...",
+			"updating": "Updating..."
+		},
+		"auth": {
+			"sign_up": "Sign Up",
+			"sign_in": "Sign In",
+			"sign_out": "Sign Out",
+			"welcome": "Welcome",
+			"first_name": "First Name",
+			"last_name": "Last Name",
+			"email": "Email",
+			"password": "Password",
+			"confirm_password": "Confirm Password",
+			"female_confirmation": "I confirm I am female",
+			"accept_terms": "I accept the",
+			"terms_and_privacy": "Terms and Condition and Privacy Policy",
+			"validation": {
+				"first_name_required": "Please enter your first name.",
+				"last_name_required": "Please enter your last name.",
+				"email_invalid": "Please enter a valid email address.",
+				"password_min_length": "Please enter at least 6 characters.",
+				"password_max_length": "Please enter fewer than 64 characters.",
+				"password_needs_number": "Your password must have at least one number.",
+				"confirm_password_min": "Please enter at least 8 characters.",
+				"passwords_no_match": "Your passwords do not match.",
+				"female_only": "Spark is currently available for female users only.",
+				"terms_required": "You must accept the Terms and Conditions to continue."
+			}
+		},
+		"settings": {
+			"title": "Settings",
+			"language": "Language",
+			"change_language": "Change the application language",
+			"account": "Account",
+			"sign_out_description": "Sign out and return to the welcome screen.",
+			"welcome_message": "Welcome to Settings"
+		},
+		"greetings": {
+			"good_morning": "Good morning",
+			"good_afternoon": "Good afternoon",
+			"good_evening": "Good evening"
+		},
+		"reviews": {
+			"title": "Reviews",
+			"write_review": "Write a Review",
+			"edit_review": "Edit Your Review",
+			"update_review": "Update Your Review",
+			"leave_review": "Leave a Review",
+			"add_review": "Add Review",
+			"edit_review_button": "Edit Review",
+			"submit_review": "Submit Review",
+			"update_review_button": "Update Review",
+			"delete_review": "Delete Review",
+			"current_ratings": "Current Ratings",
+			"average_rating": "Average Rating",
+			"safety_rating": "Safety Rating",
+			"quality_rating": "Quality Rating",
+			"comment_optional": "Comment (Optional)",
+			"share_experience": "Share your experience...",
+			"update_rating_feedback": "Update your rating and feedback",
+			"share_with_community": "Share your experience with the community",
+			"reviews_for": "Reviews for {{name}}",
+			"based_on_reviews": "Based on {{count}} review",
+			"based_on_reviews_plural": "Based on {{count}} reviews",
+			"no_reviews_yet": "No reviews yet",
+			"safety_short": "Safety: {{rating}}",
+			"quality_short": "Quality: {{rating}}",
+			"review_updated": "Your review has been updated.",
+			"review_submitted": "Thank you for your review!",
+			"invalid_feature": "Invalid feature ID",
+			"form": {
+				"safety_rating_required": "Please provide a safety rating",
+				"quality_rating_required": "Please provide a quality rating",
+				"submit_error": "Failed to submit review",
+				"submitting": "Submitting..."
+			}
+		},
+		"select": {
+			"placeholder": "Select an option",
+			"search_placeholder": "Type to search...",
+			"select_language": "Select language...",
+			"language_modal_title": "Select Language",
+			"min_search_length": "(min {{count}} chars)"
+		},
+		"navigation": {
+			"map": "Map",
+			"blog": "Blog",
+			"settings": "Settings"
+		},
+		"errors": {
+			"general_error": "Something went wrong",
+			"network_error": "Network error occurred",
+			"loading_failed": "Failed to load data",
+			"save_failed": "Failed to save changes",
+			"delete_failed": "Failed to delete item"
+		},
+		"empty_states": {
+			"no_reviews": "No reviews found",
+			"be_first_reviewer": "Be the first to review this feature",
+			"no_data": "No data available",
+			"no_results": "No results found"
+		},
+		"blog": {
+			"categories": {
+				"self_defense": "Self Defense",
+				"ted_talks": "TED Talks",
+				"movie_recommendations": "Movie Recommendations",
+				"book_recommendations": "Book Recommendations",
+				"inspiring_women": "Inspiring Women",
+				"woman_murders": "Woman Murders",
+				"toxic_relationships": "Toxic Relationships",
+				"video_essays": "Video Essays",
+				"woman_anatomy_period": "Woman Anatomy & Period",
+				"podcasts": "Podcasts",
+				"self_love": "Self Love",
+				"feminism_basics": "Feminism 101"
+			}
+		},
+		"accessibility": {
+			"close_review_form": "Close review form",
+			"button": "button",
+			"star_rating": "Star rating",
+			"search_input": "Search input"
+		},
+		"map": {
+			"user_location": "Your location",
+			"feature_info": "Feature information",
+			"filter": "Filter",
+			"search": "Search locations",
+			"filters": {
+				"title": "Map Filters",
+				"description": "Choose what to search for",
+				"search_district": "Search district",
+				"select_district": "Select district...",
+				"select_category": "Select category..."
+			},
+			"poi_categories": {
+				"food_and_drink": "🍽️ Food & Drink",
+				"transportation": "🚌 Transportation"
+			}
+		},
+		"app": {
+			"title": "Spark",
+			"description": "Spark is a platform that helps you discover how safe different places are around you."
+		}
+	}
+}

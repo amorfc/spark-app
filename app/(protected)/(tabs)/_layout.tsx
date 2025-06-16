@@ -5,9 +5,11 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useProtectedAppInit } from "@/hooks/useProtectedAppInit";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function TabsLayout() {
 	const { colorScheme } = useColorScheme();
+	const { t } = useTranslation();
 	useProtectedAppInit();
 
 	return (
@@ -33,7 +35,7 @@ export default function TabsLayout() {
 			<Tabs.Screen
 				name="map-screen"
 				options={{
-					title: "Map",
+					title: t("navigation.map"),
 					tabBarIcon: ({ focused }) => (
 						<MaterialIcons
 							name="map"
@@ -46,7 +48,7 @@ export default function TabsLayout() {
 			<Tabs.Screen
 				name="blog-screen"
 				options={{
-					title: "Blog",
+					title: t("navigation.blog"),
 					tabBarIcon: ({ focused }) => (
 						<MaterialIcons
 							name="article"
@@ -59,7 +61,7 @@ export default function TabsLayout() {
 			<Tabs.Screen
 				name="settings-screen"
 				options={{
-					title: "Settings",
+					title: t("navigation.settings"),
 					tabBarIcon: ({ focused }) => (
 						<MaterialIcons
 							name="settings"

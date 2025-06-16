@@ -14,14 +14,22 @@ import { cn } from "@/lib/utils";
 
 import { useUpsertReview } from "@/hooks/useReviews";
 import { Review } from "@/types/reviews";
+import { useTranslation } from "@/lib/i18n/hooks";
 
-const reviewFormSchema = z.object({
-	safety_rating: z.number().min(1, "Please provide a safety rating").max(5),
-	quality_rating: z.number().min(1, "Please provide a quality rating").max(5),
-	comment: z.string().optional(),
-});
+const getReviewFormSchema = (t: any) =>
+	z.object({
+		safety_rating: z
+			.number()
+			.min(1, t("reviews.form.safety_rating_required"))
+			.max(5),
+		quality_rating: z
+			.number()
+			.min(1, t("reviews.form.quality_rating_required"))
+			.max(5),
+		comment: z.string().optional(),
+	});
 
-type ReviewFormData = z.infer<typeof reviewFormSchema>;
+type ReviewFormData = z.infer<ReturnType<typeof getReviewFormSchema>>;
 
 interface ReviewFormProps {
 	featureRefId: string;
@@ -38,6 +46,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 	onCancel,
 	className,
 }) => {
+	const { t } = useTranslation();
 	const [safetyRating, setSafetyRating] = useState(
 		existingReview?.safety_rating || 0,
 	);
@@ -46,6 +55,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 	);
 
 	const upsertMutation = useUpsertReview();
+	const reviewFormSchema = getReviewFormSchema(t);
 
 	const form = useForm<ReviewFormData>({
 		resolver: zodResolver(reviewFormSchema),
@@ -81,8 +91,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 		} catch (error) {
 			console.error("Error submitting review:", error);
 			Alert.alert(
-				"Error",
-				error instanceof Error ? error.message : "Failed to submit review",
+				t("common.error"),
+				error instanceof Error ? error.message : t("reviews.form.submit_error"),
 			);
 		}
 	};
@@ -92,7 +102,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 	return (
 		<View className={cn("space-y-4 p-4", className)}>
 			<H3 className="text-center">
-				{existingReview ? "Update Your Review" : "Leave a Review"}
+				{existingReview
+					? t("reviews.update_review")
+					: t("reviews.leave_review")}
 			</H3>
 
 			<Form {...form}>
@@ -103,7 +115,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 						name="safety_rating"
 						render={({ field }) => (
 							<View className="space-y-2">
-								<Text className="font-semibold">Safety Rating</Text>
+								<Text className="font-semibold">
+									{t("reviews.safety_rating")}
+								</Text>
 								<StarRating
 									rating={safetyRating}
 									onRatingChange={setSafetyRating}
@@ -120,7 +134,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 						name="quality_rating"
 						render={({ field }) => (
 							<View className="space-y-2">
-								<Text className="font-semibold">Quality Rating</Text>
+								<Text className="font-semibold">
+									{t("reviews.quality_rating")}
+								</Text>
 								<StarRating
 									rating={qualityRating}
 									onRatingChange={setQualityRating}
@@ -137,9 +153,11 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 						name="comment"
 						render={({ field }) => (
 							<View className="space-y-2">
-								<Text className="font-semibold">Comment (Optional)</Text>
+								<Text className="font-semibold">
+									{t("reviews.comment_optional")}
+								</Text>
 								<Textarea
-									placeholder="Share your experience..."
+									placeholder={t("reviews.share_experience")}
 									value={field.value || ""}
 									onChangeText={field.onChange}
 									onBlur={field.onBlur}
@@ -158,7 +176,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 							disabled={isLoading}
 							className="flex-1"
 						>
-							<Text>Cancel</Text>
+							<Text>{t("common.cancel")}</Text>
 						</Button>
 						<Button
 							onPress={form.handleSubmit(onSubmit)}
@@ -167,10 +185,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 						>
 							<Text>
 								{isLoading
-									? "Submitting..."
+									? t("reviews.form.submitting")
 									: existingReview
-										? "Update Review"
-										: "Submit Review"}
+										? t("reviews.update_review_button")
+										: t("reviews.submit_review")}
 							</Text>
 						</Button>
 					</View>

@@ -1,0 +1,168 @@
+{
+	"translation": {
+		"common": {
+			"loading": "Yükleniyor...",
+			"searching": "Aranıyor...",
+			"error": "Hata",
+			"success": "Başarılı!",
+			"confirm": "Onayla",
+			"cancel": "İptal",
+			"save": "Kaydet",
+			"edit": "Düzenle",
+			"add": "Ekle",
+			"delete": "Sil",
+			"close": "Kapat",
+			"submit": "Gönder",
+			"update": "Güncelle",
+			"go_back": "Geri Dön",
+			"ok": "Tamam",
+			"yes": "Evet",
+			"no": "Hayır",
+			"submitting": "Gönderiliyor...",
+			"deleting": "Siliniyor...",
+			"updating": "Güncelleniyor..."
+		},
+		"auth": {
+			"sign_up": "Kayıt Ol",
+			"sign_in": "Giriş Yap",
+			"sign_out": "Çıkış Yap",
+			"welcome": "Hoş Geldiniz",
+			"first_name": "Ad",
+			"last_name": "Soyad",
+			"email": "E-posta",
+			"password": "Şifre",
+			"confirm_password": "Şifreyi Onayla",
+			"female_confirmation": "Kadın olduğumu onaylıyorum",
+			"accept_terms": "Kabul ediyorum",
+			"terms_and_privacy": "Şartlar ve Koşullar ile Gizlilik Politikası",
+			"validation": {
+				"first_name_required": "Lütfen adınızı girin.",
+				"last_name_required": "Lütfen soyadınızı girin.",
+				"email_invalid": "Lütfen geçerli bir e-posta adresi girin.",
+				"password_min_length": "Lütfen en az 6 karakter girin.",
+				"password_max_length": "Lütfen 64 karakterden az girin.",
+				"password_needs_number": "Şifrenizde en az bir rakam olmalıdır.",
+				"confirm_password_min": "Lütfen en az 8 karakter girin.",
+				"passwords_no_match": "Şifreleriniz eşleşmiyor.",
+				"female_only": "Spark şu anda sadece kadın kullanıcılar için mevcuttur.",
+				"terms_required": "Devam etmek için Şartlar ve Koşulları kabul etmelisiniz."
+			}
+		},
+		"settings": {
+			"title": "Ayarlar",
+			"language": "Dil",
+			"change_language": "Uygulamanın dilini değiştirin",
+			"account": "Hesap",
+			"sign_out_description": "Çıkış yapın ve karşılama ekranına dönün.",
+			"welcome_message": "Ayarlara Hoş Geldiniz"
+		},
+		"greetings": {
+			"good_morning": "Günaydın",
+			"good_afternoon": "İyi öğleden sonra",
+			"good_evening": "İyi akşamlar"
+		},
+		"reviews": {
+			"title": "Yorumlar",
+			"write_review": "Yorum Yaz",
+			"edit_review": "Yorumunuzu Düzenleyin",
+			"update_review": "Yorumunuzu Güncelleyin",
+			"leave_review": "Yorum Bırak",
+			"add_review": "Yorum Ekle",
+			"edit_review_button": "Yorumu Düzenle",
+			"submit_review": "Yorum Gönder",
+			"update_review_button": "Yorumu Güncelle",
+			"delete_review": "Yorumu Sil",
+			"current_ratings": "Mevcut Puanlamalar",
+			"average_rating": "Ortalama Puan",
+			"safety_rating": "Güvenlik Puanı",
+			"quality_rating": "Kalite Puanı",
+			"comment_optional": "Yorum (İsteğe Bağlı)",
+			"share_experience": "Deneyiminizi paylaşın...",
+			"update_rating_feedback": "Puanınızı ve geri bildiriminizi güncelleyin",
+			"share_with_community": "Deneyiminizi toplulukla paylaşın",
+			"reviews_for": "{{name}} için yorumlar",
+			"based_on_reviews": "{{count}} yoruma dayalı",
+			"based_on_reviews_plural": "{{count}} yoruma dayalı",
+			"no_reviews_yet": "Henüz yorum yok",
+			"safety_short": "Güvenlik: {{rating}}",
+			"quality_short": "Kalite: {{rating}}",
+			"review_updated": "Yorumunuz güncellendi.",
+			"review_submitted": "Yorumunuz için teşekkürler!",
+			"invalid_feature": "Geçersiz özellik ID",
+			"form": {
+				"safety_rating_required": "Lütfen güvenlik puanı verin",
+				"quality_rating_required": "Lütfen kalite puanı verin",
+				"submit_error": "Yorum gönderilemedi",
+				"submitting": "Gönderiliyor..."
+			}
+		},
+		"select": {
+			"placeholder": "Seçiniz",
+			"search_placeholder": "Arama yapınız...",
+			"select_language": "Dil seçiniz...",
+			"language_modal_title": "Dil Seçin",
+			"min_search_length": "(min {{count}} karakter)"
+		},
+		"navigation": {
+			"map": "Harita",
+			"blog": "Blog",
+			"settings": "Ayarlar"
+		},
+		"errors": {
+			"general_error": "Bir şeyler ters gitti",
+			"network_error": "Ağ hatası oluştu",
+			"loading_failed": "Veri yüklenemedi",
+			"save_failed": "Değişiklikler kaydedilemedi",
+			"delete_failed": "Öğe silinemedi"
+		},
+		"empty_states": {
+			"no_reviews": "Yorum bulunamadı",
+			"be_first_reviewer": "Bu özelliği yorumlayan ilk kişi olun",
+			"no_data": "Veri mevcut değil",
+			"no_results": "Sonuç bulunamadı"
+		},
+		"blog": {
+			"categories": {
+				"self_defense": "Kendini Savunma",
+				"ted_talks": "TED Konuşmaları",
+				"movie_recommendations": "Film Önerileri",
+				"book_recommendations": "Kitap Önerileri",
+				"inspiring_women": "İlham Verici Kadınlar",
+				"woman_murders": "Kadın Cinayetleri",
+				"toxic_relationships": "Toksik İlişkiler",
+				"video_essays": "Video Denemeler",
+				"woman_anatomy_period": "Kadın Anatomisi ve Periyot",
+				"podcasts": "Podkastlar",
+				"self_love": "Kendini Sevmek",
+				"feminism_basics": "Feminizm 101"
+			}
+		},
+		"accessibility": {
+			"close_review_form": "Yorum formunu kapat",
+			"button": "düğme",
+			"star_rating": "Yıldız puanlaması",
+			"search_input": "Arama girişi"
+		},
+		"map": {
+			"user_location": "Konumunuz",
+			"feature_info": "Özellik bilgisi",
+			"filter": "Filtre",
+			"search": "Konum ara",
+			"filters": {
+				"title": "Harita Filtreleri",
+				"description": "Ne arayacağınızı seçin",
+				"search_district": "İlçe ara",
+				"select_district": "İlçe seçin...",
+				"select_category": "Kategori seçin..."
+			},
+			"poi_categories": {
+				"food_and_drink": "🍽️ Yiyecek ve İçecek",
+				"transportation": "🚌 Ulaşım"
+			}
+		},
+		"app": {
+			"title": "Spark",
+			"description": "Spark, çevrenizdeki farklı yerlerin ne kadar güvenli olduğunu keşfetmenize yardımcı olan bir platformdur."
+		}
+	}
+}

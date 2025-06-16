@@ -6,8 +6,12 @@ import React, {
 	useMemo,
 	useRef,
 } from "react";
-import { POICategories, POICategoryDefinition } from "@/services/poi-service";
+import {
+	getPOICategoriesWithTranslations,
+	POICategoryDefinition,
+} from "@/services/poi-service";
 import { Select, SelectProps, SelectRef } from "@/components/select/select";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 export interface POICategorySelectRef {
 	clearSelection: () => void;
@@ -28,6 +32,7 @@ export const POICategorySelect = forwardRef<
 		string | null
 	>(null);
 	const selectRef = useRef<SelectRef>(null);
+	const { t } = useTranslation();
 
 	// Expose methods to parent
 	useImperativeHandle(
@@ -51,8 +56,8 @@ export const POICategorySelect = forwardRef<
 	);
 
 	const dropdownItems = useMemo(() => {
-		return POICategories;
-	}, []);
+		return getPOICategoriesWithTranslations(t);
+	}, [t]);
 
 	return (
 		<Select

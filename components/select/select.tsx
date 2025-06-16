@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useImperativeHandle } from "react";
+import React, {
+	useState,
+	useEffect,
+	useRef,
+	useImperativeHandle,
+	useMemo,
+} from "react";
 import {
 	ViewStyle,
 	TextStyle,
@@ -11,6 +17,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 export interface SelectProps<T> {
 	open?: boolean;
@@ -54,9 +61,9 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 			setValue,
 			onSelectItem,
 			onClear,
-			placeholder = "Select an option...",
+			placeholder,
 			searchable = false,
-			searchPlaceholder = "Type to search...",
+			searchPlaceholder,
 			listMode = "MODAL",
 			modalTitle,
 			disabled = false,
@@ -84,6 +91,7 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 		const debounceRef = useRef<any>(null);
 		const clearButtonAnimation = useRef(new Animated.Value(0)).current;
 		const dropdownWidthAnimation = useRef(new Animated.Value(0)).current;
+		const { t } = useTranslation();
 
 		const [open, setOpen] = useState(false);
 		const isDark = colorScheme === "dark";
@@ -97,6 +105,14 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 		const closeDropdown = () => {
 			setOpen(false);
 		};
+
+		const tPlaceholder = useMemo(() => {
+			return placeholder || t("select.placeholder");
+		}, [t, placeholder]);
+
+		const tSearchPlaceholder = useMemo(() => {
+			return searchPlaceholder || t("select.search_placeholder");
+		}, [t, searchPlaceholder]);
 
 		// Expose methods to parent
 		useImperativeHandle(
@@ -365,9 +381,9 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 						setValue={setValue}
 						setItems={setItems}
 						onSelectItem={onSelectItem}
-						placeholder={placeholder}
+						placeholder={tPlaceholder}
 						searchable={searchable}
-						searchPlaceholder={`${searchPlaceholder} (min ${minSearchLength} chars)`}
+						searchPlaceholder={tSearchPlaceholder}
 						onChangeSearchText={handleSearch}
 						listMode={listMode}
 						modalTitle={modalTitle}

@@ -16,9 +16,10 @@ import {
 } from "@/hooks/useReviews";
 import { useAuth } from "@/context/supabase-provider";
 import { Review } from "@/types/reviews";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 interface FeatureReviewsProps {
-	featureRefId: number;
+	featureRefId: string;
 	featureName?: string;
 	className?: string;
 }
@@ -30,6 +31,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 }) => {
 	const [showReviewForm, setShowReviewForm] = useState(false);
 	const [editingReview, setEditingReview] = useState<Review | null>(null);
+	const { t } = useTranslation();
 
 	const { session } = useAuth();
 	const {
@@ -54,12 +56,12 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 		if (!userReview) return;
 
 		Alert.alert(
-			"Delete Review",
+			t("reviews.delete_review"),
 			"Are you sure you want to delete your review? This action cannot be undone.",
 			[
-				{ text: "Cancel", style: "cancel" },
+				{ text: t("common.cancel"), style: "cancel" },
 				{
-					text: "Delete",
+					text: t("common.delete"),
 					style: "destructive",
 					onPress: () => {
 						deleteReviewMutation.mutate({

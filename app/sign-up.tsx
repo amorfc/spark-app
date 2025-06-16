@@ -12,32 +12,39 @@ import { useAuth } from "@/context/supabase-provider";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { router } from "expo-router";
+import { useTranslation } from "@/lib/i18n/hooks";
 
-const formSchema = z
-	.object({
-		firstName: z.string().min(1, "Please enter your first name."),
-		lastName: z.string().min(1, "Please enter your last name."),
-		email: z.string().email("Please enter a valid email address."),
-		password: z
-			.string()
-			.min(6, "Please enter at least 6 characters.")
-			.max(64, "Please enter fewer than 64 characters.")
-			.regex(/^(?=.*[0-9])/, "Your password must have at least one number."),
-		confirmPassword: z.string().min(8, "Please enter at least 8 characters."),
-		isFemale: z.boolean().refine((val) => val === true, {
-			message: "Spark is currently available for female users only.",
-		}),
-		acceptTerms: z.boolean().refine((val) => val === true, {
-			message: "You must accept the Terms and Conditions to continue.",
-		}),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Your passwords do not match.",
-		path: ["confirmPassword"],
-	});
+const getFormSchema = (t: any) =>
+	z
+		.object({
+			firstName: z.string().min(1, t("auth.validation.first_name_required")),
+			lastName: z.string().min(1, t("auth.validation.last_name_required")),
+			email: z.string().email(t("auth.validation.email_invalid")),
+			password: z
+				.string()
+				.min(6, t("auth.validation.password_min_length"))
+				.max(64, t("auth.validation.password_max_length"))
+				.regex(/^(?=.*[0-9])/, t("auth.validation.password_needs_number")),
+			confirmPassword: z
+				.string()
+				.min(8, t("auth.validation.confirm_password_min")),
+			isFemale: z.boolean().refine((val) => val === true, {
+				message: t("auth.validation.female_only"),
+			}),
+			acceptTerms: z.boolean().refine((val) => val === true, {
+				message: t("auth.validation.terms_required"),
+			}),
+		})
+		.refine((data) => data.password === data.confirmPassword, {
+			message: t("auth.validation.passwords_no_match"),
+			path: ["confirmPassword"],
+		});
 
 export default function SignUp() {
 	const { signUp } = useAuth();
+	const { t } = useTranslation();
+
+	const formSchema = getFormSchema(t);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -71,7 +78,7 @@ export default function SignUp() {
 	return (
 		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
 			<View className="flex-1 gap-4 web:m-4">
-				<H1 className="self-start">Sign Up</H1>
+				<H1 className="self-start">{t("auth.sign_up")}</H1>
 				<Form {...form}>
 					<View className="gap-4">
 						<FormField
@@ -79,8 +86,8 @@ export default function SignUp() {
 							name="firstName"
 							render={({ field }) => (
 								<FormInput
-									label="First Name"
-									placeholder="First Name"
+									label={t("auth.first_name")}
+									placeholder={t("auth.first_name")}
 									autoCapitalize="none"
 									autoCorrect={true}
 									{...field}
@@ -93,8 +100,8 @@ export default function SignUp() {
 							name="lastName"
 							render={({ field }) => (
 								<FormInput
-									label="Last Name"
-									placeholder="Last Name"
+									label={t("auth.last_name")}
+									placeholder={t("auth.last_name")}
 									autoCapitalize="none"
 									autoCorrect={true}
 									{...field}
@@ -107,8 +114,8 @@ export default function SignUp() {
 							name="email"
 							render={({ field }) => (
 								<FormInput
-									label="Email"
-									placeholder="Email"
+									label={t("auth.email")}
+									placeholder={t("auth.email")}
 									autoCapitalize="none"
 									autoComplete="email"
 									autoCorrect={false}
@@ -122,8 +129,8 @@ export default function SignUp() {
 							name="password"
 							render={({ field }) => (
 								<FormInput
-									label="Password"
-									placeholder="Password"
+									label={t("auth.password")}
+									placeholder={t("auth.password")}
 									autoCapitalize="none"
 									autoCorrect={false}
 									secureTextEntry
@@ -136,8 +143,8 @@ export default function SignUp() {
 							name="confirmPassword"
 							render={({ field }) => (
 								<FormInput
-									label="Confirm Password"
-									placeholder="Confirm password"
+									label={t("auth.confirm_password")}
+									placeholder={t("auth.confirm_password")}
 									autoCapitalize="none"
 									autoCorrect={false}
 									secureTextEntry
@@ -153,7 +160,7 @@ export default function SignUp() {
 							render={({ field }) => (
 								<View className="flex-row items-center justify-between">
 									<Text className="text-base font-medium">
-										I confirm I am female
+										{t("auth.female_confirmation")}
 									</Text>
 									<Switch
 										checked={field.value}
@@ -184,11 +191,11 @@ export default function SignUp() {
 										renderLabel={() => (
 											<View className="flex-row items-center gap-1">
 												<Text className="text-sm text-foreground">
-													I accept the
+													{t("auth.accept_terms")}
 												</Text>{" "}
 												<Pressable onPress={handleTermsPress}>
 													<Text className="text-blue-500 text-sm underline">
-														Terms and Condition and Privacy Policy
+														{t("auth.terms_and_privacy")}
 													</Text>
 												</Pressable>
 											</View>
@@ -215,7 +222,7 @@ export default function SignUp() {
 				{form.formState.isSubmitting ? (
 					<ActivityIndicator size="small" />
 				) : (
-					<Text>Sign Up</Text>
+					<Text>{t("auth.sign_up")}</Text>
 				)}
 			</Button>
 		</SafeAreaView>

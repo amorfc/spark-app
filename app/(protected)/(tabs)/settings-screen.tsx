@@ -8,33 +8,35 @@ import { useAuth } from "@/context/supabase-provider";
 import { useProfile } from "@/hooks/useProfile";
 import { getFullName } from "@/lib/profile";
 import LangSelect from "@/components/select/lang-select";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function Settings() {
 	const { signOut } = useAuth();
 	const { profile, isLoading } = useProfile();
+	const { t } = useTranslation();
 	const fullName = getFullName(profile);
 
 	const getGreeting = () => {
 		const hour = new Date().getHours();
-		if (hour < 12) return "Good morning";
-		if (hour < 18) return "Good afternoon";
-		return "Good evening";
+		if (hour < 12) return t("greetings.good_morning");
+		if (hour < 18) return t("greetings.good_afternoon");
+		return t("greetings.good_evening");
 	};
 
 	return (
 		<SafeAreaView className="flex-1 bg-background" edges={["top"]}>
 			{/* Top Section - User Greeting */}
 			<View className="p-6 pt-8">
-				<H1 className="text-left mb-2">Settings</H1>
+				<H1 className="text-left mb-2">{t("settings.title")}</H1>
 				{isLoading ? (
-					<Muted>Loading...</Muted>
+					<Muted>{t("common.loading")}</Muted>
 				) : fullName ? (
 					<>
 						<H2 className="text-left mb-1">{getGreeting()},</H2>
 						<H2 className="text-left text-primary">{fullName}!</H2>
 					</>
 				) : (
-					<Muted>Welcome to Settings</Muted>
+					<Muted>{t("settings.welcome_message")}</Muted>
 				)}
 			</View>
 
@@ -50,9 +52,11 @@ export default function Settings() {
 			<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 			<View className="p-6 pt-4 border-t border-border">
 				<View className="mb-4">
-					<Text className="text-lg font-semibold mb-2">Account</Text>
+					<Text className="text-lg font-semibold mb-2">
+						{t("settings.account")}
+					</Text>
 					<Muted className="text-sm">
-						Sign out and return to the welcome screen.
+						{t("settings.sign_out_description")}
 					</Muted>
 				</View>
 				<Button
@@ -63,7 +67,7 @@ export default function Settings() {
 						await signOut();
 					}}
 				>
-					<Text>Sign Out</Text>
+					<Text>{t("auth.sign_out")}</Text>
 				</Button>
 			</View>
 		</SafeAreaView>

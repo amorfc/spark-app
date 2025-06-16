@@ -12,8 +12,10 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useUserReview } from "@/hooks/useReviews";
 import { useMapSearch } from "@/hooks/useMapSearch";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function ReviewUpsertScreen() {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const { selectedFeature } = useMapSearch();
 	const featureRefId = selectedFeature?.id as string;
@@ -40,13 +42,11 @@ export default function ReviewUpsertScreen() {
 
 		// Show success message and navigate back
 		Alert.alert(
-			"Success!",
-			userReview
-				? "Your review has been updated."
-				: "Thank you for your review!",
+			t("common.success"),
+			userReview ? t("reviews.review_updated") : t("reviews.review_submitted"),
 			[
 				{
-					text: "OK",
+					text: t("common.ok"),
 					onPress: () => router.back(),
 				},
 			],
@@ -59,7 +59,9 @@ export default function ReviewUpsertScreen() {
 	};
 
 	const isEditing = !!userReview;
-	const headerTitle = isEditing ? "Edit Your Review" : "Write a Review";
+	const headerTitle = isEditing
+		? t("reviews.edit_review")
+		: t("reviews.write_review");
 	const isLoading = userReviewLoading;
 
 	const featureName = selectedFeature?.properties?.name;
@@ -68,10 +70,10 @@ export default function ReviewUpsertScreen() {
 		return (
 			<SafeAreaView className="flex-1 justify-center items-center">
 				<Text className="text-center text-destructive text-lg">
-					Invalid feature ID
+					{t("reviews.invalid_feature")}
 				</Text>
 				<Button onPress={() => router.back()} className="mt-4">
-					Go Back
+					{t("common.go_back")}
 				</Button>
 			</SafeAreaView>
 		);
@@ -90,15 +92,15 @@ export default function ReviewUpsertScreen() {
 					)}
 					<Text className="text-sm text-muted-foreground mt-1">
 						{isEditing
-							? "Update your rating and feedback"
-							: "Share your experience with the community"}
+							? t("reviews.update_rating_feedback")
+							: t("reviews.share_experience")}
 					</Text>
 				</View>
 				<TouchableOpacity
 					className="px-2 py-2"
 					onPress={handleClose}
 					disabled={isSubmitting}
-					accessibilityLabel="Close review form"
+					accessibilityLabel={t("accessibility.close_review_form")}
 					accessibilityRole="button"
 				>
 					<MaterialIcons
@@ -112,7 +114,9 @@ export default function ReviewUpsertScreen() {
 			{/* Current Stats Section */}
 			{userReview && !isLoading && (
 				<View className="mx-4 mt-4 p-4 bg-muted rounded-lg">
-					<Text className="text-sm font-medium mb-3">Current Ratings</Text>
+					<Text className="text-sm font-medium mb-3">
+						{t("reviews.current_ratings")}
+					</Text>
 					<View className="flex-row justify-between items-center">
 						<View className="flex-row items-center space-x-2">
 							<StarRating
@@ -131,15 +135,19 @@ export default function ReviewUpsertScreen() {
 							</Text>
 						</View>
 						<Text className="text-sm text-muted-foreground">
-							Average Rating
+							{t("reviews.average_rating")}
 						</Text>
 					</View>
 					<View className="flex-row justify-between mt-2">
 						<Text className="text-sm text-muted-foreground">
-							Safety: {userReview.safety_rating}/5
+							{t("reviews.safety_short", {
+								rating: userReview.safety_rating,
+							})}
 						</Text>
 						<Text className="text-sm text-muted-foreground">
-							Quality: {userReview.quality_rating}/5
+							{t("reviews.quality_short", {
+								rating: userReview.quality_rating,
+							})}
 						</Text>
 					</View>
 				</View>
@@ -150,7 +158,9 @@ export default function ReviewUpsertScreen() {
 				{isLoading ? (
 					<View className="flex-1 justify-center items-center">
 						<ActivityIndicator size="large" />
-						<Text className="mt-2 text-muted-foreground">Loading...</Text>
+						<Text className="mt-2 text-muted-foreground">
+							{t("common.loading")}
+						</Text>
 					</View>
 				) : (
 					<ReviewForm

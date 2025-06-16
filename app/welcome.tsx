@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H1, Muted } from "@/components/ui/typography";
 import { useColorScheme } from "@/lib/useColorScheme";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function WelcomeScreen() {
 	const router = useRouter();
 	const { colorScheme } = useColorScheme();
+	const { t } = useTranslation();
 	const appIcon =
 		colorScheme === "dark"
 			? require("@/assets/icon.png")
@@ -21,11 +23,8 @@ export default function WelcomeScreen() {
 		<SafeAreaView className="flex flex-1 bg-background p-4">
 			<View className="flex flex-1 items-center justify-center gap-y-4 web:m-4">
 				<Image source={appIcon} className="size-32 rounded-xl" />
-				<H1 className="text-center">Spark</H1>
-				<Muted className="text-center">
-					Spark is a platform that helps you discover how safe different places
-					are around you.
-				</Muted>
+				<H1 className="text-center">{t("app.title")}</H1>
+				<Muted className="text-center">{t("app.description")}</Muted>
 			</View>
 			<View className="flex flex-col gap-y-4 web:m-4">
 				<Button
@@ -35,7 +34,7 @@ export default function WelcomeScreen() {
 						router.push("/sign-up");
 					}}
 				>
-					<Text>Sign Up</Text>
+					<Text>{t("auth.sign_up")}</Text>
 				</Button>
 				<Button
 					size="default"
@@ -44,7 +43,7 @@ export default function WelcomeScreen() {
 						router.push("/sign-in");
 					}}
 				>
-					<Text>Sign In</Text>
+					<Text>{t("auth.sign_in")}</Text>
 				</Button>
 			</View>
 		</SafeAreaView>

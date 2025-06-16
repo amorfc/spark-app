@@ -2,7 +2,8 @@ import React from "react";
 import { ItemType } from "react-native-dropdown-picker";
 import { Select } from "@/components/select/select";
 import { BlogCategory } from "@/types/blog";
-import { getCategoryDisplayName } from "@/utils/blog";
+import { getCategoryTranslationKey } from "@/utils/blog";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 interface CategorySelectProps {
 	value: BlogCategory | null;
@@ -15,10 +16,12 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
 	onValueChange,
 	placeholder = "Select a category...",
 }) => {
+	const { t } = useTranslation();
+
 	// Create category options for the dropdown
 	const categoryOptions: ItemType<string>[] = Object.values(BlogCategory).map(
 		(category) => ({
-			label: getCategoryDisplayName(category),
+			label: t(getCategoryTranslationKey(category)),
 			value: category,
 		}),
 	);

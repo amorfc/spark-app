@@ -21,6 +21,7 @@ import { router } from "expo-router";
 import { GenericFlatList } from "@/components/ui/generic-flatlist";
 import { Review } from "@/types/reviews";
 import { ReviewItem } from "@/components/reviews/review-item";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 type FeatureInfoBottomSheetProps = Omit<BottomSheetProps, "children"> & {
 	feature: GeoJSON.Feature;
@@ -31,6 +32,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 	FeatureInfoBottomSheetProps
 >(({ feature, ...bottomSheetProps }, ref) => {
 	const { colorScheme } = useColorScheme();
+	const { t } = useTranslation();
 
 	const isDark = colorScheme === "dark";
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
@@ -166,9 +168,13 @@ export const FeatureInfoBottomSheet = forwardRef<
 								{userReviewLoading ? (
 									<ActivityIndicator size="small" color="white" />
 								) : userReview ? (
-									<Text className="text-white font-medium">Edit Review</Text>
+									<Text className="text-white font-medium">
+										{t("reviews.edit_review_button")}
+									</Text>
 								) : (
-									<Text className="text-white font-medium">Add Review</Text>
+									<Text className="text-white font-medium">
+										{t("reviews.add_review")}
+									</Text>
 								)}
 							</TouchableOpacity>
 						</View>
@@ -187,8 +193,8 @@ export const FeatureInfoBottomSheet = forwardRef<
 							loading={reviewsLoading}
 							onRefresh={reviewsRefetch}
 							refreshing={reviewsRefetching}
-							emptyStateMessage="No reviews found"
-							emptyStateSubtitle="Be the first to review this feature"
+							emptyStateMessage={t("empty_states.no_reviews")}
+							emptyStateSubtitle={t("empty_states.be_first_reviewer")}
 							renderItem={renderReviewItem}
 							showsVerticalScrollIndicator={true}
 							contentContainerStyle={{

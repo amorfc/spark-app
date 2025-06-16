@@ -8,12 +8,14 @@ import { getBlogPostsByCategory } from "@/utils/blog";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { SafeAreaView } from "@/components/safe-area-view";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 // Import blog data
 import blogData from "@/assets/data/blog-posts.json";
 
 export default function BlogScreen() {
 	const { colorScheme } = useColorScheme();
+	const { t } = useTranslation();
 	const isDark = colorScheme === "dark";
 
 	// State for selected category - default to SelfDefense as requested
@@ -71,7 +73,7 @@ export default function BlogScreen() {
 				<CategorySelect
 					value={selectedCategory}
 					onValueChange={handleCategoryChange}
-					placeholder="Select a category..."
+					placeholder={t("select.placeholder")}
 				/>
 			</View>
 
@@ -81,7 +83,7 @@ export default function BlogScreen() {
 				renderItem={renderBlogPost}
 				onRefresh={handleRefresh}
 				refreshing={refreshing}
-				emptyStateMessage="No blog posts found"
+				emptyStateMessage={t("empty_states.no_data")}
 				emptyStateSubtitle="Try selecting a different category"
 				contentContainerStyle={styles.listContainer}
 				enableLayoutAnimation={true}
