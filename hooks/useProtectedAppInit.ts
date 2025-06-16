@@ -3,11 +3,13 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/store";
 import { setDistricts } from "@/store/slices/mapSearchSlice";
 import { useMapSearch } from "@/hooks/useMapSearch";
+import { useProfile } from "@/hooks/useProfile";
 
 export const useProtectedAppInit = () => {
 	const dispatch = useAppDispatch();
 	const { updateMapLoading } = useMapSearch();
 	const { data: districts, isLoading: isDistrictsLoading } = useDistricts();
+	useProfile();
 
 	useEffect(() => {
 		updateMapLoading(isDistrictsLoading);

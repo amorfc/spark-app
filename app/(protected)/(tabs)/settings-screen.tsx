@@ -7,6 +7,7 @@ import { H1, H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/supabase-provider";
 import { useProfile } from "@/hooks/useProfile";
 import { getFullName } from "@/lib/profile";
+import LangSelect from "@/components/select/lang-select";
 
 export default function Settings() {
 	const { signOut } = useAuth();
@@ -46,6 +47,7 @@ export default function Settings() {
 			</View>
 
 			{/* Bottom Section - Sign Out */}
+			<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 			<View className="p-6 pt-4 border-t border-border">
 				<View className="mb-4">
 					<Text className="text-lg font-semibold mb-2">Account</Text>
