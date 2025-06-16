@@ -154,23 +154,23 @@ export const FeatureInfoBottomSheet = forwardRef<
 								</View>
 								<TouchableOpacity
 									className="px-1"
-									onPress={() => router.push(`/review-upsert-screen`)}
-								>
-									{userReviewLoading ? (
-										<ActivityIndicator size="small" color={iconColor} />
-									) : userReview ? (
-										<MaterialIcons name="edit" size={24} color={iconColor} />
-									) : (
-										<MaterialIcons name="add" size={24} color={iconColor} />
-									)}
-								</TouchableOpacity>
-								<TouchableOpacity
-									className="px-1"
 									onPress={() => bottomSheetRef.current?.close()}
 								>
 									<MaterialIcons name="close" size={24} color={iconColor} />
 								</TouchableOpacity>
 							</View>
+							<TouchableOpacity
+								className="mt-2 items-center py-1.5 bg-primary web:hover:opacity-90 active:opacity-90 rounded-lg"
+								onPress={() => router.push(`/review-upsert-screen`)}
+							>
+								{userReviewLoading ? (
+									<ActivityIndicator size="small" color="white" />
+								) : userReview ? (
+									<Text className="text-white font-medium">Edit Review</Text>
+								) : (
+									<Text className="text-white font-medium">Add Review</Text>
+								)}
+							</TouchableOpacity>
 						</View>
 
 						<View className="flex flex-row flex-wrap gap-1 mb-3">
