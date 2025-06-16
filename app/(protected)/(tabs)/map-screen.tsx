@@ -54,7 +54,6 @@ export default function MapScreen() {
 	const featureSheetRef = useRef<BottomSheetRef>(null);
 	const filterSheetRef = useRef<MapFilterBottomSheetRef>(null);
 	const { data: pois, isLoading: isAmenitiesLoading } = useAmenities();
-
 	const handleCloseFeatureSheet = useCallback(() => {
 		featureSheetRef.current?.close();
 		clearSelectedFeature();

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, Pressable, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, View } from "react-native";
 import * as z from "zod";
 
 import { SafeAreaView } from "@/components/safe-area-view";
@@ -15,24 +15,14 @@ import { router } from "expo-router";
 
 const formSchema = z
 	.object({
+		firstName: z.string().min(1, "Please enter your first name."),
+		lastName: z.string().min(1, "Please enter your last name."),
 		email: z.string().email("Please enter a valid email address."),
 		password: z
 			.string()
-			.min(8, "Please enter at least 8 characters.")
+			.min(6, "Please enter at least 6 characters.")
 			.max(64, "Please enter fewer than 64 characters.")
-			.regex(
-				/^(?=.*[a-z])/,
-				"Your password must have at least one lowercase letter.",
-			)
-			.regex(
-				/^(?=.*[A-Z])/,
-				"Your password must have at least one uppercase letter.",
-			)
-			.regex(/^(?=.*[0-9])/, "Your password must have at least one number.")
-			.regex(
-				/^(?=.*[_!@#$%^&*])/,
-				"Your password must have at least one special character.",
-			),
+			.regex(/^(?=.*[0-9])/, "Your password must have at least one number."),
 		confirmPassword: z.string().min(8, "Please enter at least 8 characters."),
 		isFemale: z.boolean().refine((val) => val === true, {
 			message: "Spark is currently available for female users only.",
@@ -52,6 +42,8 @@ export default function SignUp() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			firstName: "",
+			lastName: "",
 			email: "",
 			password: "",
 			confirmPassword: "",
@@ -62,10 +54,14 @@ export default function SignUp() {
 
 	async function onSubmit(data: z.infer<typeof formSchema>) {
 		try {
-			await signUp(data.email, data.password);
+			await signUp(data.email, data.password, {
+				firstName: data.firstName,
+				lastName: data.lastName,
+			});
 
 			form.reset();
 		} catch (error: Error | any) {
+			Alert.alert(error.message);
 			console.error(error.message);
 		}
 	}
@@ -78,6 +74,34 @@ export default function SignUp() {
 				<H1 className="self-start">Sign Up</H1>
 				<Form {...form}>
 					<View className="gap-4">
+						<FormField
+							control={form.control}
+							name="firstName"
+							render={({ field }) => (
+								<FormInput
+									label="First Name"
+									placeholder="First Name"
+									autoCapitalize="none"
+									autoCorrect={true}
+									{...field}
+								/>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="lastName"
+							render={({ field }) => (
+								<FormInput
+									label="Last Name"
+									placeholder="Last Name"
+									autoCapitalize="none"
+									autoCorrect={true}
+									{...field}
+								/>
+							)}
+						/>
+
 						<FormField
 							control={form.control}
 							name="email"
