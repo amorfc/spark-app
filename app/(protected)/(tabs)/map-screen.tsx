@@ -188,13 +188,6 @@ export default function MapScreen() {
 			{/* Filter Button - Top Right */}
 			<View className="absolute top-20 right-4 z-10 flex-col gap-2">
 				<MapFilterButton onPress={openFilterSheet} />
-
-				{/* User Location Button - Top Right, below filter button */}
-				<UserLocationButton
-					onPress={handleUserLocationPress}
-					isLoading={isLocationLoading}
-					hasPermission={hasPermission}
-				/>
 			</View>
 
 			<Map
@@ -206,7 +199,7 @@ export default function MapScreen() {
 				onMapLoad={handleMapLoad}
 				onPointPress={handlePointPress}
 				currentBounds={currentCameraBounds}
-				showUserLocation={true}
+				showUserLocation={false}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
