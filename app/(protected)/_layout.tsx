@@ -25,15 +25,6 @@ export default function ProtectedLayout() {
 		>
 			<Stack.Screen name="(tabs)" />
 			<Stack.Screen name="modal" options={{ presentation: "modal" }} />
-			<Stack.Screen
-				name="review-upsert-screen"
-				options={{
-					presentation: "modal",
-					headerShown: false,
-					gestureEnabled: true,
-					animation: "slide_from_bottom",
-				}}
-			/>
 		</Stack>
 	);
 }

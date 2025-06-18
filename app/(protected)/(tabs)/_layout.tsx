@@ -38,7 +38,7 @@ export default function TabsLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="map-screen"
+				name="map"
 				options={{
 					title: t("navigation.map"),
 					tabBarIcon: ({ focused }) => (

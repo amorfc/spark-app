@@ -1,7 +1,6 @@
-// app/review-upsert.tsx
 import React, { useState } from "react";
 import { View, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
@@ -17,8 +16,11 @@ import { useTranslation } from "@/lib/i18n/hooks";
 export default function ReviewUpsertScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
+	const { id } = useLocalSearchParams<{ id: string }>();
 	const { selectedFeature } = useMapSearch();
-	const featureRefId = selectedFeature?.id as string;
+
+	// Use the id from params or fall back to selectedFeature
+	const featureRefId = id || (selectedFeature?.id as string);
 
 	const { colorScheme } = useColorScheme();
 	const isDark = colorScheme === "dark";

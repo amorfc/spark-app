@@ -217,7 +217,7 @@ const getFormSchema = (t: any) =>
 - `components/select/poi-category-select.tsx` - POI category translations
 - `components/bottom-sheet/feature-info-bottom-sheet.tsx` - Review button translations
 - `components/reviews/review-form.tsx` - Review form translations
-- `app/(protected)/review-upsert-screen.tsx` - Review screen translations
+- `app/(protected)/(tabs)/map/[id].tsx` - Review screen translations
 - `components/bottom-sheet/map-filter-bottom-sheet.tsx` - Map filter translations
 - `components/select/district-select.tsx` - District select translations
 - `services/poi-service.ts` - POI category translation keys
