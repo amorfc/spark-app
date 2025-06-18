@@ -3,6 +3,7 @@ import React, {
 	useRef,
 	useImperativeHandle,
 	useCallback,
+	useState,
 } from "react";
 import { View } from "react-native";
 
@@ -22,36 +23,38 @@ export interface PostReviewBottomSheetRef extends BottomSheetRef {
 
 interface PostReviewBottomSheetProps {
 	postId: string;
-	existingReview?: PostReviewWithProfile | null;
-	onSuccess?: () => void;
 	snapPoints?: string[];
 }
 
 export const PostReviewBottomSheet = forwardRef<
 	PostReviewBottomSheetRef,
 	PostReviewBottomSheetProps
->(({ postId, existingReview, onSuccess }, ref) => {
-	const { t } = useTranslation();
+>(({ postId }, ref) => {
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
-
-	const isUpdateMode = !!existingReview;
+	const [existingReview, setExistingReview] =
+		useState<PostReviewWithProfile | null>(null);
 
 	const openForCreate = useCallback(() => {
+		setExistingReview(null);
 		bottomSheetRef.current?.snapToIndex(0);
 	}, []);
 
-	const openForEdit = useCallback((review: PostReviewWithProfile) => {
-		bottomSheetRef.current?.snapToIndex(0);
-	}, []);
+	const openForEdit = useCallback(
+		(review: PostReviewWithProfile) => {
+			bottomSheetRef.current?.snapToIndex(0);
+			setExistingReview(review);
+		},
+		[setExistingReview],
+	);
 
 	const handleClose = useCallback(() => {
+		setExistingReview(null);
 		bottomSheetRef.current?.close();
-	}, []);
+	}, [setExistingReview]);
 
 	const handleFormSuccess = useCallback(() => {
-		onSuccess?.();
 		handleClose();
-	}, [onSuccess, handleClose]);
+	}, [handleClose]);
 
 	// Expose methods to parent via ref
 	useImperativeHandle(
@@ -71,23 +74,9 @@ export const PostReviewBottomSheet = forwardRef<
 			enablePanDownToClose={true}
 			enableDynamicSizing={true}
 			scrollable={false}
+			backdropPressBehavior="close"
 		>
 			<View className="py-6">
-				{/* Header */}
-				<View className="mb-6">
-					<Text className="text-xl font-semibold text-foreground mb-2">
-						{isUpdateMode
-							? t("posts.reviews.edit_review")
-							: t("posts.reviews.write_review")}
-					</Text>
-					<Text className="text-sm text-muted-foreground">
-						{isUpdateMode
-							? t("posts.reviews.update_your_review")
-							: t("reviews.share_with_community")}
-					</Text>
-				</View>
-
-				{/* Use existing PostReviewForm component */}
 				<PostReviewForm
 					postId={postId}
 					existingReview={existingReview}

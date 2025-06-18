@@ -15,6 +15,7 @@ import {
 	PostReviewBottomSheetRef,
 } from "@/components/bottom-sheet/post-review-bottom-sheet";
 import { PostReviewList } from "@/components/post/post-review-list";
+import { PostReviewWithProfile } from "@/types/posts";
 
 export default function PostDetailScreen() {
 	const { t } = useTranslation();
@@ -63,8 +64,12 @@ export default function PostDetailScreen() {
 		);
 	}
 
-	const handleMakeReview = () => {
+	const openReviewCreateSheet = () => {
 		postReviewBottomSheetRef.current?.openForCreate();
+	};
+
+	const openReviewUpdateSheet = (review: PostReviewWithProfile) => {
+		postReviewBottomSheetRef.current?.openForEdit(review);
 	};
 
 	return (
@@ -73,7 +78,7 @@ export default function PostDetailScreen() {
 			<View className="flex-row justify-between items-center px-4 py-3 border-b border-border">
 				<Text className="text-xl font-semibold">{t("posts.post_details")}</Text>
 				<View className="flex-row items-center gap-2">
-					<Button variant="default" size="sm" onPress={handleMakeReview}>
+					<Button variant="default" size="sm" onPress={openReviewCreateSheet}>
 						<Text className="text-white">{t("posts.make_review")}</Text>
 					</Button>
 					<TouchableOpacity onPress={handleClose}>
@@ -94,14 +99,9 @@ export default function PostDetailScreen() {
 
 			<View className="flex-1 px-2 pt-4">
 				<Text className="text-lg font-semibold mb-2">Reviews</Text>
-				<PostReviewList postId={id} />
+				<PostReviewList postId={id} onReviewPress={openReviewUpdateSheet} />
 			</View>
-			<PostReviewBottomSheet
-				ref={postReviewBottomSheetRef}
-				postId={id}
-				existingReview={null}
-				onSuccess={() => {}}
-			/>
+			<PostReviewBottomSheet ref={postReviewBottomSheetRef} postId={id} />
 		</SafeAreaView>
 	);
 }

@@ -18,6 +18,7 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 
 export interface SelectProps<T> {
 	open?: boolean;
@@ -433,13 +434,7 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 							],
 						}}
 					>
-						<TouchableOpacity
-							onPress={handleClear}
-							className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-sm"
-							activeOpacity={0.9}
-						>
-							<MaterialIcons name="delete" size={16} color="white" />
-						</TouchableOpacity>
+						<DeleteIconButton onPress={handleClear} />
 					</Animated.View>
 				)}
 			</View>

@@ -10,6 +10,7 @@ import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { useAuth } from "@/context/supabase-provider";
 import { useDeletePost } from "@/hooks/usePosts";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 
 interface PostCardProps {
 	item: PostWithProfile;
@@ -78,14 +79,7 @@ export const PostCard = ({
 
 				{/* Delete Button for Own Posts */}
 				{isOwnPost && canDelete && (
-					<TouchableOpacity
-						onPress={handleDeletePress}
-						className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-sm"
-						activeOpacity={0.9}
-						disabled={deletePostMutation.isPending}
-					>
-						<MaterialIcons name="delete" size={16} color="white" />
-					</TouchableOpacity>
+					<DeleteIconButton onPress={handleDeletePress} />
 				)}
 			</View>
 

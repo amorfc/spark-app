@@ -1,18 +1,12 @@
 import React, { useState } from "react";
-import {
-	View,
-	Pressable,
-	TouchableOpacity,
-	Alert,
-	ActivityIndicator,
-} from "react-native";
+import { View, Pressable, Alert, ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
 import { StarRating } from "@/components/reviews/star-rating";
 import { cn } from "@/lib/utils";
 import { Review } from "@/types/reviews";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useDeleteReview } from "@/hooks/useReviews";
 import { useAuth } from "@/context/supabase-provider";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 
 interface ReviewItemProps {
 	review: Review;
@@ -86,15 +80,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 						{averageRating.toFixed(1)}
 					</Text>
 				</View>
-				{canDelete && (
-					<TouchableOpacity
-						onPress={handleDeletePress}
-						className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-sm"
-						activeOpacity={0.9}
-					>
-						<MaterialIcons name="delete" size={16} color="white" />
-					</TouchableOpacity>
-				)}
+				{canDelete && <DeleteIconButton onPress={handleDeletePress} />}
 			</View>
 
 			{/* Individual ratings */}

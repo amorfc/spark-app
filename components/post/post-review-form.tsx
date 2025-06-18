@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Alert } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,8 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 
-import { useCreatePostReview } from "@/hooks/usePosts";
+import {
+	useCreatePostReview,
+	useUpdatePostReview,
+	useDeletePostReview,
+} from "@/hooks/usePosts";
+import { PostReviewWithProfile } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 
 const maxReviewLength = 400;
 const getPostReviewFormSchema = (t: any) =>
@@ -31,6 +37,7 @@ type PostReviewFormData = z.infer<ReturnType<typeof getPostReviewFormSchema>>;
 
 interface PostReviewFormProps {
 	postId: string;
+	existingReview?: PostReviewWithProfile | null;
 	onSuccess?: () => void;
 	onCancel?: () => void;
 	className?: string;
@@ -38,6 +45,7 @@ interface PostReviewFormProps {
 
 const PostReviewForm: React.FC<PostReviewFormProps> = ({
 	postId,
+	existingReview,
 	onSuccess,
 	onCancel,
 	className,
@@ -46,22 +54,44 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const createMutation = useCreatePostReview();
+	const updateMutation = useUpdatePostReview();
+	const deleteMutation = useDeletePostReview();
 	const postReviewFormSchema = getPostReviewFormSchema(t);
+
+	const isEditMode = !!existingReview;
 
 	const form = useForm<PostReviewFormData>({
 		resolver: zodResolver(postReviewFormSchema),
 		defaultValues: {
-			text: "",
+			text: existingReview?.text || "",
 		},
 	});
+
+	// Update form when existing review changes
+	useEffect(() => {
+		if (existingReview) {
+			form.setValue("text", existingReview.text);
+		} else {
+			form.setValue("text", "");
+		}
+	}, [existingReview, form]);
 
 	const onSubmit = async (data: PostReviewFormData) => {
 		setIsSubmitting(true);
 		try {
-			await createMutation.mutateAsync({
-				postId,
-				data: { text: data.text },
-			});
+			if (isEditMode && existingReview) {
+				// Update existing review
+				await updateMutation.mutateAsync({
+					reviewId: existingReview.id,
+					data: { text: data.text },
+				});
+			} else {
+				// Create new review
+				await createMutation.mutateAsync({
+					postId,
+					data: { text: data.text },
+				});
+			}
 
 			form.reset();
 			onSuccess?.();
@@ -78,13 +108,53 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 		}
 	};
 
-	const isLoading = createMutation.isPending || isSubmitting;
+	const handleDelete = async () => {
+		if (!existingReview) return;
+
+		Alert.alert(
+			t("posts.reviews.delete_review"),
+			t("posts.reviews.delete_confirmation"),
+			[
+				{ text: t("common.cancel"), style: "cancel" },
+				{
+					text: t("common.delete"),
+					style: "destructive",
+					onPress: async () => {
+						try {
+							await deleteMutation.mutateAsync({
+								reviewId: existingReview.id,
+								postId: existingReview.post_id,
+							});
+							form.reset();
+							onSuccess?.();
+						} catch {
+							Alert.alert(t("common.error"), t("posts.reviews.delete_error"));
+						}
+					},
+				},
+			],
+		);
+	};
+
+	const isLoading =
+		createMutation.isPending || updateMutation.isPending || isSubmitting;
+	const isDeleting = deleteMutation.isPending;
 
 	return (
-		<View className={cn("space-y-4", className)}>
-			<Text className="font-semibold text-foreground">
-				{t("posts.reviews.add_review")}
-			</Text>
+		<View className={cn("space-y-4 gap-y-4", className)}>
+			<View className="flex-row justify-between items-center">
+				<Text className="font-semibold text-foreground">
+					{isEditMode
+						? t("posts.reviews.edit_review")
+						: t("posts.reviews.add_review")}
+				</Text>
+				{isEditMode && existingReview && (
+					<DeleteIconButton
+						disabled={isLoading || isDeleting}
+						onPress={handleDelete}
+					/>
+				)}
+			</View>
 
 			<Form {...form}>
 				<View className="space-y-4">
@@ -117,7 +187,7 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 							<Button
 								variant="outline"
 								onPress={onCancel}
-								disabled={isLoading}
+								disabled={isLoading || isDeleting}
 								className="flex-1"
 							>
 								<Text>{t("common.cancel")}</Text>
@@ -126,13 +196,15 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 
 						<Button
 							onPress={form.handleSubmit(onSubmit)}
-							disabled={isLoading || !form.watch("text")?.trim()}
+							disabled={isLoading || isDeleting || !form.watch("text")?.trim()}
 							className="flex-1"
 						>
 							<Text>
 								{isLoading
 									? t("common.submitting")
-									: t("posts.reviews.submit_review")}
+									: isEditMode
+										? t("posts.reviews.update_review_button")
+										: t("posts.reviews.submit_review")}
 							</Text>
 						</Button>
 					</View>

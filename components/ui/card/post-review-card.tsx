@@ -1,13 +1,69 @@
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
+import { useAuth } from "@/context/supabase-provider";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
+import { useDeletePostReview } from "@/hooks/usePosts";
+import { useTranslation } from "@/lib/i18n/hooks";
 import { PostReviewWithProfile } from "@/types/posts";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View, Alert } from "react-native";
 
-export const PostReviewCard = ({ item }: { item: PostReviewWithProfile }) => {
+interface PostReviewCardProps {
+	item: PostReviewWithProfile;
+	onPress: () => void;
+	canDelete?: boolean;
+}
+
+export const PostReviewCard = ({
+	item,
+	onPress,
+	canDelete = true,
+}: PostReviewCardProps) => {
+	const { t } = useTranslation();
 	const createdAt = new Date(item.created_at);
 	const timeAgo = useTimeAgo(createdAt);
+	const { session } = useAuth();
+	const deleteReviewMutation = useDeletePostReview();
+
+	// Check if current user is the review author
+	const isOwnReview = session?.user?.id === item.user_id;
+
+	const handleDeletePress = () => {
+		Alert.alert(
+			t("posts.reviews.delete_review"),
+			t("posts.reviews.delete_confirmation"),
+			[
+				{ text: t("common.cancel"), style: "cancel" },
+				{
+					text: t("common.delete"),
+					style: "destructive",
+					onPress: async () => {
+						try {
+							await deleteReviewMutation.mutateAsync({
+								reviewId: item.id,
+								postId: item.post_id,
+							});
+							Alert.alert(
+								t("common.success"),
+								t("posts.reviews.review_deleted"),
+							);
+						} catch (error) {
+							Alert.alert(
+								t("common.error"),
+								error instanceof Error
+									? error.message
+									: t("posts.reviews.delete_error"),
+							);
+						}
+					},
+				},
+			],
+		);
+	};
 
 	return (
-		<View className="bg-card border border-border rounded-lg p-4 mb-3">
+		<TouchableOpacity
+			className="bg-card border border-border rounded-lg p-4 mb-3"
+			onPress={onPress}
+		>
 			{/* Review Header */}
 			<View className="flex-row items-center mb-2">
 				<View className="w-8 h-8 bg-primary rounded-full items-center justify-center">
@@ -22,10 +78,15 @@ export const PostReviewCard = ({ item }: { item: PostReviewWithProfile }) => {
 					</Text>
 					<Text className="text-xs text-muted-foreground">{timeAgo}</Text>
 				</View>
+
+				{/* Delete Button for Own Reviews */}
+				{isOwnReview && canDelete && (
+					<DeleteIconButton onPress={handleDeletePress} />
+				)}
 			</View>
 
 			{/* Review Content */}
 			<Text className="text-foreground leading-5">{item.text}</Text>
-		</View>
+		</TouchableOpacity>
 	);
 };
