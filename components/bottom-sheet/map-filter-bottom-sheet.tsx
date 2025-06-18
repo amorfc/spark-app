@@ -1,6 +1,5 @@
 import React, {
 	forwardRef,
-	useMemo,
 	useCallback,
 	useRef,
 	useImperativeHandle,
@@ -9,7 +8,10 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { View, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheet, BottomSheetRef } from "@/components/bottom-sheet";
+import {
+	BottomSheet,
+	BottomSheetRef,
+} from "@/components/bottom-sheet/bottom-sheet";
 import {
 	POICategorySelect,
 	POICategorySelectRef,
@@ -17,7 +19,6 @@ import {
 import { POICategoryDefinition } from "@/services/poi-service";
 import { useMapSearch } from "@/hooks/useMapSearch";
 import { useColorScheme } from "@/lib/useColorScheme";
-import { BottomSheetProps } from "@/components/bottom-sheet/bottom-sheet";
 import { colors } from "@/constants/colors";
 import { DistrictSelect } from "@/components/select/district-select";
 import { useTranslation } from "@/lib/i18n/hooks";
@@ -25,7 +26,7 @@ export interface MapFilterBottomSheetRef extends BottomSheetRef {
 	clearFilters: () => void;
 }
 
-interface MapFilterBottomSheetProps extends Omit<BottomSheetProps, "children"> {
+interface MapFilterBottomSheetProps extends Omit<BottomSheetRef, "children"> {
 	selectedPOICategories: POICategoryDefinition[];
 	onPOICategoriesChange: (categories: POICategoryDefinition[]) => void;
 }

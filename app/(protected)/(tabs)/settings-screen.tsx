@@ -7,7 +7,7 @@ import { H1, H2, Muted } from "@/components/ui/typography";
 import { useAuth } from "@/context/supabase-provider";
 import { useProfile } from "@/hooks/useProfile";
 import { getFullName } from "@/lib/profile";
-import LangSelect from "@/components/select/lang-select";
+import { LangSelect } from "@/components/select/lang-select";
 import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function Settings() {

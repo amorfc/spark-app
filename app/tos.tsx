@@ -1,10 +1,14 @@
 import { SafeAreaView } from "@/components/safe-area-view";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Button, ScrollView, useWindowDimensions } from "react-native";
 import RenderHTML from "react-native-render-html";
 
 export default function ToS() {
 	const { width } = useWindowDimensions();
+	const {
+		i18n: { language },
+	} = useTranslation();
 
 	const enToS = `<body style="font-family: sans-serif; color: #1e293b; background-color: #ffffff; padding: 16px; max-width: 100%; line-height: 1.6; font-size: 14px;">
 
@@ -160,7 +164,10 @@ export default function ToS() {
 	return (
 		<SafeAreaView className="flex-1 bg-background" edges={["bottom"]}>
 			<ScrollView className="p-4" contentContainerStyle={{ flexGrow: 1 }}>
-				<RenderHTML contentWidth={width} source={{ html: trToS }} />
+				<RenderHTML
+					contentWidth={width}
+					source={{ html: language === "tr" ? trToS : enToS }}
+				/>
 			</ScrollView>
 			<Button title="Close" onPress={() => router.back()} />
 		</SafeAreaView>

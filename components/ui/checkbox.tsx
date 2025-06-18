@@ -13,8 +13,6 @@ interface CheckboxRootProps {
 	className?: string;
 }
 
-type CheckboxRootRef = React.RefObject<View>;
-
 interface CheckboxProps extends CheckboxRootProps {
 	label?: string;
 	labelClassName?: string;

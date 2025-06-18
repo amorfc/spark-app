@@ -1,18 +1,12 @@
 import React, { useRef } from "react";
-import {
-	View,
-	TouchableOpacity,
-	ActivityIndicator,
-	RefreshControl,
-	ScrollView,
-} from "react-native";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/hooks";
-import { usePost } from "@/hooks/usePosts";
+import { usePost, usePostReviewsInfinite } from "@/hooks/usePosts";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { PostCard } from "@/components/ui/card/post-card";
@@ -20,6 +14,7 @@ import {
 	PostReviewBottomSheet,
 	PostReviewBottomSheetRef,
 } from "@/components/bottom-sheet/post-review-bottom-sheet";
+import { PostReviewList } from "@/components/post/post-review-list";
 
 export default function PostDetailScreen() {
 	const { t } = useTranslation();
@@ -34,6 +29,13 @@ export default function PostDetailScreen() {
 		isRefetching: postRefetching,
 		refetch: refetchPost,
 	} = usePost(id);
+
+	const {
+		data: reviews,
+		isLoading: reviewsLoading,
+		isRefetching: reviewsRefetching,
+		refetch: refetchReviews,
+	} = usePostReviewsInfinite(id);
 
 	const handleClose = () => {
 		router.back();
@@ -88,20 +90,12 @@ export default function PostDetailScreen() {
 				</View>
 			</View>
 
-			{/* Post Details and Review Form */}
-			<ScrollView
-				className="flex-1 pt-6"
-				showsVerticalScrollIndicator={false}
-				refreshControl={
-					<RefreshControl
-						refreshing={postRefetching}
-						onRefresh={refetchPost}
-						tintColor={isDark ? colors.dark.primary : colors.light.primary}
-					/>
-				}
-			>
-				<PostCard item={post} clickable={false} canDelete={true} />
-			</ScrollView>
+			<PostCard item={post} clickable={false} canDelete={true} />
+
+			<View className="flex-1 px-2 pt-4">
+				<Text className="text-lg font-semibold mb-2">Reviews</Text>
+				<PostReviewList postId={id} />
+			</View>
 			<PostReviewBottomSheet
 				ref={postReviewBottomSheetRef}
 				postId={id}

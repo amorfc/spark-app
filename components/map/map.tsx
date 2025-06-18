@@ -13,7 +13,7 @@ import { getCameraBounds } from "@/lib/mapbox";
 import { BoundingBox } from "@/types/osm";
 import MapPolygon from "@/components/map/map-polygon";
 import { MapPois } from "@/components/map/map-pois";
-import UserLocation from "@/components/map/user-location";
+import { UserLocation } from "@/components/map/user-location";
 
 export interface MapRef {
 	centerOnCoordinates: (

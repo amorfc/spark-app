@@ -43,8 +43,6 @@ export default function MapScreen() {
 	// User location hook
 	const {
 		location: userLocation,
-		isLoading: isLocationLoading,
-		error: locationError,
 		hasPermission,
 		getCurrentLocation,
 	} = useUserLocation();
@@ -188,6 +186,7 @@ export default function MapScreen() {
 			{/* Filter Button - Top Right */}
 			<View className="absolute top-20 right-4 z-10 flex-col gap-2">
 				<MapFilterButton onPress={openFilterSheet} />
+				<UserLocationButton onPress={handleUserLocationPress} />
 			</View>
 
 			<Map

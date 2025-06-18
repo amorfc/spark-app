@@ -12,7 +12,6 @@ import { Select, SelectProps, SelectRef } from "@/components/select/select";
 import { useDistricts } from "@/hooks/useDistricts";
 import { mapFeatureCollectionToDropdownItems } from "@/lib/dropdown";
 import { useMapSearch } from "@/hooks/useMapSearch";
-import { useTranslation } from "@/lib/i18n/hooks";
 
 type ValueType = number;
 

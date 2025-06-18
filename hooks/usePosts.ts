@@ -6,9 +6,6 @@ import {
 } from "@tanstack/react-query";
 import { PostsService } from "@/services/posts-service";
 import type {
-	Post,
-	PostReviewWithProfile,
-	PostDetailsResponse,
 	CreatePostRequest,
 	UpdatePostRequest,
 	CreatePostReviewRequest,
@@ -41,23 +38,6 @@ export const postsKeys = {
 	search: (params: PostSearchParams) =>
 		[...postsKeys.all, "search", params] as const,
 };
-
-// Post query hooks
-export function usePostsFeedCursor(params: CursorPaginationParams = {}) {
-	return useQuery({
-		queryKey: [...postsKeys.feeds(), "cursor", params],
-		queryFn: () => PostsService.getPostsFeedCursor(params),
-		staleTime: 5 * 60 * 1000, // 5 minutes
-	});
-}
-
-export function usePopularPosts(params: PostFeedParams = {}) {
-	return useQuery({
-		queryKey: postsKeys.popular(params),
-		queryFn: () => PostsService.getPopularPosts(params),
-		staleTime: 10 * 60 * 1000, // 10 minutes
-	});
-}
 
 // Primary hook for getting post with profile and total review count
 export function usePost(postId: string) {
@@ -262,8 +242,11 @@ export function useInfinitePostsData(
 }
 
 // Helper hook to get flattened reviews from infinite query
-export function useInfiniteReviewsData(infiniteQueryResult: any) {
+export function useInfiniteReviewsData(
+	infiniteQueryResult: ReturnType<typeof useInfinitePostReviews>,
+) {
 	return {
+		...infiniteQueryResult,
 		reviews:
 			infiniteQueryResult.data?.pages?.flatMap(
 				(page: PostReviewsResponse) => page.reviews,
@@ -289,58 +272,4 @@ export function usePostReviewsInfinite(
 ) {
 	const infiniteQuery = useInfinitePostReviews(postId, params);
 	return useInfiniteReviewsData(infiniteQuery);
-}
-
-// Helper hook for optimistic updates
-export function useOptimisticPostUpdate() {
-	const queryClient = useQueryClient();
-
-	return {
-		updatePostContent: (postId: string, newContent: string) => {
-			queryClient.setQueryData(
-				postsKeys.detail(postId),
-				(oldData: Post | undefined) => {
-					if (!oldData) return oldData;
-					return {
-						...oldData,
-						content: newContent,
-						updated_at: new Date().toISOString(),
-					};
-				},
-			);
-		},
-
-		addOptimisticReview: (
-			postId: string,
-			review: Partial<PostReviewWithProfile>,
-		) => {
-			queryClient.setQueryData(
-				postsKeys.detail(postId),
-				(oldData: PostDetailsResponse | undefined) => {
-					if (!oldData) return oldData;
-					const newReview = {
-						id: "temp-" + Date.now(),
-						post_id: postId,
-						user_id: review.user_id || "",
-						text: review.text || "",
-						created_at: new Date().toISOString(),
-						updated_at: new Date().toISOString(),
-						reviewer_profile: review.reviewer_profile || {
-							id: review.user_id || "",
-							first_name: null,
-							last_name: null,
-							username: null,
-							avatar_url: null,
-						},
-					} as PostReviewWithProfile;
-
-					return {
-						...oldData,
-						reviews_data: [newReview, ...oldData.reviews_data],
-						total_reviews_count: oldData.total_reviews_count + 1,
-					};
-				},
-			);
-		},
-	};
 }

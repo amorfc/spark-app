@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/lib/i18n/hooks";
-import { useInfinitePostsData, useInfinitePostsFeed } from "@/hooks/usePosts";
+import { usePostsFeedInfinite } from "@/hooks/usePosts";
 import { routes } from "@/lib/routes";
 import { PaginatedFlatList } from "@/components/ui/list/paginated-flatlist";
 import { PostCard } from "@/components/ui/card/post-card";
@@ -12,10 +12,6 @@ import { Button } from "@/components/ui/button";
 
 export default function FeedScreen() {
 	const { t } = useTranslation();
-
-	const infinitePostsData = useInfinitePostsFeed({
-		limit: 4,
-	});
 
 	const {
 		posts,
@@ -25,7 +21,7 @@ export default function FeedScreen() {
 		isLoading,
 		isRefetching,
 		refetch,
-	} = useInfinitePostsData(infinitePostsData);
+	} = usePostsFeedInfinite({ limit: 4 });
 
 	const renderHeader = () => (
 		<View className="px-4 py-3 border-b border-border bg-background">

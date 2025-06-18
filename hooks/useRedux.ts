@@ -67,7 +67,7 @@ export const useMapSearch = () => {
 		isLoading,
 	} = useAppSelector((state) => state.mapSearch);
 
-	const selectFeature = (featureId: string | null) => {
+	const selectFeature = (featureId: GeoJSON.Feature | null) => {
 		dispatch(setSelectedFeature(featureId));
 	};
 

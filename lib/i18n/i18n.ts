@@ -12,6 +12,7 @@ const resources = {
 	tr: tr,
 };
 
+// eslint-disable-next-line import/no-named-as-default-member
 const i18nInstance = i18n.use(initReactI18next);
 
 const initI18n = async () => {
