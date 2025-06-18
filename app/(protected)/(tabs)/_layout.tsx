@@ -12,6 +12,11 @@ export default function TabsLayout() {
 	const { t } = useTranslation();
 	useProtectedAppInit();
 
+	const getTabBarIconProps = (focused: boolean) => ({
+		size: 24,
+		color: focused ? "#FF69B4" : "#9CA3AF",
+	});
+
 	return (
 		<Tabs
 			screenOptions={{
@@ -37,10 +42,18 @@ export default function TabsLayout() {
 				options={{
 					title: t("navigation.map"),
 					tabBarIcon: ({ focused }) => (
+						<MaterialIcons name="map" {...getTabBarIconProps(focused)} />
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="feed-screen"
+				options={{
+					title: t("navigation.feed"),
+					tabBarIcon: ({ focused }) => (
 						<MaterialIcons
-							name="map"
-							size={24}
-							color={focused ? "#FF69B4" : "#9CA3AF"}
+							name="dynamic-feed"
+							{...getTabBarIconProps(focused)}
 						/>
 					),
 				}}
@@ -50,11 +63,7 @@ export default function TabsLayout() {
 				options={{
 					title: t("navigation.blog"),
 					tabBarIcon: ({ focused }) => (
-						<MaterialIcons
-							name="article"
-							size={24}
-							color={focused ? "#FF69B4" : "#9CA3AF"}
-						/>
+						<MaterialIcons name="article" {...getTabBarIconProps(focused)} />
 					),
 				}}
 			/>
@@ -63,11 +72,7 @@ export default function TabsLayout() {
 				options={{
 					title: t("navigation.settings"),
 					tabBarIcon: ({ focused }) => (
-						<MaterialIcons
-							name="settings"
-							size={24}
-							color={focused ? "#FF69B4" : "#9CA3AF"}
-						/>
+						<MaterialIcons name="settings" {...getTabBarIconProps(focused)} />
 					),
 				}}
 			/>
