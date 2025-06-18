@@ -183,7 +183,6 @@
 			"edit_post": "Gönderiyi Düzenle",
 			"delete_post": "Gönderiyi Sil",
 			"post_content": "Gönderi içeriği",
-			"whats_on_mind": "Aklından neler geçiyor?",
 			"share_thoughts": "Düşüncelerini toplulukla paylaş...",
 			"character_count": "{{count}}/{{max}} karakter",
 			"post_created": "Gönderiniz başarıyla oluşturuldu!",
@@ -193,6 +192,11 @@
 			"post_not_found": "Gönderi bulunamadı",
 			"loading_post": "Gönderi yükleniyor...",
 			"go_back": "Geri Dön",
+			"save_failed": "Gönderi kaydedilemedi",
+			"validation": {
+				"content_required": "Lütfen gönderi içeriğinizi girin",
+				"content_max_length": "Gönderi içeriği {{max}} karakterden az olmalıdır"
+			},
 			"reviews": {
 				"title": "Gönderi Yorumları",
 				"write_review": "Yorum Yaz",

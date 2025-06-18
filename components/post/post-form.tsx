@@ -8,19 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Form, FormField, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Text } from "@/components/ui/text";
-import { H3 } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
 import { useCreatePost, useUpdatePost } from "@/hooks/usePosts";
 import { Post } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
 
+const maxPostLength = 500;
 const getPostFormSchema = (t: any) =>
 	z.object({
 		content: z
 			.string()
-			.min(1, "Please enter your post content")
-			.max(2000, "Post content must be less than 2000 characters"),
+			.min(1, t("posts.validation.content_required"))
+			.max(
+				maxPostLength,
+				t("posts.validation.content_max_length", { max: maxPostLength }),
+			),
 	});
 
 type PostFormData = z.infer<ReturnType<typeof getPostFormSchema>>;
@@ -85,7 +88,7 @@ const PostForm: React.FC<PostFormProps> = ({
 			console.error("Error submitting post:", error);
 			Alert.alert(
 				t("common.error"),
-				error instanceof Error ? error.message : "Failed to save post",
+				error instanceof Error ? error.message : t("posts.save_failed"),
 			);
 		}
 	};
@@ -102,18 +105,20 @@ const PostForm: React.FC<PostFormProps> = ({
 						name="content"
 						render={({ field }) => (
 							<View className="space-y-2">
-								<Text className="font-semibold mb-2">Whats on your mind?</Text>
 								<Textarea
-									placeholder="Share your thoughts with the community..."
+									placeholder={t("posts.share_thoughts")}
 									value={field.value || ""}
 									onChangeText={field.onChange}
 									onBlur={field.onBlur}
 									className="min-h-32"
-									maxLength={2000}
+									maxLength={maxPostLength}
 								/>
 								<FormMessage />
 								<Text className="text-xs text-muted-foreground text-right">
-									{field.value?.length || 0}/2000 characters
+									{t("posts.character_count", {
+										count: field.value?.length || 0,
+										max: maxPostLength,
+									})}
 								</Text>
 							</View>
 						)}
@@ -138,10 +143,10 @@ const PostForm: React.FC<PostFormProps> = ({
 						>
 							<Text>
 								{isLoading
-									? "Saving..."
+									? t("common.submitting")
 									: isEditing
-										? "Update Post"
-										: "Create Post"}
+										? t("posts.edit_post")
+										: t("posts.create_post")}
 							</Text>
 						</Button>
 					</View>
