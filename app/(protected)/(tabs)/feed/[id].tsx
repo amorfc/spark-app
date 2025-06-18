@@ -6,7 +6,7 @@ import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/hooks";
-import { usePost, usePostReviewsInfinite } from "@/hooks/usePosts";
+import { usePost } from "@/hooks/usePosts";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { PostCard } from "@/components/ui/card/post-card";
@@ -24,19 +24,7 @@ export default function PostDetailScreen() {
 	const { colorScheme } = useColorScheme();
 	const isDark = colorScheme === "dark";
 	const postReviewBottomSheetRef = useRef<PostReviewBottomSheetRef>(null);
-	const {
-		data: post,
-		isLoading: postLoading,
-		isRefetching: postRefetching,
-		refetch: refetchPost,
-	} = usePost(id);
-
-	const {
-		data: reviews,
-		isLoading: reviewsLoading,
-		isRefetching: reviewsRefetching,
-		refetch: refetchReviews,
-	} = usePostReviewsInfinite(id);
+	const { data: post, isLoading: postLoading } = usePost(id);
 
 	const handleClose = () => {
 		router.back();
@@ -99,7 +87,7 @@ export default function PostDetailScreen() {
 				item={post}
 				clickable={false}
 				canDelete={true}
-				onSuccessDelete={router.back}
+				onSuccessDelete={handleClose}
 			/>
 
 			<View className="flex-1 px-2 pt-4">

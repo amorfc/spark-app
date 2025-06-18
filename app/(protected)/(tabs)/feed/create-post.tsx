@@ -37,9 +37,9 @@ export default function CreatePostScreen() {
 		: colors.light.mutedForeground;
 
 	return (
-		<SafeAreaView className="flex-1 bg-background">
+		<SafeAreaView className="flex-1 bg-background px-4">
 			{/* Header */}
-			<View className="flex-row justify-between items-center px-4 py-3 border-b border-border">
+			<View className="flex-row justify-between items-center py-3 border-b border-border">
 				<Text className="text-xl font-semibold">{t("posts.create_post")}</Text>
 				<TouchableOpacity
 					className="px-2 py-2"
