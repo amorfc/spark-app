@@ -199,11 +199,15 @@
 				"content_required": "Lütfen gönderi içeriğinizi girin",
 				"content_max_length": "Gönderi içeriği {{max}} karakterden az olmalıdır"
 			},
+			"delete_confirmation": "Gönderinizi silmek istediğinizden emin misiniz?",
 			"reviews": {
 				"title": "Gönderi Yorumları",
 				"write_review": "Yorum Yaz",
 				"edit_review": "Yorumu Düzenle",
+				"add_review": "Yorum ekle",
+				"update_your_review": "Yorumunu güncelle",
 				"update_review_button": "Yorumu Güncelle",
+				"submit_review": "Yorumu Gönder",
 				"delete_review": "Yorumu Sil",
 				"delete_confirmation": "Yorumunuzu silmek istediğinizden emin misiniz?",
 				"delete_error": "Yorum silinemedi",

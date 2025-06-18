@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import {
 	View,
 	FlatList,
 	TouchableOpacity,
 	ActivityIndicator,
-	Alert,
 	RefreshControl,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -13,7 +12,7 @@ import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/hooks";
-import { usePostDetails, useUserPostReview } from "@/hooks/usePosts";
+import { useUserPostReview } from "@/hooks/usePosts";
 import { PostReviewWithProfile } from "@/types/posts";
 import { PostReviewForm } from "@/components/post/post-review-form";
 import { useColorScheme } from "@/lib/useColorScheme";

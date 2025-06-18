@@ -1,6 +1,6 @@
 import { PostWithProfile } from "@/types/posts";
 
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Alert } from "react-native";
 import { router } from "expo-router";
 import { routes } from "@/lib/routes";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -8,20 +8,57 @@ import { colors } from "@/constants/colors";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { useAuth } from "@/context/supabase-provider";
+import { useDeletePost } from "@/hooks/usePosts";
 
 interface PostCardProps {
 	item: PostWithProfile;
+	canDelete?: boolean;
 	clickable?: boolean;
 }
 
-export const PostCard = ({ item, clickable = true }: PostCardProps) => {
+export const PostCard = ({
+	item,
+	clickable = true,
+	canDelete = false,
+}: PostCardProps) => {
 	const { t } = useTranslation();
+	const { session } = useAuth();
 	const createdAt = new Date(item.created_at);
 	const timeAgo = useTimeAgo(createdAt);
 	const { colorScheme } = useColorScheme();
 	const isDark = colorScheme === "dark";
+	const deletePostMutation = useDeletePost();
+
+	// Check if current user is the post author
+	const isOwnPost = session?.user?.id === item.user_id;
+
+	const handleDeletePress = () => {
+		Alert.alert(t("posts.delete_post"), t("posts.delete_confirmation"), [
+			{ text: t("common.cancel"), style: "cancel" },
+			{
+				text: t("common.delete"),
+				style: "destructive",
+				onPress: async () => {
+					try {
+						await deletePostMutation.mutateAsync(item.id);
+						Alert.alert(t("common.success"), t("posts.post_deleted"));
+					} catch (error) {
+						Alert.alert(
+							t("common.error"),
+							error instanceof Error
+								? error.message
+								: t("errors.delete_failed"),
+						);
+					}
+				},
+			},
+		]);
+	};
+
 	return (
 		<TouchableOpacity
+			disabled={!clickable}
 			className="bg-card border border-border rounded-lg p-4 mb-3 mx-4"
 			onPress={() => clickable && router.push(routes.postDetail(item.id))}
 		>
@@ -38,6 +75,18 @@ export const PostCard = ({ item, clickable = true }: PostCardProps) => {
 					</Text>
 					<Text className="text-sm text-muted-foreground">{timeAgo}</Text>
 				</View>
+
+				{/* Delete Button for Own Posts */}
+				{isOwnPost && canDelete && (
+					<TouchableOpacity
+						onPress={handleDeletePress}
+						className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-sm"
+						activeOpacity={0.9}
+						disabled={deletePostMutation.isPending}
+					>
+						<MaterialIcons name="delete" size={16} color="white" />
+					</TouchableOpacity>
+				)}
 			</View>
 
 			{/* Post Content */}

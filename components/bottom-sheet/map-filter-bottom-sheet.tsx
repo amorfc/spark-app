@@ -79,7 +79,7 @@ export const MapFilterBottomSheet = forwardRef<
 			<BottomSheet
 				ref={bottomSheetRef}
 				index={0}
-				containerStyle={{ zIndex: 1500 }}
+				containerStyle={{ zIndex: 1500, paddingHorizontal: 16 }}
 				scrollable={false}
 				showBackdrop={false}
 				{...bottomSheetProps}

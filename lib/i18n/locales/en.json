@@ -199,11 +199,15 @@
 				"content_required": "Please enter your post content",
 				"content_max_length": "Post content must be less than {{max}} characters"
 			},
+			"delete_confirmation": "Are you sure you want to delete your post?",
 			"reviews": {
 				"title": "Post Reviews",
 				"write_review": "Write a Review",
 				"edit_review": "Edit Review",
+				"add_review": "Add a review",
+				"update_your_review": "Update your review",
 				"update_review_button": "Update Review",
+				"submit_review": "Submit Review",
 				"delete_review": "Delete Review",
 				"delete_confirmation": "Are you sure you want to delete your review?",
 				"delete_error": "Failed to delete review",

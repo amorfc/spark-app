@@ -96,7 +96,7 @@ const PostForm: React.FC<PostFormProps> = ({
 	const isLoading = createMutation.isPending || updateMutation.isPending;
 
 	return (
-		<View className={cn("space-y-4 p-4", className)}>
+		<View className={cn("space-y-4", className)}>
 			<Form {...form}>
 				<View className="space-y-4">
 					{/* Post Content */}

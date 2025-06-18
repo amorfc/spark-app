@@ -17,12 +17,18 @@ import {
 import { PostReviewWithProfile } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
 
+const maxReviewLength = 400;
 const getPostReviewFormSchema = (t: any) =>
 	z.object({
 		text: z
 			.string()
-			.min(1, "Please enter your review text")
-			.max(1000, "Review text must be less than 1000 characters"),
+			.min(1, t("posts.reviews.validation.text_required"))
+			.max(
+				maxReviewLength,
+				t("posts.reviews.validation.text_max_length", {
+					max: maxReviewLength,
+				}),
+			),
 	});
 
 type PostReviewFormData = z.infer<ReturnType<typeof getPostReviewFormSchema>>;
@@ -79,7 +85,9 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 			console.error("Error submitting post review:", error);
 			Alert.alert(
 				t("common.error"),
-				error instanceof Error ? error.message : "Failed to submit review",
+				error instanceof Error
+					? error.message
+					: t("posts.reviews.submit_error"),
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -90,12 +98,12 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 		if (!existingReview) return;
 
 		Alert.alert(
-			"Delete Review",
-			"Are you sure you want to delete your review?",
+			t("posts.reviews.delete_review"),
+			t("posts.reviews.delete_confirmation"),
 			[
-				{ text: "Cancel", style: "cancel" },
+				{ text: t("common.cancel"), style: "cancel" },
 				{
-					text: "Delete",
+					text: t("common.delete"),
 					style: "destructive",
 					onPress: async () => {
 						try {
@@ -106,7 +114,7 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 							form.reset();
 							onSuccess?.();
 						} catch (error) {
-							Alert.alert(t("common.error"), "Failed to delete review");
+							Alert.alert(t("common.error"), t("posts.reviews.delete_error"));
 						}
 					},
 				},
@@ -119,10 +127,6 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 
 	return (
 		<View className={cn("space-y-4", className)}>
-			<Text className="font-semibold text-foreground">
-				{existingReview ? "Update your review" : "Add a review"}
-			</Text>
-
 			<Form {...form}>
 				<View className="space-y-4">
 					{/* Review Text */}
@@ -132,16 +136,17 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 						render={({ field }) => (
 							<View className="space-y-2">
 								<Textarea
-									placeholder="Share your thoughts about this post..."
+									placeholder={t("posts.reviews.review_placeholder")}
 									value={field.value || ""}
 									onChangeText={field.onChange}
 									onBlur={field.onBlur}
 									className="min-h-20"
-									maxLength={1000}
+									maxLength={maxReviewLength}
 								/>
 								<FormMessage />
 								<Text className="text-xs text-muted-foreground text-right">
-									{field.value?.length || 0}/1000 characters
+									{field.value?.length || 0}/{maxReviewLength}{" "}
+									{t("common.characters")}
 								</Text>
 							</View>
 						)}
@@ -167,10 +172,10 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 						>
 							<Text>
 								{isLoading
-									? "Submitting..."
+									? t("common.submitting")
 									: existingReview
-										? "Update Review"
-										: "Submit Review"}
+										? t("posts.reviews.update_review_button")
+										: t("posts.reviews.submit_review")}
 							</Text>
 						</Button>
 
@@ -181,7 +186,9 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 								disabled={isLoading || isDeleting}
 								className="px-4"
 							>
-								<Text>{isDeleting ? "Deleting..." : "Delete"}</Text>
+								<Text>
+									{isDeleting ? t("common.deleting") : t("common.delete")}
+								</Text>
 							</Button>
 						)}
 					</View>

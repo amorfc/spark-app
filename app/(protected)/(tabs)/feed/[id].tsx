@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
 	View,
 	TouchableOpacity,
@@ -12,12 +12,14 @@ import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/hooks";
-import { usePost, useUserPostReview } from "@/hooks/usePosts";
+import { usePost } from "@/hooks/usePosts";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
-import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { PostCard } from "@/components/ui/card/post-card";
-import { routes } from "@/lib/routes";
+import {
+	PostReviewBottomSheet,
+	PostReviewBottomSheetRef,
+} from "@/components/bottom-sheet/post-review-bottom-sheet";
 
 export default function PostDetailScreen() {
 	const { t } = useTranslation();
@@ -25,7 +27,7 @@ export default function PostDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { colorScheme } = useColorScheme();
 	const isDark = colorScheme === "dark";
-
+	const postReviewBottomSheetRef = useRef<PostReviewBottomSheetRef>(null);
 	const {
 		data: post,
 		isLoading: postLoading,
@@ -60,7 +62,7 @@ export default function PostDetailScreen() {
 	}
 
 	const handleMakeReview = () => {
-		router.push(routes.postReview(id));
+		postReviewBottomSheetRef.current?.openForCreate();
 	};
 
 	return (
@@ -98,8 +100,14 @@ export default function PostDetailScreen() {
 					/>
 				}
 			>
-				<PostCard item={post} clickable={false} />
+				<PostCard item={post} clickable={false} canDelete={true} />
 			</ScrollView>
+			<PostReviewBottomSheet
+				ref={postReviewBottomSheetRef}
+				postId={id}
+				existingReview={null}
+				onSuccess={() => {}}
+			/>
 		</SafeAreaView>
 	);
 }
