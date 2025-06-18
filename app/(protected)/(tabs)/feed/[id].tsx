@@ -63,7 +63,7 @@ export default function PostDetailScreen() {
 	return (
 		<SafeAreaView className="flex-1 bg-background">
 			{/* Header */}
-			<View className="flex-row justify-between items-center px-4 py-3 border-b border-border">
+			<View className="flex-row justify-between items-center px-4 pt-3 border-b border-border">
 				<Text className="text-xl font-semibold">{t("posts.post_details")}</Text>
 				<View className="flex-row items-center gap-2">
 					<Button variant="default" size="sm" onPress={openReviewCreateSheet}>
@@ -83,15 +83,19 @@ export default function PostDetailScreen() {
 				</View>
 			</View>
 
-			<PostCard
-				item={post}
-				clickable={false}
-				canDelete={true}
-				onSuccessDelete={handleClose}
-			/>
+			<View className="pt-4">
+				<PostCard
+					item={post}
+					clickable={false}
+					canDelete={true}
+					onSuccessDelete={handleClose}
+				/>
+			</View>
 
-			<View className="flex-1 px-2 pt-4">
-				<Text className="text-lg font-semibold mb-2">Reviews</Text>
+			<View className="flex-1 px-2">
+				<Text className="self-center text-lg font-semibold">
+					{t("posts.reviews.all_reviews")}
+				</Text>
 				<PostReviewList postId={id} onReviewPress={openReviewUpdateSheet} />
 			</View>
 			<PostReviewBottomSheet ref={postReviewBottomSheetRef} postId={id} />

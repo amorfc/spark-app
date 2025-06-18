@@ -201,6 +201,7 @@
 			},
 			"delete_confirmation": "Gönderinizi silmek istediğinizden emin misiniz?",
 			"reviews": {
+				"all_reviews": "Tüm Yorumlar",
 				"title": "Gönderi Yorumları",
 				"write_review": "Yorum Yaz",
 				"edit_review": "Yorumu Düzenle",

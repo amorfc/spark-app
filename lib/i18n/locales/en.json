@@ -201,6 +201,7 @@
 			},
 			"delete_confirmation": "Are you sure you want to delete your post?",
 			"reviews": {
+				"all_reviews": "All Reviews",
 				"title": "Post Reviews",
 				"write_review": "Write a Review",
 				"edit_review": "Edit Review",
