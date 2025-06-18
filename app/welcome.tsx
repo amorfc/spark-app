@@ -9,6 +9,7 @@ import { Text } from "@/components/ui/text";
 import { H1, Muted } from "@/components/ui/typography";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { routes } from "@/lib/routes";
 
 export default function WelcomeScreen() {
 	const router = useRouter();
@@ -31,7 +32,7 @@ export default function WelcomeScreen() {
 					size="default"
 					variant="default"
 					onPress={() => {
-						router.push("/sign-up");
+						router.push(routes.signUp());
 					}}
 				>
 					<Text>{t("auth.sign_up")}</Text>
@@ -40,7 +41,7 @@ export default function WelcomeScreen() {
 					size="default"
 					variant="secondary"
 					onPress={() => {
-						router.push("/sign-in");
+						router.push(routes.signIn());
 					}}
 				>
 					<Text>{t("auth.sign_in")}</Text>

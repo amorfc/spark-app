@@ -3,13 +3,13 @@ import { View, FlatList, TouchableOpacity, RefreshControl } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { usePostsFeed } from "@/hooks/usePosts";
 import { PostWithProfile } from "@/types/posts";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
+import { routes } from "@/lib/routes";
 
 export default function FeedScreen() {
 	const { t } = useTranslation();
@@ -35,7 +35,7 @@ export default function FeedScreen() {
 		return (
 			<TouchableOpacity
 				className="bg-card border border-border rounded-lg p-4 mb-3 mx-4"
-				onPress={() => router.push(`/feed/${item.id}` as any)}
+				onPress={() => router.push(routes.postDetail(item.id))}
 			>
 				{/* Post Header */}
 				<View className="flex-row items-center mb-3">

@@ -9,7 +9,7 @@ export default function MapLayout() {
 		>
 			<Stack.Screen name="index" />
 			<Stack.Screen
-				name="[id]"
+				name="[id]/feature-review"
 				options={{
 					presentation: "modal",
 					headerShown: false,
