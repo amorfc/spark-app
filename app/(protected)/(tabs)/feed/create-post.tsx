@@ -20,16 +20,12 @@ export default function CreatePostScreen() {
 	};
 
 	const handleFormSuccess = () => {
-		Alert.alert(
-			t("common.success"),
-			"Your post has been created successfully!",
-			[
-				{
-					text: t("common.ok"),
-					onPress: () => router.back(),
-				},
-			],
-		);
+		Alert.alert(t("common.success"), t("posts.post_created"), [
+			{
+				text: t("common.ok"),
+				onPress: () => router.back(),
+			},
+		]);
 	};
 
 	const handleFormCancel = () => {
@@ -44,11 +40,11 @@ export default function CreatePostScreen() {
 		<SafeAreaView className="flex-1 bg-background">
 			{/* Header */}
 			<View className="flex-row justify-between items-center px-4 py-3 border-b border-border">
-				<Text className="text-xl font-semibold">Create Post</Text>
+				<Text className="text-xl font-semibold">{t("posts.create_post")}</Text>
 				<TouchableOpacity
 					className="px-2 py-2"
 					onPress={handleClose}
-					accessibilityLabel="Close create post"
+					accessibilityLabel={t("common.close")}
 					accessibilityRole="button"
 				>
 					<MaterialIcons name="close" size={24} color={iconColor} />
