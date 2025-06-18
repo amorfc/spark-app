@@ -47,7 +47,7 @@ export default function TabsLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="feed-screen"
+				name="feed"
 				options={{
 					title: t("navigation.feed"),
 					tabBarIcon: ({ focused }) => (
