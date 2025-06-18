@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
+import { useTranslation } from "@/lib/i18n/hooks";
 
 // Enable LayoutAnimation on Android
 if (
@@ -47,8 +48,8 @@ export const GenericFlatList = <T,>({
 	renderItem,
 	onRefresh,
 	refreshing = false,
-	emptyStateMessage = "No items found",
-	emptyStateSubtitle = "Refresh to try again",
+	emptyStateMessage,
+	emptyStateSubtitle,
 	loading = false,
 	error,
 	loadingComponent,
@@ -59,10 +60,17 @@ export const GenericFlatList = <T,>({
 	animationDuration = 500,
 	...flatListProps
 }: GenericFlatListProps<T>) => {
+	const { t } = useTranslation();
 	const { colorScheme } = useColorScheme();
 	const isDark = colorScheme === "dark";
 	const fadeAnim = useRef(new Animated.Value(1)).current;
 	const prevDataLength = useRef(data.length);
+
+	// Use translated defaults if not provided
+	const finalEmptyStateMessage =
+		emptyStateMessage || t("empty_states.no_items");
+	const finalEmptyStateSubtitle =
+		emptyStateSubtitle || t("empty_states.refresh_to_try");
 
 	// Handle layout animations when data changes
 	useEffect(() => {
@@ -115,33 +123,7 @@ export const GenericFlatList = <T,>({
 	const defaultErrorComponent = (
 		<View style={styles.centerContainer}>
 			<Text style={[styles.errorText, { color: colors.light.destructive }]}>
-				Error: {error}
-			</Text>
-		</View>
-	);
-
-	// Default empty state component
-	const defaultEmptyComponent = (
-		<View style={styles.centerContainer}>
-			<Text
-				style={[
-					styles.emptyTitle,
-					{ color: isDark ? colors.dark.foreground : colors.light.foreground },
-				]}
-			>
-				{emptyStateMessage}
-			</Text>
-			<Text
-				style={[
-					styles.emptySubtitle,
-					{
-						color: isDark
-							? colors.dark.mutedForeground
-							: colors.light.mutedForeground,
-					},
-				]}
-			>
-				{emptyStateSubtitle}
+				{t("errors.error_prefix")} {error}
 			</Text>
 		</View>
 	);
@@ -153,10 +135,6 @@ export const GenericFlatList = <T,>({
 
 	if (error) {
 		return errorComponent || defaultErrorComponent;
-	}
-
-	if (data.length === 0) {
-		return emptyStateComponent || defaultEmptyComponent;
 	}
 
 	return (
@@ -188,11 +166,23 @@ export const GenericFlatList = <T,>({
 				contentContainerStyle={[
 					data.length === 0 && styles.emptyContainer,
 					{
+						minHeight: 1,
+						paddingVertical: 16,
 						backgroundColor: isDark
 							? colors.dark.background
 							: colors.light.background,
 					},
 				]}
+				ListEmptyComponent={() => (
+					<View className="items-center justify-center py-20">
+						<Text className="text-lg font-semibold">
+							{finalEmptyStateMessage}
+						</Text>
+						<Text className="text-sm text-muted">
+							{finalEmptyStateSubtitle}
+						</Text>
+					</View>
+				)}
 				{...flatListProps}
 			/>
 		</Animated.View>
@@ -209,8 +199,8 @@ const styles = StyleSheet.create({
 		minHeight: 100,
 	},
 	emptyContainer: {
-		flexGrow: 1,
-		justifyContent: "center",
+		paddingTop: 16,
+		paddingBottom: 16,
 	},
 	message: {
 		fontSize: 16,

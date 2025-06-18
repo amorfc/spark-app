@@ -116,7 +116,8 @@
 			"network_error": "Ağ hatası oluştu",
 			"loading_failed": "Veri yüklenemedi",
 			"save_failed": "Değişiklikler kaydedilemedi",
-			"delete_failed": "Öğe silinemedi"
+			"delete_failed": "Öğe silinemedi",
+			"error_prefix": "Hata:"
 		},
 		"empty_states": {
 			"no_reviews": "Yorum bulunamadı",
@@ -125,7 +126,9 @@
 			"no_results": "Sonuç bulunamadı",
 			"no_posts": "Henüz gönderi yok",
 			"be_first_poster": "İlk gönderiyi sen oluştur!",
-			"pull_to_refresh": "Yenilemek için çek"
+			"pull_to_refresh": "Yenilemek için çek",
+			"no_items": "Öğe bulunamadı",
+			"refresh_to_try": "Tekrar denemek için yenileyin"
 		},
 		"blog": {
 			"categories": {

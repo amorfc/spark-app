@@ -63,7 +63,7 @@ export default function PostDetailScreen() {
 	return (
 		<SafeAreaView className="flex-1 bg-background">
 			{/* Header */}
-			<View className="flex-row justify-between items-center px-4 pt-3 border-b border-border">
+			<View className="flex-row justify-between items-center px-4 py-2 border-b border-border">
 				<Text className="text-xl font-semibold">{t("posts.post_details")}</Text>
 				<View className="flex-row items-center gap-2">
 					<Button variant="default" size="sm" onPress={openReviewCreateSheet}>

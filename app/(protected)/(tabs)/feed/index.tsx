@@ -24,7 +24,7 @@ export default function FeedScreen() {
 	} = usePostsFeedInfinite({ limit: 4 });
 
 	const renderHeader = () => (
-		<View className="px-4 py-3 border-b border-border bg-background">
+		<View className="px-4 py-3 mb-4 border-b border-border bg-background">
 			<View className="flex-row items-center justify-between">
 				<Text className="text-2xl font-bold text-foreground">
 					{t("navigation.feed")}

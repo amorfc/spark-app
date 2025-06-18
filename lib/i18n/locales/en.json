@@ -116,7 +116,8 @@
 			"network_error": "Network error occurred",
 			"loading_failed": "Failed to load data",
 			"save_failed": "Failed to save changes",
-			"delete_failed": "Failed to delete item"
+			"delete_failed": "Failed to delete item",
+			"error_prefix": "Error:"
 		},
 		"empty_states": {
 			"no_reviews": "No reviews found",
@@ -125,7 +126,9 @@
 			"no_results": "No results found",
 			"no_posts": "No posts yet",
 			"be_first_poster": "Be the first to create a post!",
-			"pull_to_refresh": "Pull to refresh"
+			"pull_to_refresh": "Pull to refresh",
+			"no_items": "No items found",
+			"refresh_to_try": "Refresh to try again"
 		},
 		"blog": {
 			"categories": {

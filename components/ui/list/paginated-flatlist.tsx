@@ -46,10 +46,7 @@ export const PaginatedFlatList = <T,>({
 	isRefetching = false,
 	isLoading = false,
 	onRefresh,
-	contentContainerStyle = {
-		paddingVertical: 16,
-		flexGrow: 1,
-	},
+	contentContainerStyle = {},
 	showsVerticalScrollIndicator = false,
 	emptyStateMessage = "No items found",
 	emptyStateSubtitle = "Pull to refresh",
