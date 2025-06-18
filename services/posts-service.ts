@@ -110,12 +110,28 @@ export class PostsService {
 	}
 
 	// Post Reviews operations
-	static async createOrUpdatePostReview(
+	static async createPostReview(
 		postId: string,
 		data: Omit<CreatePostReviewRequest, "post_id">,
 	): Promise<PostReviewWithProfile> {
-		const { data: review, error } = await supabase.rpc("upsert_post_review", {
+		const { data: review, error } = await supabase.rpc("create_post_review", {
 			post_uuid: postId,
+			review_text: data.text,
+		});
+
+		if (error) {
+			throw new Error(error.message);
+		}
+
+		return review;
+	}
+
+	static async updatePostReview(
+		reviewId: string,
+		data: { text: string },
+	): Promise<PostReviewWithProfile> {
+		const { data: review, error } = await supabase.rpc("update_post_review", {
+			review_uuid: reviewId,
 			review_text: data.text,
 		});
 
@@ -140,7 +156,7 @@ export class PostsService {
 	static async getUserPostReview(
 		postId: string,
 	): Promise<PostReviewWithProfile | null> {
-		const { data, error } = await supabase.rpc("get_user_post_review", {
+		const { data, error } = await supabase.rpc("get_user_latest_post_review", {
 			post_uuid: postId,
 		});
 
@@ -149,6 +165,20 @@ export class PostsService {
 		}
 
 		return data;
+	}
+
+	static async getUserPostReviews(
+		postId: string,
+	): Promise<PostReviewWithProfile[]> {
+		const { data, error } = await supabase.rpc("get_user_post_reviews", {
+			post_uuid: postId,
+		});
+
+		if (error) {
+			throw new Error(error.message);
+		}
+
+		return data || [];
 	}
 
 	static async getPostReviews(

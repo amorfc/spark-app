@@ -114,7 +114,7 @@ export function useUserPostReview(postId: string) {
 }
 
 // Post review mutations
-export function useCreateOrUpdatePostReview() {
+export function useCreatePostReview() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -124,10 +124,14 @@ export function useCreateOrUpdatePostReview() {
 		}: {
 			postId: string;
 			data: Omit<CreatePostReviewRequest, "post_id">;
-		}) => PostsService.createOrUpdatePostReview(postId, data),
+		}) => PostsService.createPostReview(postId, data),
 		onSuccess: (_, { postId }) => {
 			// Invalidate user's review for this post
 			queryClient.invalidateQueries({ queryKey: postsKeys.userReview(postId) });
+			// Invalidate user's reviews for this post
+			queryClient.invalidateQueries({
+				queryKey: [...postsKeys.userReview(postId), "all"],
+			});
 			// Invalidate post reviews with predicate to match all variations
 			queryClient.invalidateQueries({
 				queryKey: postsKeys.reviews(),
@@ -139,6 +143,41 @@ export function useCreateOrUpdatePostReview() {
 			// Invalidate post details to update review counts and averages
 			queryClient.invalidateQueries({ queryKey: postsKeys.detail(postId) });
 			// Invalidate feeds to show updated review counts
+			queryClient.invalidateQueries({ queryKey: postsKeys.feeds() });
+		},
+	});
+}
+
+export function useUpdatePostReview() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({
+			reviewId,
+			data,
+		}: {
+			reviewId: string;
+			data: { text: string };
+		}) => PostsService.updatePostReview(reviewId, data),
+		onSuccess: (updatedReview) => {
+			const postId = updatedReview.post_id;
+			// Invalidate user's review for this post
+			queryClient.invalidateQueries({ queryKey: postsKeys.userReview(postId) });
+			// Invalidate user's reviews for this post
+			queryClient.invalidateQueries({
+				queryKey: [...postsKeys.userReview(postId), "all"],
+			});
+			// Invalidate post reviews with predicate
+			queryClient.invalidateQueries({
+				queryKey: postsKeys.reviews(),
+				predicate: (query) => {
+					const key = query.queryKey;
+					return key.includes(postId) && key.includes("reviews");
+				},
+			});
+			// Invalidate post details
+			queryClient.invalidateQueries({ queryKey: postsKeys.detail(postId) });
+			// Invalidate feeds
 			queryClient.invalidateQueries({ queryKey: postsKeys.feeds() });
 		},
 	});
