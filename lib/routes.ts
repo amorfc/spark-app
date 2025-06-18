@@ -11,7 +11,7 @@ export const routes = {
 	mapFeatureReview: (id: string) => `${mapPath}/${id}/feature-review` as Href,
 
 	// ─── Feed/Post Routes ─────────────────────────────────────────
-	postDetail: (id: string) => `${feedPath}/${id}/post-review` as Href,
+	postDetail: (id: string) => `${feedPath}/${id}` as Href,
 
 	postUpdate: (id: string) => `${feedPath}/${id}/update-post` as Href,
 

@@ -19,7 +19,6 @@ export interface PostReview {
 
 export interface PostWithProfile extends Post {
 	author_profile: Profile;
-	recent_reviews: PostReviewWithProfile[];
 	total_reviews_count: number;
 }
 
@@ -27,11 +26,15 @@ export interface PostReviewWithProfile extends PostReview {
 	reviewer_profile: Profile;
 }
 
-export interface PostDetailsResponse {
-	post_data: PostWithProfile;
-	reviews_data: PostReviewWithProfile[];
+// Simple post details response from RPC function
+export interface PostDetails {
+	id: string;
+	user_id: string;
+	content: string;
+	created_at: string;
+	updated_at: string;
+	author_profile: Profile;
 	total_reviews_count: number;
-	has_more_reviews: boolean;
 }
 
 export interface CreatePostRequest {
@@ -54,14 +57,12 @@ export interface UpdatePostReviewRequest {
 export interface PostFeedParams {
 	limit?: number;
 	cursor?: string; // ISO timestamp for cursor pagination
-	offset?: number; // Keep for backward compatibility
 }
 
 export interface PostReviewsParams {
 	post_id: string;
 	limit?: number;
 	cursor?: string; // ISO timestamp for cursor pagination
-	offset?: number; // Keep for backward compatibility
 }
 
 export interface PostSearchParams extends PostFeedParams {

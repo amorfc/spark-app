@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, StyleSheet, ListRenderItem } from "react-native";
 import { BlogPost, BlogCategory } from "@/types/blog";
-import { BlogPostCard } from "@/components/ui/blog-post-card";
+import { BlogPostCard } from "@/components/ui/card/blog-post-card";
 import { GenericFlatList } from "@/components/ui/list/generic-flatlist";
 import { CategorySelect } from "@/components/select/category-select";
 import { getBlogPostsByCategory } from "@/utils/blog";

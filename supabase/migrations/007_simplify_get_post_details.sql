@@ -1,6 +1,10 @@
 -- Simplify get_post_details function to only return post data with profile and total review count
 -- Remove pagination logic for reviews since that should be handled separately
 
+-- Drop the existing function first to avoid overloading conflicts
+DROP FUNCTION IF EXISTS get_post_details(UUID, INTEGER, INTEGER);
+
+-- Create the new simplified function
 CREATE OR REPLACE FUNCTION get_post_details(post_uuid UUID)
 RETURNS TABLE (
     id UUID,

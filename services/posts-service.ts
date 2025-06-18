@@ -2,8 +2,8 @@ import { supabase } from "@/config/supabase";
 import type {
 	Post,
 	PostWithProfile,
+	PostDetails,
 	PostReviewWithProfile,
-	PostDetailsResponse,
 	CreatePostRequest,
 	UpdatePostRequest,
 	CreatePostReviewRequest,
@@ -42,7 +42,7 @@ export class PostsService {
 	): Promise<Post> {
 		const { data: post, error } = await supabase
 			.from("posts")
-			.update({ content: data.content })
+			.update(data)
 			.eq("id", postId)
 			.select()
 			.single();
@@ -62,21 +62,21 @@ export class PostsService {
 		}
 	}
 
-	static async getPost(postId: string): Promise<Post | null> {
-		const { data: post, error } = await supabase
-			.from("posts")
-			.select("*")
-			.eq("id", postId)
-			.single();
+	// Get post with profile and total review count using RPC function
+	static async getPost(postId: string): Promise<PostDetails> {
+		const { data, error } = await supabase.rpc("get_post_details", {
+			post_uuid: postId,
+		});
 
 		if (error) {
-			if (error.code === "PGRST116") {
-				return null; // Post not found
-			}
 			throw new Error(error.message);
 		}
 
-		return post;
+		if (!data || data.length === 0) {
+			throw new Error("Post not found");
+		}
+
+		return data[0];
 	}
 
 	// Cursor-based pagination for posts feed
@@ -107,29 +107,6 @@ export class PostsService {
 			next_cursor: result.next_cursor,
 			has_more: result.has_more,
 		};
-	}
-
-	static async getPostDetails(
-		postId: string,
-		reviewsParams: { limit?: number; offset?: number } = {},
-	): Promise<PostDetailsResponse> {
-		const { limit = 10, offset = 0 } = reviewsParams;
-
-		const { data, error } = await supabase.rpc("get_post_details", {
-			post_uuid: postId,
-			reviews_limit: limit,
-			reviews_offset: offset,
-		});
-
-		if (error) {
-			throw new Error(error.message);
-		}
-
-		if (!data || data.length === 0) {
-			throw new Error("Post not found");
-		}
-
-		return data[0];
 	}
 
 	// Post Reviews operations
@@ -177,7 +154,7 @@ export class PostsService {
 	static async getPostReviews(
 		params: PostReviewsParams,
 	): Promise<PostReviewsResponse> {
-		const { post_id, limit = 10, offset = 0 } = params;
+		const { post_id, limit = 10 } = params;
 
 		// Get total count
 		const { count, error: countError } = await supabase
@@ -189,7 +166,7 @@ export class PostsService {
 			throw new Error(countError.message);
 		}
 
-		// Get reviews with profiles
+		// Get reviews with profiles using cursor pagination
 		const { data, error } = await supabase
 			.from("post_reviews")
 			.select(
@@ -200,14 +177,14 @@ export class PostsService {
 			)
 			.eq("post_id", post_id)
 			.order("created_at", { ascending: false })
-			.range(offset, offset + limit - 1);
+			.limit(limit);
 
 		if (error) {
 			throw new Error(error.message);
 		}
 
 		const totalCount = count || 0;
-		const hasMore = totalCount > offset + limit;
+		const hasMore = (data?.length || 0) >= limit;
 
 		return {
 			reviews: data || [],
@@ -255,14 +232,14 @@ export class PostsService {
 		userId: string,
 		params: PostFeedParams = {},
 	): Promise<Post[]> {
-		const { limit = 10, offset = 0 } = params;
+		const { limit = 10 } = params;
 
 		const { data, error } = await supabase
 			.from("posts")
 			.select("*")
 			.eq("user_id", userId)
 			.order("created_at", { ascending: false })
-			.range(offset, offset + limit - 1);
+			.limit(limit);
 
 		if (error) {
 			throw new Error(error.message);
@@ -288,7 +265,7 @@ export class PostsService {
 	static async getPopularPosts(
 		params: PostFeedParams = {},
 	): Promise<PostWithProfile[]> {
-		const { limit = 10, offset = 0 } = params;
+		const { limit = 10 } = params;
 
 		// Get posts ordered by review count
 		const { data, error } = await supabase
@@ -304,7 +281,7 @@ export class PostsService {
       `,
 			)
 			.order("created_at", { ascending: false })
-			.range(offset, offset + limit - 1);
+			.limit(limit);
 
 		if (error) {
 			throw new Error(error.message);

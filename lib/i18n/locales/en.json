@@ -20,7 +20,8 @@
 			"no": "No",
 			"submitting": "Submitting...",
 			"deleting": "Deleting...",
-			"updating": "Updating..."
+			"updating": "Updating...",
+			"characters": "characters"
 		},
 		"auth": {
 			"sign_up": "Sign Up",
@@ -182,6 +183,7 @@
 			"create_post": "Create Post",
 			"edit_post": "Edit Post",
 			"delete_post": "Delete Post",
+			"make_review": "Make Review",
 			"post_content": "Post content",
 			"share_thoughts": "Share your thoughts with the community...",
 			"character_count": "{{count}}/{{max}} characters",
@@ -201,6 +203,11 @@
 				"title": "Post Reviews",
 				"write_review": "Write a Review",
 				"edit_review": "Edit Review",
+				"update_review_button": "Update Review",
+				"delete_review": "Delete Review",
+				"delete_confirmation": "Are you sure you want to delete your review?",
+				"delete_error": "Failed to delete review",
+				"submit_error": "Failed to submit review",
 				"no_reviews": "No reviews yet",
 				"be_first": "Be the first to review this post!",
 				"review_placeholder": "Share your thoughts about this post...",
@@ -209,7 +216,11 @@
 				"review_deleted": "Your review has been deleted!",
 				"count_singular": "review",
 				"count_plural": "reviews",
-				"empty_state": "No reviews yet. Be the first to review!"
+				"empty_state": "No reviews yet. Be the first to review!",
+				"validation": {
+					"text_required": "Please enter your review text",
+					"text_max_length": "Review text must be less than {{max}} characters"
+				}
 			}
 		}
 	}

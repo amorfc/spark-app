@@ -42,6 +42,15 @@ export const postsKeys = {
 		[...postsKeys.all, "search", params] as const,
 };
 
+// Post query hooks
+export function usePostsFeedCursor(params: CursorPaginationParams = {}) {
+	return useQuery({
+		queryKey: [...postsKeys.feeds(), "cursor", params],
+		queryFn: () => PostsService.getPostsFeedCursor(params),
+		staleTime: 5 * 60 * 1000, // 5 minutes
+	});
+}
+
 export function usePopularPosts(params: PostFeedParams = {}) {
 	return useQuery({
 		queryKey: postsKeys.popular(params),
@@ -50,23 +59,13 @@ export function usePopularPosts(params: PostFeedParams = {}) {
 	});
 }
 
-export function usePostDetails(
-	postId: string,
-	reviewsParams?: { limit?: number; offset?: number },
-) {
-	return useQuery({
-		queryKey: postsKeys.detail(postId),
-		queryFn: () => PostsService.getPostDetails(postId, reviewsParams),
-		enabled: !!postId,
-		staleTime: 2 * 60 * 1000, // 2 minutes
-	});
-}
-
+// Primary hook for getting post with profile and total review count
 export function usePost(postId: string) {
 	return useQuery({
 		queryKey: postsKeys.detail(postId),
 		queryFn: () => PostsService.getPost(postId),
 		enabled: !!postId,
+		staleTime: 2 * 60 * 1000, // 2 minutes
 	});
 }
 

@@ -11,9 +11,10 @@ import { useTranslation } from "@/lib/i18n/hooks";
 
 interface PostCardProps {
 	item: PostWithProfile;
+	clickable?: boolean;
 }
 
-export const PostCard = ({ item }: PostCardProps) => {
+export const PostCard = ({ item, clickable = true }: PostCardProps) => {
 	const { t } = useTranslation();
 	const createdAt = new Date(item.created_at);
 	const timeAgo = useTimeAgo(createdAt);
@@ -22,7 +23,7 @@ export const PostCard = ({ item }: PostCardProps) => {
 	return (
 		<TouchableOpacity
 			className="bg-card border border-border rounded-lg p-4 mb-3 mx-4"
-			onPress={() => router.push(routes.postDetail(item.id))}
+			onPress={() => clickable && router.push(routes.postDetail(item.id))}
 		>
 			{/* Post Header */}
 			<View className="flex-row items-center mb-3">
@@ -63,13 +64,17 @@ export const PostCard = ({ item }: PostCardProps) => {
 							: t("posts.reviews.count_plural")}
 					</Text>
 				</View>
-				<MaterialIcons
-					name="chevron-right"
-					size={20}
-					color={
-						isDark ? colors.dark.mutedForeground : colors.light.mutedForeground
-					}
-				/>
+				{clickable && (
+					<MaterialIcons
+						name="chevron-right"
+						size={20}
+						color={
+							isDark
+								? colors.dark.mutedForeground
+								: colors.light.mutedForeground
+						}
+					/>
+				)}
 			</View>
 		</TouchableOpacity>
 	);

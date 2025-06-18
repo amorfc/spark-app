@@ -20,7 +20,8 @@
 			"no": "Hayır",
 			"submitting": "Gönderiliyor...",
 			"deleting": "Siliniyor...",
-			"updating": "Güncelleniyor..."
+			"updating": "Güncelleniyor...",
+			"characters": "karakter"
 		},
 		"auth": {
 			"sign_up": "Kayıt Ol",
@@ -182,6 +183,7 @@
 			"create_post": "Gönderi Oluştur",
 			"edit_post": "Gönderiyi Düzenle",
 			"delete_post": "Gönderiyi Sil",
+			"make_review": "Yorum Yap",
 			"post_content": "Gönderi içeriği",
 			"share_thoughts": "Düşüncelerini toplulukla paylaş...",
 			"character_count": "{{count}}/{{max}} karakter",
@@ -201,6 +203,11 @@
 				"title": "Gönderi Yorumları",
 				"write_review": "Yorum Yaz",
 				"edit_review": "Yorumu Düzenle",
+				"update_review_button": "Yorumu Güncelle",
+				"delete_review": "Yorumu Sil",
+				"delete_confirmation": "Yorumunuzu silmek istediğinizden emin misiniz?",
+				"delete_error": "Yorum silinemedi",
+				"submit_error": "Yorum gönderilemedi",
 				"no_reviews": "Henüz yorum yok",
 				"be_first": "Bu gönderiyi yorumlayan ilk kişi ol!",
 				"review_placeholder": "Bu gönderi hakkındaki düşüncelerini paylaş...",
@@ -209,7 +216,11 @@
 				"review_deleted": "Yorumun silindi!",
 				"count_singular": "yorum",
 				"count_plural": "yorum",
-				"empty_state": "Henüz yorum yok. İlk yorumu sen yap!"
+				"empty_state": "Henüz yorum yok. İlk yorumu sen yap!",
+				"validation": {
+					"text_required": "Lütfen yorum metninizi girin",
+					"text_max_length": "Yorum metni {{max}} karakterden az olmalıdır"
+				}
 			}
 		}
 	}

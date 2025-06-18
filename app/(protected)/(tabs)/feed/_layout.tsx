@@ -8,8 +8,18 @@ export default function FeedLayout() {
 			}}
 		>
 			<Stack.Screen name="index" />
+			<Stack.Screen name="[id]" options={{ headerShown: false }} />
 			<Stack.Screen
-				name="[id]"
+				name="create-post"
+				options={{
+					presentation: "modal",
+					headerShown: false,
+					gestureEnabled: true,
+					animation: "slide_from_bottom",
+				}}
+			/>
+			<Stack.Screen
+				name="[id]/update-post"
 				options={{
 					presentation: "modal",
 					headerShown: false,
