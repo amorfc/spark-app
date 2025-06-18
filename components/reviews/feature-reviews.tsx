@@ -65,7 +65,6 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 					style: "destructive",
 					onPress: () => {
 						deleteReviewMutation.mutate({
-							reviewId: userReview.id,
 							featureRefId,
 						});
 					},
@@ -193,9 +192,9 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 							Loading reviews...
 						</Text>
 					</View>
-				) : reviews && reviews.length > 0 ? (
+				) : reviews && reviews.data.length > 0 ? (
 					<FlatList
-						data={reviews.filter((review) => review.id !== userReview?.id)} // Don't show user's review in the list
+						data={reviews.data.filter((review) => review.id !== userReview?.id)} // Don't show user's review in the list
 						keyExtractor={(item) => item.id}
 						renderItem={({ item }) => (
 							<ReviewItem review={item} className="mx-4 mb-3" />

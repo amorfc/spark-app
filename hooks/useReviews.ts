@@ -47,16 +47,15 @@ export const useFeatureReviews = (
 	});
 };
 
-/**
- * Hook to get review statistics for a feature
-//  */
-// export const useFeatureReviewStats = (featureRefId: number) => {
-// 	return useQuery({
-// 		queryKey: reviewKeys.stats(featureRefId),
-// 		queryFn: () => ReviewService.getFeatureReviewStats(featureRefId),
-// 		enabled: !!featureRefId,
-// 	});
-// };
+//  * Hook to get review statistics for a feature
+
+export const useFeatureReviewStats = (featureRefId: string) => {
+	return useQuery({
+		queryKey: reviewKeys.stats(featureRefId),
+		queryFn: () => ReviewService.getFeatureReviewStats(featureRefId),
+		enabled: !!featureRefId,
+	});
+};
 
 /**
  * Hook to get reviews with filters

@@ -179,4 +179,17 @@ export class ReviewService {
 
 		return data.data; // Will be null if no review found, or the review object if found
 	}
+
+	static async getFeatureReviewStats(featureRefId: string) {
+		const { data, error } = await supabase.rpc("get_feature_review_stats", {
+			p_feature_ref_id: featureRefId,
+		});
+
+		if (error) {
+			console.error("Error getting feature review stats:", error);
+			throw new Error(error.message);
+		}
+
+		return data;
+	}
 }
