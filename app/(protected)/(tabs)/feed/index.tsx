@@ -132,10 +132,7 @@ export default function FeedScreen() {
 				</Text>
 				<TouchableOpacity
 					className="p-2 rounded-full bg-primary"
-					onPress={() => {
-						// TODO: Navigate to create post screen
-						console.log("Create post");
-					}}
+					onPress={() => router.push(routes.postCreate())}
 				>
 					<MaterialIcons name="add" size={24} color="white" />
 				</TouchableOpacity>

@@ -164,7 +164,9 @@ export const FeatureInfoBottomSheet = forwardRef<
 							</View>
 							<TouchableOpacity
 								className="mt-2 items-center py-1.5 bg-primary web:hover:opacity-90 active:opacity-90 rounded-lg"
-								onPress={() => router.push(routes.featureReview(feature.id))}
+								onPress={() =>
+									router.push(routes.mapFeatureReview(feature.id as string))
+								}
 							>
 								{userReviewLoading ? (
 									<ActivityIndicator size="small" color="white" />
