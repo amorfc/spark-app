@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { router } from "expo-router";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { routes } from "@/lib/routes";
 
 const getFormSchema = (t: any) =>
 	z
@@ -73,7 +74,7 @@ export default function SignUp() {
 		}
 	}
 
-	const handleTermsPress = () => router.push("/tos");
+	const handleTermsPress = () => router.push(routes.tos());
 
 	return (
 		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
