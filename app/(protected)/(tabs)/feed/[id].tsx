@@ -95,7 +95,12 @@ export default function PostDetailScreen() {
 				</View>
 			</View>
 
-			<PostCard item={post} clickable={false} canDelete={true} />
+			<PostCard
+				item={post}
+				clickable={false}
+				canDelete={true}
+				onSuccessDelete={router.back}
+			/>
 
 			<View className="flex-1 px-2 pt-4">
 				<Text className="text-lg font-semibold mb-2">Reviews</Text>

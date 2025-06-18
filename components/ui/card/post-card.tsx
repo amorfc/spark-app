@@ -16,12 +16,14 @@ interface PostCardProps {
 	item: PostWithProfile;
 	canDelete?: boolean;
 	clickable?: boolean;
+	onSuccessDelete?: () => void;
 }
 
 export const PostCard = ({
 	item,
 	clickable = true,
 	canDelete = false,
+	onSuccessDelete,
 }: PostCardProps) => {
 	const { t } = useTranslation();
 	const { session } = useAuth();
@@ -44,6 +46,7 @@ export const PostCard = ({
 					try {
 						await deletePostMutation.mutateAsync(item.id);
 						Alert.alert(t("common.success"), t("posts.post_deleted"));
+						onSuccessDelete?.();
 					} catch (error) {
 						Alert.alert(
 							t("common.error"),
