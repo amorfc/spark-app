@@ -61,8 +61,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			throw error;
 		}
 
-		console.log(data);
-
 		if (data.session) {
 			setSession(data.session);
 			console.log("User signed up:", data.user);
@@ -121,7 +119,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		if (initialized) {
 			SplashScreen.hideAsync();
 			if (session) {
-				router.replace("/map-screen");
+				router.replace("/(protected)/(tabs)/map");
 			} else {
 				router.replace("/welcome");
 			}
