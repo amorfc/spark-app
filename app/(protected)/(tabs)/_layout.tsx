@@ -14,7 +14,7 @@ export default function TabsLayout() {
 
 	const getTabBarIconProps = (focused: boolean) => ({
 		size: 24,
-		color: focused ? "#FF69B4" : "#9CA3AF",
+		color: focused ? colors.light.primary : colors.light.mutedForeground,
 	});
 
 	return (
@@ -27,8 +27,8 @@ export default function TabsLayout() {
 							? colors.dark.background
 							: colors.light.background,
 				},
-				tabBarActiveTintColor: "#FF69B4",
-				tabBarInactiveTintColor: "#9CA3AF",
+				tabBarActiveTintColor: colors.light.primary,
+				tabBarInactiveTintColor: colors.light.mutedForeground,
 				tabBarShowLabel: true,
 				tabBarLabelStyle: {
 					fontSize: 12,

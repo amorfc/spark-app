@@ -121,7 +121,6 @@ export default function FeedScreen() {
 			<Text className="text-muted-foreground text-center mt-2 leading-5">
 				Be the first to share something with the community!
 			</Text>
-			<Button className="mt-6">Create First Post</Button>
 		</View>
 	);
 
@@ -158,12 +157,12 @@ export default function FeedScreen() {
 				showsVerticalScrollIndicator={false}
 				refreshControl={
 					<RefreshControl
-						refreshing={isRefetching}
+						refreshing={isRefetching || isLoading}
 						onRefresh={refetch}
 						tintColor={isDark ? colors.dark.primary : colors.light.primary}
 					/>
 				}
-				ListEmptyComponent={!isLoading ? renderEmptyState : undefined}
+				ListEmptyComponent={renderEmptyState}
 			/>
 		</SafeAreaView>
 	);
