@@ -1,98 +1,7 @@
--- Migration: Create posts and post_reviews tables with RLS and optimized queries
--- Created: $(date)
+-- Migration: Fix posts functions to use correct profile columns
+-- This fixes the issue where functions reference non-existent username and avatar_url columns
 
--- Enable UUID extension if not already enabled
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Create posts table
-CREATE TABLE IF NOT EXISTS posts (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- Create post_reviews table
-CREATE TABLE IF NOT EXISTS post_reviews (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    text TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    
-    -- Unique constraint to prevent duplicate reviews per user per post
-    CONSTRAINT unique_user_post_review UNIQUE (post_id, user_id)
-);
-
--- Create indexes for performance
-CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
-CREATE INDEX IF NOT EXISTS idx_post_reviews_post_id ON post_reviews(post_id);
-CREATE INDEX IF NOT EXISTS idx_post_reviews_user_id ON post_reviews(user_id);
-CREATE INDEX IF NOT EXISTS idx_post_reviews_created_at ON post_reviews(created_at DESC);
-
-
--- Create composite index for efficient post-user lookups
-CREATE INDEX IF NOT EXISTS idx_post_reviews_post_user ON post_reviews(post_id, user_id);
-
--- Enable Row Level Security
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE post_reviews ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies for posts table
--- Users can read all posts (you can modify this based on your privacy requirements)
-CREATE POLICY "Posts are viewable by everyone" ON posts
-    FOR SELECT USING (true);
-
--- Users can insert their own posts
-CREATE POLICY "Users can insert their own posts" ON posts
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-
--- Users can update their own posts
-CREATE POLICY "Users can update their own posts" ON posts
-    FOR UPDATE USING (auth.uid() = user_id);
-
--- Users can delete their own posts
-CREATE POLICY "Users can delete their own posts" ON posts
-    FOR DELETE USING (auth.uid() = user_id);
-
--- RLS Policies for post_reviews table
--- Users can read all post reviews
-CREATE POLICY "Post reviews are viewable by everyone" ON post_reviews
-    FOR SELECT USING (true);
-
--- Users can insert reviews for any post (but not their own posts)
-CREATE POLICY "Users can insert reviews for others' posts" ON post_reviews
-    FOR INSERT WITH CHECK (
-        auth.uid() = user_id AND 
-        auth.uid() != (SELECT user_id FROM posts WHERE id = post_id)
-    );
-
--- Users can update their own reviews
-CREATE POLICY "Users can update their own reviews" ON post_reviews
-    FOR UPDATE USING (auth.uid() = user_id);
-
--- Users can delete their own reviews
-CREATE POLICY "Users can delete their own reviews" ON post_reviews
-    FOR DELETE USING (auth.uid() = user_id);
-
--- Create updated_at trigger function
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = now();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
--- Add updated_at triggers
-CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON posts
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_post_reviews_updated_at BEFORE UPDATE ON post_reviews
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Drop and recreate the functions with correct profile column references
 
 -- Create function to get paginated feed with embedded reviews and profiles (offset-based)
 CREATE OR REPLACE FUNCTION get_posts_feed(
@@ -154,8 +63,7 @@ BEGIN
                                     'id', rprof.id,
                                     'first_name', rprof.first_name,
                                     'last_name', rprof.last_name,
-                                    'username', rprof.username,
-                                    'avatar_url', rprof.avatar_url
+                                    'full_name', rprof.full_name
                                 )
                                 FROM profiles rprof 
                                 WHERE rprof.id = pr.user_id
@@ -164,8 +72,7 @@ BEGIN
                                 'id', pr.user_id,
                                 'first_name', null,
                                 'last_name', null,
-                                'username', null,
-                                'avatar_url', null
+                                'full_name', null
                             )
                         )
                     ) ORDER BY pr.created_at DESC
@@ -221,8 +128,7 @@ BEGIN
                         'id', prof.id,
                         'first_name', prof.first_name,
                         'last_name', prof.last_name,
-                        'username', prof.username,
-                        'avatar_url', prof.avatar_url
+                        'full_name', prof.full_name
                     )
                     FROM profiles prof 
                     WHERE prof.id = p.user_id
@@ -231,8 +137,7 @@ BEGIN
                     'id', p.user_id,
                     'first_name', null,
                     'last_name', null,
-                    'username', null,
-                    'avatar_url', null
+                    'full_name', null
                 )
             ),
             'recent_reviews', COALESCE(
@@ -249,8 +154,7 @@ BEGIN
                                         'id', rprof.id,
                                         'first_name', rprof.first_name,
                                         'last_name', rprof.last_name,
-                                        'username', rprof.username,
-                                        'avatar_url', rprof.avatar_url
+                                        'full_name', rprof.full_name
                                     )
                                     FROM profiles rprof 
                                     WHERE rprof.id = pr.user_id
@@ -259,8 +163,7 @@ BEGIN
                                     'id', pr.user_id,
                                     'first_name', null,
                                     'last_name', null,
-                                    'username', null,
-                                    'avatar_url', null
+                                    'full_name', null
                                 )
                             )
                         ) ORDER BY pr.created_at DESC
@@ -349,8 +252,7 @@ BEGIN
                             'id', prof.id,
                             'first_name', prof.first_name,
                             'last_name', prof.last_name,
-                            'username', prof.username,
-                            'avatar_url', prof.avatar_url
+                            'full_name', prof.full_name
                         )
                         FROM profiles prof 
                         WHERE prof.id = p.user_id
@@ -359,8 +261,7 @@ BEGIN
                         'id', p.user_id,
                         'first_name', null,
                         'last_name', null,
-                        'username', null,
-                        'avatar_url', null
+                        'full_name', null
                     )
                 ),
                 'total_reviews', total_count
@@ -385,8 +286,7 @@ BEGIN
                                     'id', rprof.id,
                                     'first_name', rprof.first_name,
                                     'last_name', rprof.last_name,
-                                    'username', rprof.username,
-                                    'avatar_url', rprof.avatar_url
+                                    'full_name', rprof.full_name
                                 )
                                 FROM profiles rprof 
                                 WHERE rprof.id = pr.user_id
@@ -395,8 +295,7 @@ BEGIN
                                 'id', pr.user_id,
                                 'first_name', null,
                                 'last_name', null,
-                                'username', null,
-                                'avatar_url', null
+                                'full_name', null
                             )
                         )
                     ) ORDER BY pr.created_at DESC
@@ -457,8 +356,7 @@ BEGIN
                         'id', prof.id,
                         'first_name', prof.first_name,
                         'last_name', prof.last_name,
-                        'username', prof.username,
-                        'avatar_url', prof.avatar_url
+                        'full_name', prof.full_name
                     )
                     FROM profiles prof 
                     WHERE prof.id = pr.user_id
@@ -467,8 +365,7 @@ BEGIN
                     'id', pr.user_id,
                     'first_name', null,
                     'last_name', null,
-                    'username', null,
-                    'avatar_url', null
+                    'full_name', null
                 )
             )
         ) ORDER BY pr.created_at DESC
@@ -556,8 +453,7 @@ BEGIN
                         'id', prof.id,
                         'first_name', prof.first_name,
                         'last_name', prof.last_name,
-                        'username', prof.username,
-                        'avatar_url', prof.avatar_url
+                        'full_name', prof.full_name
                     )
                     FROM profiles prof 
                     WHERE prof.id = result_review.user_id
@@ -566,8 +462,7 @@ BEGIN
                     'id', result_review.user_id,
                     'first_name', null,
                     'last_name', null,
-                    'username', null,
-                    'avatar_url', null
+                    'full_name', null
                 )
             )
         )
@@ -609,8 +504,7 @@ BEGIN
                         'id', prof.id,
                         'first_name', prof.first_name,
                         'last_name', prof.last_name,
-                        'username', prof.username,
-                        'avatar_url', prof.avatar_url
+                        'full_name', prof.full_name
                     )
                     FROM profiles prof 
                     WHERE prof.id = user_review.user_id
@@ -619,22 +513,10 @@ BEGIN
                     'id', user_review.user_id,
                     'first_name', null,
                     'last_name', null,
-                    'username', null,
-                    'avatar_url', null
+                    'full_name', null
                 )
             )
         )
     );
 END;
-$$;
-
--- Grant necessary permissions
-GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT ALL ON posts TO authenticated;
-GRANT ALL ON post_reviews TO authenticated;
-GRANT EXECUTE ON FUNCTION get_posts_feed TO authenticated;
-GRANT EXECUTE ON FUNCTION get_posts_feed_cursor TO authenticated;
-GRANT EXECUTE ON FUNCTION get_post_details TO authenticated;
-GRANT EXECUTE ON FUNCTION get_post_reviews_cursor TO authenticated;
-GRANT EXECUTE ON FUNCTION upsert_post_review TO authenticated;
-GRANT EXECUTE ON FUNCTION get_user_post_review TO authenticated; 
+$$; 

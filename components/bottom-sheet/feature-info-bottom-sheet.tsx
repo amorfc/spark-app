@@ -18,7 +18,7 @@ import { colors } from "@/constants/colors";
 import { useFeatureMetadata } from "@/hooks/useFeatureMetadata";
 import { useFeatureReviewsInfinite, useUserReview } from "@/hooks/useReviews";
 import { router } from "expo-router";
-import { GenericFlatList } from "@/components/ui/generic-flatlist";
+import { GenericFlatList } from "@/components/ui/list/generic-flatlist";
 import { Review } from "@/types/reviews";
 import { ReviewItem } from "@/components/reviews/review-item";
 import { useTranslation } from "@/lib/i18n/hooks";

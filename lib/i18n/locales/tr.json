@@ -107,7 +107,8 @@
 			"map": "Harita",
 			"blog": "Blog",
 			"feed": "Gönderiler",
-			"settings": "Ayarlar"
+			"settings": "Ayarlar",
+			"create_post": "Gönderi Oluştur"
 		},
 		"errors": {
 			"general_error": "Bir şeyler ters gitti",
@@ -120,7 +121,10 @@
 			"no_reviews": "Yorum bulunamadı",
 			"be_first_reviewer": "Bu özelliği yorumlayan ilk kişi olun",
 			"no_data": "Veri mevcut değil",
-			"no_results": "Sonuç bulunamadı"
+			"no_results": "Sonuç bulunamadı",
+			"no_posts": "Henüz gönderi yok",
+			"be_first_poster": "İlk gönderiyi sen oluştur!",
+			"pull_to_refresh": "Yenilemek için çek"
 		},
 		"blog": {
 			"categories": {
@@ -164,6 +168,45 @@
 		"app": {
 			"title": "Spark",
 			"description": "Spark, çevrenizdeki farklı yerlerin ne kadar güvenli olduğunu keşfetmenize yardımcı olan bir platformdur."
+		},
+		"time": {
+			"seconds": "s",
+			"minutes": "dk",
+			"hours": "sa",
+			"days": "g",
+			"just_now": "şimdi",
+			"ago": "önce"
+		},
+		"posts": {
+			"title": "Gönderiler",
+			"create_post": "Gönderi Oluştur",
+			"edit_post": "Gönderiyi Düzenle",
+			"delete_post": "Gönderiyi Sil",
+			"post_content": "Gönderi içeriği",
+			"whats_on_mind": "Aklından neler geçiyor?",
+			"share_thoughts": "Düşüncelerini toplulukla paylaş...",
+			"character_count": "{{count}}/{{max}} karakter",
+			"post_created": "Gönderiniz başarıyla oluşturuldu!",
+			"post_updated": "Gönderiniz başarıyla güncellendi!",
+			"post_deleted": "Gönderiniz başarıyla silindi!",
+			"post_details": "Gönderi Detayları",
+			"post_not_found": "Gönderi bulunamadı",
+			"loading_post": "Gönderi yükleniyor...",
+			"go_back": "Geri Dön",
+			"reviews": {
+				"title": "Gönderi Yorumları",
+				"write_review": "Yorum Yaz",
+				"edit_review": "Yorumu Düzenle",
+				"no_reviews": "Henüz yorum yok",
+				"be_first": "Bu gönderiyi yorumlayan ilk kişi ol!",
+				"review_placeholder": "Bu gönderi hakkındaki düşüncelerini paylaş...",
+				"review_created": "Yorumun paylaşıldı!",
+				"review_updated": "Yorumun güncellendi!",
+				"review_deleted": "Yorumun silindi!",
+				"count_singular": "yorum",
+				"count_plural": "yorum",
+				"empty_state": "Henüz yorum yok. İlk yorumu sen yap!"
+			}
 		}
 	}
 }

@@ -1,0 +1,76 @@
+import { PostWithProfile } from "@/types/posts";
+
+import { Text, TouchableOpacity, View } from "react-native";
+import { router } from "expo-router";
+import { routes } from "@/lib/routes";
+import { MaterialIcons } from "@expo/vector-icons";
+import { colors } from "@/constants/colors";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { useTimeAgo } from "@/hooks/useTimeAgo";
+import { useTranslation } from "@/lib/i18n/hooks";
+
+interface PostCardProps {
+	item: PostWithProfile;
+}
+
+export const PostCard = ({ item }: PostCardProps) => {
+	const { t } = useTranslation();
+	const createdAt = new Date(item.created_at);
+	const timeAgo = useTimeAgo(createdAt);
+	const { colorScheme } = useColorScheme();
+	const isDark = colorScheme === "dark";
+	return (
+		<TouchableOpacity
+			className="bg-card border border-border rounded-lg p-4 mb-3 mx-4"
+			onPress={() => router.push(routes.postDetail(item.id))}
+		>
+			{/* Post Header */}
+			<View className="flex-row items-center mb-3">
+				<View className="w-10 h-10 bg-primary rounded-full items-center justify-center">
+					<Text className="text-white font-semibold text-lg">
+						{item.author_profile?.first_name?.charAt(0).toUpperCase() || "?"}
+					</Text>
+				</View>
+				<View className="ml-3 flex-1">
+					<Text className="font-semibold text-foreground">
+						{item.author_profile?.first_name} {item.author_profile?.last_name}
+					</Text>
+					<Text className="text-sm text-muted-foreground">{timeAgo}</Text>
+				</View>
+			</View>
+
+			{/* Post Content */}
+			<Text className="text-foreground leading-5 mb-3" numberOfLines={4}>
+				{item.content}
+			</Text>
+
+			{/* Post Stats */}
+			<View className="flex-row items-center justify-between pt-2 border-t border-border">
+				<View className="flex-row items-center">
+					<MaterialIcons
+						name="chat-bubble-outline"
+						size={16}
+						color={
+							isDark
+								? colors.dark.mutedForeground
+								: colors.light.mutedForeground
+						}
+					/>
+					<Text className="text-sm text-muted-foreground ml-1">
+						{item.total_reviews_count || 0}{" "}
+						{item.total_reviews_count === 1
+							? t("posts.reviews.count_singular")
+							: t("posts.reviews.count_plural")}
+					</Text>
+				</View>
+				<MaterialIcons
+					name="chevron-right"
+					size={20}
+					color={
+						isDark ? colors.dark.mutedForeground : colors.light.mutedForeground
+					}
+				/>
+			</View>
+		</TouchableOpacity>
+	);
+};

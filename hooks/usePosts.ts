@@ -42,15 +42,6 @@ export const postsKeys = {
 		[...postsKeys.all, "search", params] as const,
 };
 
-// Posts hooks
-export function usePostsFeed(params: PostFeedParams = {}) {
-	return useQuery({
-		queryKey: postsKeys.feed(params),
-		queryFn: () => PostsService.getPostsFeed(params),
-		staleTime: 5 * 60 * 1000, // 5 minutes
-	});
-}
-
 export function usePopularPosts(params: PostFeedParams = {}) {
 	return useQuery({
 		queryKey: postsKeys.popular(params),
@@ -76,14 +67,6 @@ export function usePost(postId: string) {
 		queryKey: postsKeys.detail(postId),
 		queryFn: () => PostsService.getPost(postId),
 		enabled: !!postId,
-	});
-}
-
-export function useUserPosts(userId: string, params: PostFeedParams = {}) {
-	return useQuery({
-		queryKey: postsKeys.userPosts(userId, params),
-		queryFn: () => PostsService.getUserPosts(userId, params),
-		enabled: !!userId,
 	});
 }
 
@@ -261,39 +244,12 @@ export function useInfinitePostReviews(
 	});
 }
 
-// Legacy: Custom hook for offset-based infinite scroll feed (for backward compatibility)
-export function useInfinitePostsFeedOffset(initialParams: PostFeedParams = {}) {
-	const limit = initialParams.limit || 10;
-
-	return useQuery({
-		queryKey: postsKeys.feed({ ...initialParams, limit }),
-		queryFn: async ({ queryKey }) => {
-			const [, , params] = queryKey as [string, string, PostFeedParams];
-			return PostsService.getPostsFeed(params);
-		},
-		staleTime: 5 * 60 * 1000,
-	});
-}
-
-// Helper functions for infinite queries
-export function usePrefetchNextPostsPage() {
-	const queryClient = useQueryClient();
-
-	return (currentParams: PostFeedParams) => {
-		const limit = currentParams.limit || 10;
-		const offset = (currentParams.offset || 0) + limit;
-
-		queryClient.prefetchQuery({
-			queryKey: postsKeys.feed({ ...currentParams, offset }),
-			queryFn: () => PostsService.getPostsFeed({ ...currentParams, offset }),
-			staleTime: 5 * 60 * 1000,
-		});
-	};
-}
-
 // Helper hook to get flattened posts from infinite query
-export function useInfinitePostsData(infiniteQueryResult: any) {
+export function useInfinitePostsData(
+	infiniteQueryResult: ReturnType<typeof useInfinitePostsFeed>,
+) {
 	return {
+		...infiniteQueryResult,
 		posts:
 			infiniteQueryResult.data?.pages?.flatMap(
 				(page: PostFeedResponse) => page.posts,

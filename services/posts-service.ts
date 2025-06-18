@@ -9,7 +9,6 @@ import type {
 	CreatePostReviewRequest,
 	PostFeedParams,
 	PostReviewsParams,
-	PostSearchParams,
 	PostFeedResponse,
 	PostReviewsResponse,
 	CursorPaginationParams,
@@ -78,24 +77,6 @@ export class PostsService {
 		}
 
 		return post;
-	}
-
-	// Feed operations using PostgreSQL functions
-	static async getPostsFeed(
-		params: PostFeedParams = {},
-	): Promise<PostWithProfile[]> {
-		const { limit = 10, offset = 0 } = params;
-
-		const { data, error } = await supabase.rpc("get_posts_feed", {
-			page_limit: limit,
-			page_offset: offset,
-		});
-
-		if (error) {
-			throw new Error(error.message);
-		}
-
-		return data || [];
 	}
 
 	// Cursor-based pagination for posts feed

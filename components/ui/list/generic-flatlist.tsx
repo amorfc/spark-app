@@ -48,7 +48,7 @@ export const GenericFlatList = <T,>({
 	onRefresh,
 	refreshing = false,
 	emptyStateMessage = "No items found",
-	emptyStateSubtitle = "Try changing your filters or check back later",
+	emptyStateSubtitle = "Refresh to try again",
 	loading = false,
 	error,
 	loadingComponent,

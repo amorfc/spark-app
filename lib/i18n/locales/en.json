@@ -107,7 +107,8 @@
 			"map": "Map",
 			"blog": "Blog",
 			"feed": "Feed",
-			"settings": "Settings"
+			"settings": "Settings",
+			"create_post": "Create Post"
 		},
 		"errors": {
 			"general_error": "Something went wrong",
@@ -120,7 +121,10 @@
 			"no_reviews": "No reviews found",
 			"be_first_reviewer": "Be the first to review this feature",
 			"no_data": "No data available",
-			"no_results": "No results found"
+			"no_results": "No results found",
+			"no_posts": "No posts yet",
+			"be_first_poster": "Be the first to create a post!",
+			"pull_to_refresh": "Pull to refresh"
 		},
 		"blog": {
 			"categories": {
@@ -164,6 +168,45 @@
 		"app": {
 			"title": "Spark",
 			"description": "Spark is a platform that helps you discover how safe different places are around you."
+		},
+		"time": {
+			"seconds": "s",
+			"minutes": "m",
+			"hours": "h",
+			"days": "d",
+			"just_now": "just now",
+			"ago": "ago"
+		},
+		"posts": {
+			"title": "Posts",
+			"create_post": "Create Post",
+			"edit_post": "Edit Post",
+			"delete_post": "Delete Post",
+			"post_content": "Post content",
+			"whats_on_mind": "What's on your mind?",
+			"share_thoughts": "Share your thoughts with the community...",
+			"character_count": "{{count}}/{{max}} characters",
+			"post_created": "Your post has been created successfully!",
+			"post_updated": "Your post has been updated successfully!",
+			"post_deleted": "Your post has been deleted successfully!",
+			"post_details": "Post Details",
+			"post_not_found": "Post not found",
+			"loading_post": "Loading post...",
+			"go_back": "Go Back",
+			"reviews": {
+				"title": "Post Reviews",
+				"write_review": "Write a Review",
+				"edit_review": "Edit Review",
+				"no_reviews": "No reviews yet",
+				"be_first": "Be the first to review this post!",
+				"review_placeholder": "Share your thoughts about this post...",
+				"review_created": "Your review has been posted!",
+				"review_updated": "Your review has been updated!",
+				"review_deleted": "Your review has been deleted!",
+				"count_singular": "review",
+				"count_plural": "reviews",
+				"empty_state": "No reviews yet. Be the first to review!"
+			}
 		}
 	}
 }
