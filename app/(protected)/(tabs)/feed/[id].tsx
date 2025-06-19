@@ -92,7 +92,7 @@ export default function PostDetailScreen() {
 				/>
 			</View>
 
-			<View className="flex-1 px-2">
+			<View className="flex-1 gap-y-2 px-4">
 				<Text className="self-center text-lg font-semibold">
 					{t("posts.reviews.all_reviews")}
 				</Text>

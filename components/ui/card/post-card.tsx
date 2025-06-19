@@ -77,7 +77,17 @@ export const PostCard = ({
 					<Text className="font-semibold text-foreground">
 						{item.author_profile?.first_name} {item.author_profile?.last_name}
 					</Text>
-					<Text className="text-sm text-muted-foreground">{timeAgo}</Text>
+					<View className="flex-row items-center">
+						<Text className="text-sm text-muted-foreground">{timeAgo}</Text>
+						{isOwnPost && (
+							<>
+								<Text className="text-sm text-muted-foreground"> • </Text>
+								<Text className="text-sm text-muted-foreground">
+									{t("posts.your_post")}
+								</Text>
+							</>
+						)}
+					</View>
 				</View>
 
 				{/* Delete Button for Own Posts */}

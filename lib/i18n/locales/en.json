@@ -198,6 +198,7 @@
 			"loading_post": "Loading post...",
 			"go_back": "Go Back",
 			"save_failed": "Failed to save post",
+			"your_post": "Your post",
 			"validation": {
 				"content_required": "Please enter your post content",
 				"content_max_length": "Post content must be less than {{max}} characters"
@@ -225,6 +226,7 @@
 				"count_singular": "review",
 				"count_plural": "reviews",
 				"empty_state": "No reviews yet. Be the first to review!",
+				"your_review": "Your review",
 				"validation": {
 					"text_required": "Please enter your review text",
 					"text_max_length": "Review text must be less than {{max}} characters"

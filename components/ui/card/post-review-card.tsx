@@ -76,7 +76,17 @@ export const PostReviewCard = ({
 						{item.reviewer_profile?.first_name}{" "}
 						{item.reviewer_profile?.last_name}
 					</Text>
-					<Text className="text-xs text-muted-foreground">{timeAgo}</Text>
+					<View className="flex-row items-center">
+						<Text className="text-xs text-muted-foreground">{timeAgo}</Text>
+						{isOwnReview && (
+							<>
+								<Text className="text-xs text-muted-foreground"> • </Text>
+								<Text className="text-xs text-muted-foreground">
+									{t("posts.reviews.your_review")}
+								</Text>
+							</>
+						)}
+					</View>
 				</View>
 
 				{/* Delete Button for Own Reviews */}

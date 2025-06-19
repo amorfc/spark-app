@@ -30,9 +30,14 @@ export function calculateBoundsFromGeometry(
 export function calculateBoundsFromFeature(
 	feature: GeoJSON.Feature,
 ): BoundingBox | null {
+	if (feature == null) {
+		return null;
+	}
+
 	try {
 		// Use Turf's bbox function to calculate bounding box from feature
 		// bbox returns [west, south, east, north]
+
 		const [west, south, east, north] = bbox(feature);
 
 		return { west, south, east, north };

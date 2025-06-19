@@ -198,6 +198,7 @@
 			"loading_post": "Gönderi yükleniyor...",
 			"go_back": "Geri Dön",
 			"save_failed": "Gönderi kaydedilemedi",
+			"your_post": "Senin gönderin",
 			"validation": {
 				"content_required": "Lütfen gönderi içeriğinizi girin",
 				"content_max_length": "Gönderi içeriği {{max}} karakterden az olmalıdır"
@@ -225,6 +226,7 @@
 				"count_singular": "yorum",
 				"count_plural": "yorum",
 				"empty_state": "Henüz yorum yok. İlk yorumu sen yap!",
+				"your_review": "Senin yorumun",
 				"validation": {
 					"text_required": "Lütfen yorum metninizi girin",
 					"text_max_length": "Yorum metni {{max}} karakterden az olmalıdır"
