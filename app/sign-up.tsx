@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { router } from "expo-router";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { routes } from "@/lib/routes";
+import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
 
 const getFormSchema = (t: any) =>
 	z
@@ -80,138 +81,140 @@ export default function SignUp() {
 		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
 			<View className="flex-1 gap-4 web:m-4">
 				<H1 className="self-start">{t("auth.sign_up")}</H1>
-				<Form {...form}>
-					<View className="gap-4">
-						<FormField
-							control={form.control}
-							name="firstName"
-							render={({ field }) => (
-								<FormInput
-									label={t("auth.first_name")}
-									placeholder={t("auth.first_name")}
-									autoCapitalize="none"
-									autoCorrect={true}
-									{...field}
-								/>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="lastName"
-							render={({ field }) => (
-								<FormInput
-									label={t("auth.last_name")}
-									placeholder={t("auth.last_name")}
-									autoCapitalize="none"
-									autoCorrect={true}
-									{...field}
-								/>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name="email"
-							render={({ field }) => (
-								<FormInput
-									label={t("auth.email")}
-									placeholder={t("auth.email")}
-									autoCapitalize="none"
-									autoComplete="email"
-									autoCorrect={false}
-									keyboardType="email-address"
-									{...field}
-								/>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="password"
-							render={({ field }) => (
-								<FormInput
-									label={t("auth.password")}
-									placeholder={t("auth.password")}
-									autoCapitalize="none"
-									autoCorrect={false}
-									secureTextEntry
-									{...field}
-								/>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="confirmPassword"
-							render={({ field }) => (
-								<FormInput
-									label={t("auth.confirm_password")}
-									placeholder={t("auth.confirm_password")}
-									autoCapitalize="none"
-									autoCorrect={false}
-									secureTextEntry
-									{...field}
-								/>
-							)}
-						/>
-
-						{/* Female Only Switch */}
-						<FormField
-							control={form.control}
-							name="isFemale"
-							render={({ field }) => (
-								<View className="flex-row items-center justify-between">
-									<Text className="text-base font-medium">
-										{t("auth.female_confirmation")}
-									</Text>
-									<Switch
-										checked={field.value}
-										onCheckedChange={(checked: boolean) => {
-											field.onChange(checked);
-										}}
+				<KeyboardAwareForm extraScrollHeight={250}>
+					<Form {...form}>
+						<View className="gap-4">
+							<FormField
+								control={form.control}
+								name="firstName"
+								render={({ field }) => (
+									<FormInput
+										label={t("auth.first_name")}
+										placeholder={t("auth.first_name")}
+										autoCapitalize="none"
+										autoCorrect={true}
+										{...field}
 									/>
-								</View>
-							)}
-						/>
-						{form.formState.errors.isFemale && (
-							<Text className="text-sm text-destructive">
-								{form.formState.errors.isFemale.message}
-							</Text>
-						)}
+								)}
+							/>
 
-						{/* Terms and Conditions Checkbox */}
-						<FormField
-							control={form.control}
-							name="acceptTerms"
-							render={({ field }) => (
-								<View className="mt-2">
-									<Checkbox
-										checked={field.value}
-										onCheckedChange={(checked: boolean) => {
-											field.onChange(checked);
-										}}
-										renderLabel={() => (
-											<View className="flex-row items-center gap-1">
-												<Text className="text-sm text-foreground">
-													{t("auth.accept_terms")}
-												</Text>{" "}
-												<Pressable onPress={handleTermsPress}>
-													<Text className="text-blue-500 text-sm underline">
-														{t("auth.terms_and_privacy")}
-													</Text>
-												</Pressable>
-											</View>
-										)}
+							<FormField
+								control={form.control}
+								name="lastName"
+								render={({ field }) => (
+									<FormInput
+										label={t("auth.last_name")}
+										placeholder={t("auth.last_name")}
+										autoCapitalize="none"
+										autoCorrect={true}
+										{...field}
 									/>
-									{form.formState.errors.acceptTerms && (
-										<Text className="text-sm text-destructive mt-1">
-											{form.formState.errors.acceptTerms.message}
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="email"
+								render={({ field }) => (
+									<FormInput
+										label={t("auth.email")}
+										placeholder={t("auth.email")}
+										autoCapitalize="none"
+										autoComplete="email"
+										autoCorrect={false}
+										keyboardType="email-address"
+										{...field}
+									/>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="password"
+								render={({ field }) => (
+									<FormInput
+										label={t("auth.password")}
+										placeholder={t("auth.password")}
+										autoCapitalize="none"
+										autoCorrect={false}
+										secureTextEntry
+										{...field}
+									/>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="confirmPassword"
+								render={({ field }) => (
+									<FormInput
+										label={t("auth.confirm_password")}
+										placeholder={t("auth.confirm_password")}
+										autoCapitalize="none"
+										autoCorrect={false}
+										secureTextEntry
+										{...field}
+									/>
+								)}
+							/>
+
+							{/* Female Only Switch */}
+							<FormField
+								control={form.control}
+								name="isFemale"
+								render={({ field }) => (
+									<View className="flex-row items-center justify-between">
+										<Text className="text-base font-medium">
+											{t("auth.female_confirmation")}
 										</Text>
-									)}
-								</View>
+										<Switch
+											checked={field.value}
+											onCheckedChange={(checked: boolean) => {
+												field.onChange(checked);
+											}}
+										/>
+									</View>
+								)}
+							/>
+							{form.formState.errors.isFemale && (
+								<Text className="text-sm text-destructive">
+									{form.formState.errors.isFemale.message}
+								</Text>
 							)}
-						/>
-					</View>
-				</Form>
+
+							{/* Terms and Conditions Checkbox */}
+							<FormField
+								control={form.control}
+								name="acceptTerms"
+								render={({ field }) => (
+									<View className="mt-2">
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={(checked: boolean) => {
+												field.onChange(checked);
+											}}
+											renderLabel={() => (
+												<View className="flex-row items-center gap-1">
+													<Text className="text-sm text-foreground">
+														{t("auth.accept_terms")}
+													</Text>{" "}
+													<Pressable onPress={handleTermsPress}>
+														<Text className="text-blue-500 text-sm underline">
+															{t("auth.terms_and_privacy")}
+														</Text>
+													</Pressable>
+												</View>
+											)}
+										/>
+										{form.formState.errors.acceptTerms && (
+											<Text className="text-sm text-destructive mt-1">
+												{form.formState.errors.acceptTerms.message}
+											</Text>
+										)}
+									</View>
+								)}
+							/>
+						</View>
+					</Form>
+				</KeyboardAwareForm>
 			</View>
 			<Button
 				size="default"

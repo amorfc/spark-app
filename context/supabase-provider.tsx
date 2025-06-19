@@ -63,7 +63,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		if (data.session) {
 			setSession(data.session);
-			console.log("User signed up:", data.user);
 		} else {
 			throw new Error("Email already in use or invalid password/email");
 		}
@@ -86,7 +85,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		if (data.session) {
 			setSession(data.session);
-			console.log("User signed in:", data.user);
 		} else {
 			throw new Error("Email already in use or invalid password/email");
 		}
@@ -98,8 +96,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		if (error) {
 			console.error("Error signing out:", error);
 			return;
-		} else {
-			console.log("User signed out");
 		}
 	};
 

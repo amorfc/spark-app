@@ -13,7 +13,6 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 import { BottomSheet, BottomSheetProps, BottomSheetRef } from "./bottom-sheet";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFeatureMetadata } from "@/hooks/useFeatureMetadata";
 import { useFeatureReviewsInfinite, useUserReview } from "@/hooks/useReviews";
@@ -32,10 +31,8 @@ export const FeatureInfoBottomSheet = forwardRef<
 	BottomSheetRef,
 	FeatureInfoBottomSheetProps
 >(({ feature, ...bottomSheetProps }, ref) => {
-	const { colorScheme } = useColorScheme();
 	const { t } = useTranslation();
 
-	const isDark = colorScheme === "dark";
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const { icon, label } = useFeatureMetadata(feature);
 	const {
@@ -57,9 +54,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 		[],
 	);
 
-	const iconColor = isDark
-		? colors.dark.mutedForeground
-		: colors.light.mutedForeground;
+	const iconColor = colors.light.mutedForeground;
 
 	useEffect(() => {
 		if (!feature) {
@@ -133,6 +128,10 @@ export const FeatureInfoBottomSheet = forwardRef<
 		);
 	};
 
+	const handleCreateReviewPress = () => {
+		router.push(routes.mapFeatureReview(feature.id as string));
+	};
+
 	return (
 		<BottomSheet
 			ref={bottomSheetRef}
@@ -164,9 +163,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 							</View>
 							<TouchableOpacity
 								className="mt-2 items-center py-1.5 bg-primary web:hover:opacity-90 active:opacity-90 rounded-lg"
-								onPress={() =>
-									router.push(routes.mapFeatureReview(feature.id as string))
-								}
+								onPress={handleCreateReviewPress}
 							>
 								{userReviewLoading ? (
 									<ActivityIndicator size="small" color="white" />

@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useCreatePost, useUpdatePost } from "@/hooks/usePosts";
 import { Post } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
 
 const maxPostLength = 500;
 const getPostFormSchema = (t: any) =>
@@ -96,63 +97,65 @@ const PostForm: React.FC<PostFormProps> = ({
 	const isLoading = createMutation.isPending || updateMutation.isPending;
 
 	return (
-		<View className={cn("space-y-4", className)}>
-			<Form {...form}>
-				<View className="space-y-4">
-					{/* Post Content */}
-					<FormField
-						control={form.control}
-						name="content"
-						render={({ field }) => (
-							<View className="space-y-2">
-								<Textarea
-									placeholder={t("posts.share_thoughts")}
-									value={field.value || ""}
-									onChangeText={field.onChange}
-									onBlur={field.onBlur}
-									className="min-h-32"
-									maxLength={maxPostLength}
-								/>
-								<FormMessage />
-								<Text className="text-xs text-muted-foreground text-right">
-									{t("posts.character_count", {
-										count: field.value?.length || 0,
-										max: maxPostLength,
-									})}
-								</Text>
-							</View>
-						)}
-					/>
+		<KeyboardAwareForm>
+			<View className={cn("space-y-4", className)}>
+				<Form {...form}>
+					<View className="space-y-4">
+						{/* Post Content */}
+						<FormField
+							control={form.control}
+							name="content"
+							render={({ field }) => (
+								<View className="space-y-2">
+									<Textarea
+										placeholder={t("posts.share_thoughts")}
+										value={field.value || ""}
+										onChangeText={field.onChange}
+										onBlur={field.onBlur}
+										className="min-h-32"
+										maxLength={maxPostLength}
+									/>
+									<FormMessage />
+									<Text className="text-xs text-muted-foreground text-right">
+										{t("posts.character_count", {
+											count: field.value?.length || 0,
+											max: maxPostLength,
+										})}
+									</Text>
+								</View>
+							)}
+						/>
 
-					{/* Buttons */}
-					<View className="flex-row space-x-2 pt-4">
-						{onCancel && (
+						{/* Buttons */}
+						<View className="flex-row space-x-2 pt-4">
+							{onCancel && (
+								<Button
+									variant="outline"
+									onPress={onCancel}
+									disabled={isLoading}
+									className="flex-1"
+								>
+									<Text>{t("common.cancel")}</Text>
+								</Button>
+							)}
 							<Button
-								variant="outline"
-								onPress={onCancel}
-								disabled={isLoading}
+								onPress={form.handleSubmit(onSubmit)}
+								disabled={isLoading || !form.watch("content")?.trim()}
 								className="flex-1"
 							>
-								<Text>{t("common.cancel")}</Text>
+								<Text>
+									{isLoading
+										? t("common.submitting")
+										: isEditing
+											? t("posts.edit_post")
+											: t("posts.create_post")}
+								</Text>
 							</Button>
-						)}
-						<Button
-							onPress={form.handleSubmit(onSubmit)}
-							disabled={isLoading || !form.watch("content")?.trim()}
-							className="flex-1"
-						>
-							<Text>
-								{isLoading
-									? t("common.submitting")
-									: isEditing
-										? t("posts.edit_post")
-										: t("posts.create_post")}
-							</Text>
-						</Button>
+						</View>
 					</View>
-				</View>
-			</Form>
-		</View>
+				</Form>
+			</View>
+		</KeyboardAwareForm>
 	);
 };
 

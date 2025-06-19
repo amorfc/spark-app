@@ -5,15 +5,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/ui/text";
 import { PostForm } from "@/components/post/post-form";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function CreatePostScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
 
 	const handleClose = () => {
 		router.back();
@@ -32,9 +29,7 @@ export default function CreatePostScreen() {
 		handleClose();
 	};
 
-	const iconColor = isDark
-		? colors.dark.mutedForeground
-		: colors.light.mutedForeground;
+	const iconColor = colors.light.mutedForeground;
 
 	return (
 		<SafeAreaView className="flex-1 bg-background px-4">

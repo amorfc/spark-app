@@ -7,7 +7,6 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { StarRating } from "@/components/reviews/star-rating";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useUserReview } from "@/hooks/useReviews";
 import { useMapSearch } from "@/hooks/useMapSearch";
@@ -20,19 +19,18 @@ export default function ReviewUpsertScreen() {
 	const { selectedFeature } = useMapSearch();
 
 	// Use the id from params or fall back to selectedFeature
-	const featureRefId = id || (selectedFeature?.id as string);
+	// Decode the URL-encoded ID if it exists
+	const featureRefId = id
+		? decodeURIComponent(id)
+		: (selectedFeature?.id as string);
 
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	// Fetch user's existing review and stats
 	const { data: userReview, isLoading: userReviewLoading } =
 		useUserReview(featureRefId);
 
-	const iconColor = isDark
-		? colors.dark.mutedForeground
-		: colors.light.mutedForeground;
+	const iconColor = colors.light.mutedForeground;
 
 	const handleClose = () => {
 		if (isSubmitting) return;

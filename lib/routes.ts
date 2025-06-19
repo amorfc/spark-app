@@ -8,12 +8,14 @@ const feedPath = tabsPath + "/feed";
 
 export const routes = {
 	// ─── Map Feature Routes ───────────────────────────────────────
-	mapFeatureReview: (id: string) => `${mapPath}/${id}/feature-review` as Href,
+	mapFeatureReview: (id: string) =>
+		`${mapPath}/${encodeURIComponent(id)}/feature-review` as Href,
 
 	// ─── Feed/Post Routes ─────────────────────────────────────────
-	postDetail: (id: string) => `${feedPath}/${id}` as Href,
+	postDetail: (id: string) => `${feedPath}/${encodeURIComponent(id)}` as Href,
 
-	postUpdate: (id: string) => `${feedPath}/${id}/update-post` as Href,
+	postUpdate: (id: string) =>
+		`${feedPath}/${encodeURIComponent(id)}/update-post` as Href,
 
 	postCreate: () => `${feedPath}/create-post` as Href,
 

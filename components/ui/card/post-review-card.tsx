@@ -67,7 +67,7 @@ export const PostReviewCard = ({
 			{/* Review Header */}
 			<View className="flex-row items-center mb-2">
 				<View className="w-8 h-8 bg-primary rounded-full items-center justify-center">
-					<Text className="text-white font-semibold text-sm">
+					<Text className="font-semibold text-sm">
 						{item.reviewer_profile?.first_name?.charAt(0).toUpperCase() || "?"}
 					</Text>
 				</View>

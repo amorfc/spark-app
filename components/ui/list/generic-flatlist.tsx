@@ -13,7 +13,6 @@ import {
 	Animated,
 	ActivityIndicator,
 } from "react-native";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useTranslation } from "@/lib/i18n/hooks";
 
@@ -61,8 +60,6 @@ export const GenericFlatList = <T,>({
 	...flatListProps
 }: GenericFlatListProps<T>) => {
 	const { t } = useTranslation();
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
 	const fadeAnim = useRef(new Animated.Value(1)).current;
 	const prevDataLength = useRef(data.length);
 
@@ -108,12 +105,7 @@ export const GenericFlatList = <T,>({
 	// Default loading component
 	const defaultLoadingComponent = (
 		<View style={styles.centerContainer}>
-			<Text
-				style={[
-					styles.message,
-					{ color: isDark ? colors.dark.foreground : colors.light.foreground },
-				]}
-			>
+			<Text style={[styles.message, { color: colors.light.foreground }]}>
 				<ActivityIndicator size="small" color={colors.light.primary} />
 			</Text>
 		</View>
@@ -125,6 +117,15 @@ export const GenericFlatList = <T,>({
 			<Text style={[styles.errorText, { color: colors.light.destructive }]}>
 				{t("errors.error_prefix")} {error}
 			</Text>
+		</View>
+	);
+
+	const defaultEmptyStateComponent = () => (
+		<View className="items-center justify-center py-20">
+			<Text className="text-black text-lg font-semibold">
+				{finalEmptyStateMessage}
+			</Text>
+			<Text className="text-black text-sm">{finalEmptyStateSubtitle}</Text>
 		</View>
 	);
 
@@ -156,8 +157,8 @@ export const GenericFlatList = <T,>({
 						<RefreshControl
 							refreshing={refreshing}
 							onRefresh={onRefresh}
-							tintColor={isDark ? colors.dark.primary : colors.light.primary}
-							colors={[isDark ? colors.dark.primary : colors.light.primary]}
+							tintColor={colors.light.primary}
+							colors={[colors.light.primary]}
 						/>
 					) : undefined
 				}
@@ -168,21 +169,10 @@ export const GenericFlatList = <T,>({
 					{
 						minHeight: 1,
 						paddingVertical: 16,
-						backgroundColor: isDark
-							? colors.dark.background
-							: colors.light.background,
+						backgroundColor: colors.light.background,
 					},
 				]}
-				ListEmptyComponent={() => (
-					<View className="items-center justify-center py-20">
-						<Text className="text-lg font-semibold">
-							{finalEmptyStateMessage}
-						</Text>
-						<Text className="text-sm text-muted">
-							{finalEmptyStateSubtitle}
-						</Text>
-					</View>
-				)}
+				ListEmptyComponent={defaultEmptyStateComponent}
 				{...flatListProps}
 			/>
 		</Animated.View>

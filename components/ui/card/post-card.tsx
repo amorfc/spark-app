@@ -65,9 +65,10 @@ export const PostCard = ({
 		>
 			{/* Post Header */}
 			<View className="flex-row items-center mb-3">
-				<View className="w-10 h-10 bg-primary rounded-full items-center justify-center">
-					<Text className="text-white font-semibold text-lg">
+				<View className="w-10 h-10 bg-muted rounded-full items-center justify-center">
+					<Text className="font-semibold text-lg">
 						{item.author_profile?.first_name?.charAt(0).toUpperCase() || "?"}
+						{item.author_profile?.last_name?.charAt(0).toUpperCase() || "?"}
 					</Text>
 				</View>
 				<View className="ml-3 flex-1">

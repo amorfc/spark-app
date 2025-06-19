@@ -41,7 +41,6 @@ export class OverpassApiService {
 		params: DistrictQueryParams,
 	): Promise<GeoJSON.FeatureCollection> {
 		const query = this.buildDistrictQuery(params);
-		console.log({ query });
 
 		return await this.executeQuery(query);
 	}

@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useUpsertReview } from "@/hooks/useReviews";
 import { Review } from "@/types/reviews";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
 
 const getReviewFormSchema = (t: any) =>
 	z.object({
@@ -100,101 +101,105 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 	const isLoading = upsertMutation.isPending;
 
 	return (
-		<View className={cn("space-y-4 p-4", className)}>
-			<H3 className="text-center">
-				{existingReview
-					? t("reviews.update_review")
-					: t("reviews.leave_review")}
-			</H3>
+		<KeyboardAwareForm>
+			<View className={cn("space-y-4 p-4", className)}>
+				<H3 className="text-center">
+					{existingReview
+						? t("reviews.update_review")
+						: t("reviews.leave_review")}
+				</H3>
 
-			<Form {...form}>
-				<View className="space-y-4">
-					{/* Safety Rating */}
-					<FormField
-						control={form.control}
-						name="safety_rating"
-						render={({ field }) => (
-							<View className="space-y-2">
-								<Text className="font-semibold">
-									{t("reviews.safety_rating")}
+				<Form {...form}>
+					<View className="space-y-4">
+						{/* Safety Rating */}
+						<FormField
+							control={form.control}
+							name="safety_rating"
+							render={({ field }) => (
+								<View className="space-y-2">
+									<Text className="font-semibold">
+										{t("reviews.safety_rating")}
+									</Text>
+									<StarRating
+										rating={safetyRating}
+										onRatingChange={setSafetyRating}
+										size="lg"
+									/>
+									<FormMessage />
+								</View>
+							)}
+						/>
+
+						{/* Quality Rating */}
+						<FormField
+							control={form.control}
+							name="quality_rating"
+							render={({ field }) => (
+								<View className="space-y-2">
+									<Text className="font-semibold">
+										{t("reviews.quality_rating")}
+									</Text>
+									<StarRating
+										rating={qualityRating}
+										onRatingChange={setQualityRating}
+										size="lg"
+									/>
+									<FormMessage />
+								</View>
+							)}
+						/>
+
+						{/* Comment */}
+						<FormField
+							control={form.control}
+							name="comment"
+							render={({ field }) => (
+								<View className="space-y-2">
+									<Text className="font-semibold">
+										{t("reviews.comment_optional")}
+									</Text>
+									<Textarea
+										placeholder={t("reviews.share_experience")}
+										value={field.value || ""}
+										onChangeText={field.onChange}
+										onBlur={field.onBlur}
+										className="min-h-20"
+									/>
+									<FormMessage />
+								</View>
+							)}
+						/>
+
+						{/* Buttons */}
+						<View className="flex-row space-x-2 pt-4">
+							<Button
+								variant="outline"
+								onPress={onCancel}
+								disabled={isLoading}
+								className="flex-1"
+							>
+								<Text>{t("common.cancel")}</Text>
+							</Button>
+							<Button
+								onPress={form.handleSubmit(onSubmit)}
+								disabled={
+									isLoading || safetyRating === 0 || qualityRating === 0
+								}
+								className="flex-1"
+							>
+								<Text>
+									{isLoading
+										? t("reviews.form.submitting")
+										: existingReview
+											? t("reviews.update_review_button")
+											: t("reviews.submit_review")}
 								</Text>
-								<StarRating
-									rating={safetyRating}
-									onRatingChange={setSafetyRating}
-									size="lg"
-								/>
-								<FormMessage />
-							</View>
-						)}
-					/>
-
-					{/* Quality Rating */}
-					<FormField
-						control={form.control}
-						name="quality_rating"
-						render={({ field }) => (
-							<View className="space-y-2">
-								<Text className="font-semibold">
-									{t("reviews.quality_rating")}
-								</Text>
-								<StarRating
-									rating={qualityRating}
-									onRatingChange={setQualityRating}
-									size="lg"
-								/>
-								<FormMessage />
-							</View>
-						)}
-					/>
-
-					{/* Comment */}
-					<FormField
-						control={form.control}
-						name="comment"
-						render={({ field }) => (
-							<View className="space-y-2">
-								<Text className="font-semibold">
-									{t("reviews.comment_optional")}
-								</Text>
-								<Textarea
-									placeholder={t("reviews.share_experience")}
-									value={field.value || ""}
-									onChangeText={field.onChange}
-									onBlur={field.onBlur}
-									className="min-h-20"
-								/>
-								<FormMessage />
-							</View>
-						)}
-					/>
-
-					{/* Buttons */}
-					<View className="flex-row space-x-2 pt-4">
-						<Button
-							variant="outline"
-							onPress={onCancel}
-							disabled={isLoading}
-							className="flex-1"
-						>
-							<Text>{t("common.cancel")}</Text>
-						</Button>
-						<Button
-							onPress={form.handleSubmit(onSubmit)}
-							disabled={isLoading || safetyRating === 0 || qualityRating === 0}
-							className="flex-1"
-						>
-							<Text>
-								{isLoading
-									? t("reviews.form.submitting")
-									: existingReview
-										? t("reviews.update_review_button")
-										: t("reviews.submit_review")}
-							</Text>
-						</Button>
+							</Button>
+						</View>
 					</View>
-				</View>
-			</Form>
-		</View>
+				</Form>
+			</View>
+		</KeyboardAwareForm>
 	);
 };
 

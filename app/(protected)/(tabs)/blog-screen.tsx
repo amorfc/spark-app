@@ -60,9 +60,7 @@ export default function BlogScreen() {
 			style={[
 				styles.container,
 				{
-					backgroundColor: isDark
-						? colors.dark.background
-						: colors.light.background,
+					backgroundColor: colors.light.background,
 				},
 			]}
 		>

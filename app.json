@@ -54,6 +54,14 @@
 			"permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
 			"package": "com.sparkcompanytr.sparkapp"
 		},
+		"androidStatusBar": {
+			"backgroundColor": "#ffffff",
+			"barStyle": "dark-content"
+		},
+		"androidNavigationBar": {
+			"backgroundColor": "#ffffff",
+			"barStyle": "dark-content"
+		},
 		"experiments": {
 			"typedRoutes": true
 		},

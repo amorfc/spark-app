@@ -1,9 +1,9 @@
 import * as React from "react";
 import { View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
+import { colors } from "@/constants/colors";
 
 // Define our own types since we don't have the actual package
 interface CheckboxRootProps {
@@ -43,9 +43,6 @@ CheckboxPrimitive.Indicator.displayName = "CheckboxIndicator";
 
 const Checkbox = React.forwardRef<View, CheckboxProps>(
 	({ className, label, labelClassName, renderLabel, ...props }, ref) => {
-		const { colorScheme } = useColorScheme();
-		const isDark = colorScheme === "dark";
-
 		return (
 			<View className="flex-row items-center gap-2">
 				<View
@@ -69,7 +66,7 @@ const Checkbox = React.forwardRef<View, CheckboxProps>(
 						<MaterialIcons
 							name="check"
 							size={16}
-							color={isDark ? "#000" : "#fff"}
+							color={colors.light.foreground}
 						/>
 					)}
 				</View>

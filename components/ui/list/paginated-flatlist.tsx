@@ -1,7 +1,6 @@
 import React from "react";
 import { ActivityIndicator, ListRenderItem } from "react-native";
 import { GenericFlatList } from "@/components/ui/list/generic-flatlist";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 
 interface PaginatedFlatListProps<T> {
@@ -54,9 +53,6 @@ export const PaginatedFlatList = <T,>({
 	enableFadeAnimation = false,
 	animationDuration = 500,
 }: PaginatedFlatListProps<T>) => {
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
-
 	// Handle end reached for pagination
 	const handleEndReached = () => {
 		if (hasNextPage && !isFetchingNextPage && fetchNextPage) {
@@ -71,7 +67,7 @@ export const PaginatedFlatList = <T,>({
 		return (
 			<ActivityIndicator
 				className="self-center py-4"
-				color={isDark ? colors.dark.primary : colors.light.primary}
+				color={colors.light.primary}
 			/>
 		);
 	};

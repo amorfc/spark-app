@@ -5,16 +5,8 @@ import React, {
 	useImperativeHandle,
 	useMemo,
 } from "react";
-import {
-	ViewStyle,
-	TextStyle,
-	View,
-	TouchableOpacity,
-	Animated,
-} from "react-native";
+import { ViewStyle, TextStyle, View, Animated } from "react-native";
 import DropDownPicker, { ItemType } from "react-native-dropdown-picker";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";

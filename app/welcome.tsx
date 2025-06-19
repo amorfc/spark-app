@@ -7,18 +7,13 @@ import { SafeAreaView } from "@/components/safe-area-view";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { H1, Muted } from "@/components/ui/typography";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { routes } from "@/lib/routes";
 
 export default function WelcomeScreen() {
 	const router = useRouter();
-	const { colorScheme } = useColorScheme();
 	const { t } = useTranslation();
-	const appIcon =
-		colorScheme === "dark"
-			? require("@/assets/icon.png")
-			: require("@/assets/icon-dark.png");
+	const appIcon = require("@/assets/icon.png");
 
 	return (
 		<SafeAreaView className="flex flex-1 bg-background p-4">

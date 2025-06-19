@@ -7,7 +7,6 @@ import Animated, {
 	useDerivedValue,
 	withTiming,
 } from "react-native-reanimated";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { cn } from "@/lib/utils";
 
 const SwitchWeb = React.forwardRef<
@@ -50,14 +49,13 @@ const SwitchNative = React.forwardRef<
 	SwitchPrimitives.RootRef,
 	SwitchPrimitives.RootProps
 >(({ className, ...props }, ref) => {
-	const { colorScheme } = useColorScheme();
 	const translateX = useDerivedValue(() => (props.checked ? 18 : 0));
 	const animatedRootStyle = useAnimatedStyle(() => {
 		return {
 			backgroundColor: interpolateColor(
 				translateX.value,
 				[0, 18],
-				[RGB_COLORS[colorScheme].input, RGB_COLORS[colorScheme].primary],
+				[RGB_COLORS.light.input, RGB_COLORS.light.primary],
 			),
 		};
 	});

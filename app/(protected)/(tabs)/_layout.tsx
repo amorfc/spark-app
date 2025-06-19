@@ -1,14 +1,12 @@
 import React from "react";
 import { Tabs } from "expo-router";
 
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useProtectedAppInit } from "@/hooks/useProtectedAppInit";
 import { useTranslation } from "@/lib/i18n/hooks";
 
 export default function TabsLayout() {
-	const { colorScheme } = useColorScheme();
 	const { t } = useTranslation();
 	useProtectedAppInit();
 
@@ -22,10 +20,7 @@ export default function TabsLayout() {
 			screenOptions={{
 				headerShown: false,
 				tabBarStyle: {
-					backgroundColor:
-						colorScheme === "dark"
-							? colors.dark.background
-							: colors.light.background,
+					backgroundColor: colors.light.background,
 				},
 				tabBarActiveTintColor: colors.light.primary,
 				tabBarInactiveTintColor: colors.light.mutedForeground,

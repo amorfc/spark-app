@@ -22,8 +22,11 @@ export default function PostDetailScreen() {
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
 
+	// Decode the URL-encoded ID
+	const postId = id ? decodeURIComponent(id) : id;
+
 	const postReviewBottomSheetRef = useRef<PostReviewBottomSheetRef>(null);
-	const { data: post, isLoading: postLoading } = usePost(id);
+	const { data: post, isLoading: postLoading } = usePost(postId);
 
 	const handleClose = () => {
 		router.back();
@@ -66,7 +69,7 @@ export default function PostDetailScreen() {
 				<Text className="text-xl font-semibold">{t("posts.post_details")}</Text>
 				<View className="flex-row items-center gap-2">
 					<Button variant="default" size="sm" onPress={openReviewCreateSheet}>
-						<Text className="text-white">{t("posts.make_review")}</Text>
+						<Text>{t("posts.make_review")}</Text>
 					</Button>
 					<TouchableOpacity onPress={handleClose}>
 						<MaterialIcons
@@ -91,9 +94,9 @@ export default function PostDetailScreen() {
 				<Text className="self-center text-lg font-semibold">
 					{t("posts.reviews.all_reviews")}
 				</Text>
-				<PostReviewList postId={id} onReviewPress={openReviewUpdateSheet} />
+				<PostReviewList postId={postId} onReviewPress={openReviewUpdateSheet} />
 			</View>
-			<PostReviewBottomSheet ref={postReviewBottomSheetRef} postId={id} />
+			<PostReviewBottomSheet ref={postReviewBottomSheetRef} postId={postId} />
 		</SafeAreaView>
 	);
 }

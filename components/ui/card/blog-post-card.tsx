@@ -9,8 +9,6 @@ import {
 } from "react-native";
 import { BlogPost } from "@/types/blog";
 import { blogColors } from "@/utils/blog";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { colors } from "@/constants/colors";
 
 interface BlogPostCardProps {
 	item: BlogPost;
@@ -21,9 +19,6 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({
 	item,
 	onPress,
 }) => {
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
-
 	const handlePress = () => {
 		if (onPress) {
 			onPress(item);
@@ -38,7 +33,7 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({
 			style={[
 				styles.container,
 				{
-					backgroundColor: isDark ? colors.dark.card : blogColors.background,
+					backgroundColor: blogColors.background,
 				},
 			]}
 			onPress={handlePress}
@@ -56,10 +51,7 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({
 			{/* Content */}
 			<View style={styles.content}>
 				<Text
-					style={[
-						styles.title,
-						{ color: isDark ? colors.dark.foreground : blogColors.text },
-					]}
+					style={[styles.title, { color: blogColors.text }]}
 					numberOfLines={3}
 				>
 					{item.title}

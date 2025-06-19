@@ -7,7 +7,6 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { PostForm } from "@/components/post/post-form";
 import { usePost } from "@/hooks/usePosts";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { useTranslation } from "@/lib/i18n/hooks";
 
@@ -15,10 +14,15 @@ export default function UpdatePostScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
 
-	const { data: post, isLoading: postLoading, error: postError } = usePost(id!);
+	// Decode the URL-encoded ID
+	const postId = id ? decodeURIComponent(id) : id;
+
+	const {
+		data: post,
+		isLoading: postLoading,
+		error: postError,
+	} = usePost(postId!);
 
 	const handleClose = () => {
 		router.back();
@@ -37,9 +41,7 @@ export default function UpdatePostScreen() {
 		handleClose();
 	};
 
-	const iconColor = isDark
-		? colors.dark.mutedForeground
-		: colors.light.mutedForeground;
+	const iconColor = colors.light.mutedForeground;
 
 	if (postLoading) {
 		return (
@@ -81,7 +83,7 @@ export default function UpdatePostScreen() {
 			{/* Form */}
 			<View className="flex-1">
 				<PostForm
-					postId={id}
+					postId={postId}
 					existingPost={post}
 					onSuccess={handleFormSuccess}
 					onCancel={handleFormCancel}

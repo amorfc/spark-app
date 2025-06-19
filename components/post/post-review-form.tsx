@@ -18,6 +18,7 @@ import {
 import { PostReviewWithProfile } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
+import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
 
 const maxReviewLength = 400;
 const getPostReviewFormSchema = (t: any) =>
@@ -156,60 +157,64 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 				)}
 			</View>
 
-			<Form {...form}>
-				<View className="space-y-4">
-					{/* Review Text */}
-					<FormField
-						control={form.control}
-						name="text"
-						render={({ field }) => (
-							<View className="space-y-2">
-								<Textarea
-									placeholder={t("posts.reviews.review_placeholder")}
-									value={field.value || ""}
-									onChangeText={field.onChange}
-									onBlur={field.onBlur}
-									className="min-h-20"
-									maxLength={maxReviewLength}
-								/>
-								<FormMessage />
-								<Text className="text-xs text-muted-foreground text-right">
-									{field.value?.length || 0}/{maxReviewLength}{" "}
-									{t("common.characters")}
-								</Text>
-							</View>
-						)}
-					/>
+			<KeyboardAwareForm>
+				<Form {...form}>
+					<View className="space-y-4">
+						{/* Review Text */}
+						<FormField
+							control={form.control}
+							name="text"
+							render={({ field }) => (
+								<View className="space-y-2">
+									<Textarea
+										placeholder={t("posts.reviews.review_placeholder")}
+										value={field.value || ""}
+										onChangeText={field.onChange}
+										onBlur={field.onBlur}
+										className="min-h-20"
+										maxLength={maxReviewLength}
+									/>
+									<FormMessage />
+									<Text className="text-xs text-muted-foreground text-right">
+										{field.value?.length || 0}/{maxReviewLength}{" "}
+										{t("common.characters")}
+									</Text>
+								</View>
+							)}
+						/>
 
-					{/* Buttons */}
-					<View className="flex-row space-x-2">
-						{onCancel && (
+						{/* Buttons */}
+						<View className="flex-row space-x-2">
+							{onCancel && (
+								<Button
+									variant="outline"
+									onPress={onCancel}
+									disabled={isLoading || isDeleting}
+									className="flex-1"
+								>
+									<Text>{t("common.cancel")}</Text>
+								</Button>
+							)}
+
 							<Button
-								variant="outline"
-								onPress={onCancel}
-								disabled={isLoading || isDeleting}
+								onPress={form.handleSubmit(onSubmit)}
+								disabled={
+									isLoading || isDeleting || !form.watch("text")?.trim()
+								}
 								className="flex-1"
 							>
-								<Text>{t("common.cancel")}</Text>
+								<Text>
+									{isLoading
+										? t("common.submitting")
+										: isEditMode
+											? t("posts.reviews.update_review_button")
+											: t("posts.reviews.submit_review")}
+								</Text>
 							</Button>
-						)}
-
-						<Button
-							onPress={form.handleSubmit(onSubmit)}
-							disabled={isLoading || isDeleting || !form.watch("text")?.trim()}
-							className="flex-1"
-						>
-							<Text>
-								{isLoading
-									? t("common.submitting")
-									: isEditMode
-										? t("posts.reviews.update_review_button")
-										: t("posts.reviews.submit_review")}
-							</Text>
-						</Button>
+						</View>
 					</View>
-				</View>
-			</Form>
+				</Form>
+			</KeyboardAwareForm>
 		</View>
 	);
 };
