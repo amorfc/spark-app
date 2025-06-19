@@ -18,7 +18,6 @@ import {
 } from "@/components/select/poi-category-select";
 import { POICategoryDefinition } from "@/services/poi-service";
 import { useMapSearch } from "@/hooks/useMapSearch";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { DistrictSelect } from "@/components/select/district-select";
 import { useTranslation } from "@/lib/i18n/hooks";
@@ -39,9 +38,7 @@ export const MapFilterBottomSheet = forwardRef<
 		{ selectedPOICategories, onPOICategoriesChange, ...bottomSheetProps },
 		ref,
 	) => {
-		const { colorScheme } = useColorScheme();
 		const { t } = useTranslation();
-		const isDark = colorScheme === "dark";
 		const { district, clearSelectedFeature, updateDistrict } = useMapSearch();
 		// Refs for child components
 		const poiCategoryGroupSelectRef = useRef<POICategorySelectRef>(null);
@@ -68,9 +65,7 @@ export const MapFilterBottomSheet = forwardRef<
 			[clearFilters],
 		);
 
-		const iconColor = isDark
-			? colors.dark.mutedForeground
-			: colors.light.mutedForeground;
+		const iconColor = colors.light.mutedForeground;
 
 		const closeBottomSheet = () => {
 			bottomSheetRef.current?.close();

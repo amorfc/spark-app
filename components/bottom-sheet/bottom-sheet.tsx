@@ -13,7 +13,6 @@ import BottomSheetLib, {
 	BottomSheetBackdrop,
 	BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 
 export interface BottomSheetRef {
@@ -51,9 +50,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 		},
 		ref,
 	) => {
-		const { colorScheme } = useColorScheme();
 		const bottomSheetRef = useRef<BottomSheetLib>(null);
-		const isDark = colorScheme === "dark";
 
 		const renderBackdrop = useCallback(
 			(props: BottomSheetBackdropProps) => (
@@ -108,20 +105,18 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 		// Dynamic styles based on theme
 		const dynamicBackgroundStyle = useMemo(
 			() => ({
-				backgroundColor: isDark ? colors.dark.card : colors.light.card,
+				backgroundColor: colors.light.card,
 				...backgroundStyle,
 			}),
-			[isDark, backgroundStyle],
+			[backgroundStyle],
 		);
 
 		const dynamicHandleIndicatorStyle = useMemo(
 			() => ({
-				backgroundColor: isDark
-					? colors.dark.mutedForeground
-					: colors.light.mutedForeground,
+				backgroundColor: colors.light.mutedForeground,
 				...handleIndicatorStyle,
 			}),
-			[isDark, handleIndicatorStyle],
+			[handleIndicatorStyle],
 		);
 
 		// Choose the appropriate content container

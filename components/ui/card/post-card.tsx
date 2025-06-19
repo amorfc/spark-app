@@ -5,7 +5,6 @@ import { router } from "expo-router";
 import { routes } from "@/lib/routes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { colors } from "@/constants/colors";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { useAuth } from "@/context/supabase-provider";
@@ -29,8 +28,6 @@ export const PostCard = ({
 	const { session } = useAuth();
 	const createdAt = new Date(item.created_at);
 	const timeAgo = useTimeAgo(createdAt);
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
 	const deletePostMutation = useDeletePost();
 
 	// Check if current user is the post author
@@ -107,11 +104,7 @@ export const PostCard = ({
 					<MaterialIcons
 						name="chat-bubble-outline"
 						size={16}
-						color={
-							isDark
-								? colors.dark.mutedForeground
-								: colors.light.mutedForeground
-						}
+						color={colors.light.mutedForeground}
 					/>
 					<Text className="text-sm text-muted-foreground ml-1">
 						{item.total_reviews_count || 0}{" "}
@@ -124,11 +117,7 @@ export const PostCard = ({
 					<MaterialIcons
 						name="chevron-right"
 						size={20}
-						color={
-							isDark
-								? colors.dark.mutedForeground
-								: colors.light.mutedForeground
-						}
+						color={colors.light.mutedForeground}
 					/>
 				)}
 			</View>

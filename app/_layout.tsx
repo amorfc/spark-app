@@ -8,19 +8,20 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { ErrorFallback } from "@/components/app-error-fallback";
 
 import { AuthProvider } from "@/context/supabase-provider";
-import { useColorScheme } from "@/lib/useColorScheme";
 import { colors } from "@/constants/colors";
 import { setupLogBox } from "@/utils/ignoreLogs";
 import { queryClient } from "@/lib/query-client";
 import { store } from "@/store";
 import { I18nextProvider } from "react-i18next";
 import i18n from "@/lib/i18n/i18n";
+import { Appearance } from "react-native";
+
+// Force light mode globally
+Appearance.getColorScheme = () => "light";
 
 setupLogBox();
 
 export default function AppLayout() {
-	const { colorScheme } = useColorScheme();
-
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<I18nextProvider i18n={i18n}>
@@ -42,15 +43,9 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTitle: "Sign Up",
 											headerStyle: {
-												backgroundColor:
-													colorScheme === "dark"
-														? colors.dark.background
-														: colors.light.background,
+												backgroundColor: colors.light.background,
 											},
-											headerTintColor:
-												colorScheme === "dark"
-													? colors.dark.foreground
-													: colors.light.foreground,
+											headerTintColor: colors.light.foreground,
 											gestureEnabled: true,
 										}}
 									/>
@@ -61,15 +56,9 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTitle: "Terms of Service and Privacy Policy",
 											headerStyle: {
-												backgroundColor:
-													colorScheme === "dark"
-														? colors.dark.background
-														: colors.light.background,
+												backgroundColor: colors.light.background,
 											},
-											headerTintColor:
-												colorScheme === "dark"
-													? colors.dark.foreground
-													: colors.light.foreground,
+											headerTintColor: colors.light.foreground,
 											gestureEnabled: true,
 										}}
 									/>
@@ -80,15 +69,9 @@ export default function AppLayout() {
 											headerShown: true,
 											headerTitle: "Sign In",
 											headerStyle: {
-												backgroundColor:
-													colorScheme === "dark"
-														? colors.dark.background
-														: colors.light.background,
+												backgroundColor: colors.light.background,
 											},
-											headerTintColor:
-												colorScheme === "dark"
-													? colors.dark.foreground
-													: colors.light.foreground,
+											headerTintColor: colors.light.foreground,
 											gestureEnabled: true,
 										}}
 									/>

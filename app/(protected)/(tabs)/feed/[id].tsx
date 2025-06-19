@@ -7,7 +7,7 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { usePost } from "@/hooks/usePosts";
-import { useColorScheme } from "@/lib/useColorScheme";
+
 import { colors } from "@/constants/colors";
 import { PostCard } from "@/components/ui/card/post-card";
 import {
@@ -21,8 +21,7 @@ export default function PostDetailScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const { colorScheme } = useColorScheme();
-	const isDark = colorScheme === "dark";
+
 	const postReviewBottomSheetRef = useRef<PostReviewBottomSheetRef>(null);
 	const { data: post, isLoading: postLoading } = usePost(id);
 
@@ -73,11 +72,7 @@ export default function PostDetailScreen() {
 						<MaterialIcons
 							name="close"
 							size={24}
-							color={
-								isDark
-									? colors.dark.mutedForeground
-									: colors.light.mutedForeground
-							}
+							color={colors.light.mutedForeground}
 						/>
 					</TouchableOpacity>
 				</View>

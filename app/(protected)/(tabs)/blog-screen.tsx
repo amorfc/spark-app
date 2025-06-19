@@ -5,7 +5,7 @@ import { BlogPostCard } from "@/components/ui/card/blog-post-card";
 import { GenericFlatList } from "@/components/ui/list/generic-flatlist";
 import { CategorySelect } from "@/components/select/category-select";
 import { getBlogPostsByCategory } from "@/utils/blog";
-import { useColorScheme } from "@/lib/useColorScheme";
+
 import { colors } from "@/constants/colors";
 import { SafeAreaView } from "@/components/safe-area-view";
 import { useTranslation } from "@/lib/i18n/hooks";
@@ -14,9 +14,7 @@ import { useTranslation } from "@/lib/i18n/hooks";
 import blogData from "@/assets/data/blog-posts.json";
 
 export default function BlogScreen() {
-	const { colorScheme } = useColorScheme();
 	const { t } = useTranslation();
-	const isDark = colorScheme === "dark";
 
 	// State for selected category - default to SelfDefense as requested
 	const [selectedCategory, setSelectedCategory] = useState<BlogCategory>(

@@ -85,7 +85,6 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 		},
 		ref,
 	) => {
-		const { colorScheme } = useColorScheme();
 		const [items, setItems] = useState<ItemType<string>[]>([]);
 		const [searchText, setSearchText] = useState("");
 		const [isLoading, setIsLoading] = useState(false);
@@ -95,12 +94,9 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 		const { t } = useTranslation();
 
 		const [open, setOpen] = useState(false);
-		const isDark = colorScheme === "dark";
-		const backgroundColor = isDark
-			? colors.dark.background
-			: colors.light.background;
-		const textColor = isDark ? colors.dark.foreground : colors.light.foreground;
-		const borderColor = isDark ? colors.dark.border : colors.light.border;
+		const backgroundColor = colors.light.background;
+		const textColor = colors.light.foreground;
+		const borderColor = colors.light.border;
 
 		// Close dropdown method
 		const closeDropdown = () => {
@@ -319,9 +315,7 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 		};
 
 		const defaultPlaceholderStyle: TextStyle = {
-			color: isDark
-				? colors.dark.mutedForeground
-				: colors.light.mutedForeground,
+			color: colors.light.mutedForeground,
 			...placeholderStyle,
 		};
 
@@ -345,22 +339,20 @@ export const Select = React.forwardRef<SelectRef, SelectProps<any>>(
 
 		// Selected item styling
 		const selectedItemContainerStyle: ViewStyle = {
-			backgroundColor: isDark ? colors.dark.accent : colors.light.accent,
+			backgroundColor: colors.light.accent,
 			borderRadius: 6,
 			marginVertical: 1,
 		};
 
 		const selectedItemLabelStyle: TextStyle = {
-			color: isDark
-				? colors.dark.accentForeground
-				: colors.light.accentForeground,
+			color: colors.light.accentForeground,
 			fontWeight: "600",
 		};
 
 		// Item container styling with dividers
 		const listItemContainerStyle: ViewStyle = {
 			borderBottomWidth: 1,
-			borderBottomColor: isDark ? colors.dark.border : colors.light.border,
+			borderBottomColor: colors.light.border,
 		};
 
 		return (
