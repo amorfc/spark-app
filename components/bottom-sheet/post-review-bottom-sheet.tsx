@@ -4,17 +4,16 @@ import React, {
 	useImperativeHandle,
 	useCallback,
 	useState,
+	useEffect,
 } from "react";
-import { View } from "react-native";
+import { View, Keyboard } from "react-native";
 
 import {
 	BottomSheet,
 	BottomSheetRef,
 } from "@/components/bottom-sheet/bottom-sheet";
-import { Text } from "@/components/ui/text";
 import { PostReviewForm } from "@/components/post/post-review-form";
 import { PostReviewWithProfile } from "@/types/posts";
-import { useTranslation } from "@/lib/i18n/hooks";
 
 export interface PostReviewBottomSheetRef extends BottomSheetRef {
 	openForCreate: () => void;
@@ -33,6 +32,7 @@ export const PostReviewBottomSheet = forwardRef<
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const [existingReview, setExistingReview] =
 		useState<PostReviewWithProfile | null>(null);
+	const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
 	const openForCreate = useCallback(() => {
 		setExistingReview(null);
@@ -56,6 +56,23 @@ export const PostReviewBottomSheet = forwardRef<
 		handleClose();
 	}, [handleClose]);
 
+	// Keyboard listeners
+	useEffect(() => {
+		const keyboardDidShowListener = Keyboard.addListener(
+			"keyboardDidShow",
+			() => setIsKeyboardOpen(true),
+		);
+		const keyboardDidHideListener = Keyboard.addListener(
+			"keyboardDidHide",
+			() => setIsKeyboardOpen(false),
+		);
+
+		return () => {
+			keyboardDidShowListener.remove();
+			keyboardDidHideListener.remove();
+		};
+	}, []);
+
 	// Expose methods to parent via ref
 	useImperativeHandle(
 		ref,
@@ -77,7 +94,7 @@ export const PostReviewBottomSheet = forwardRef<
 			backdropPressBehavior="close"
 			keyboardBehavior="interactive"
 		>
-			<View className="py-6">
+			<View className={`py-6 ${isKeyboardOpen ? "pb-20" : "pb-6"}`}>
 				<PostReviewForm
 					postId={postId}
 					existingReview={existingReview}
