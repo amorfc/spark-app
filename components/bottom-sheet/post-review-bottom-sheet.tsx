@@ -75,6 +75,7 @@ export const PostReviewBottomSheet = forwardRef<
 			enableDynamicSizing={true}
 			scrollable={false}
 			backdropPressBehavior="close"
+			keyboardBehavior="interactive"
 		>
 			<View className="py-6">
 				<PostReviewForm

@@ -167,6 +167,7 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 							render={({ field }) => (
 								<View className="space-y-2">
 									<Textarea
+										inBottomSheet={true}
 										placeholder={t("posts.reviews.review_placeholder")}
 										value={field.value || ""}
 										onChangeText={field.onChange}

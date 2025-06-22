@@ -5,7 +5,7 @@ import React, {
 	forwardRef,
 	useImperativeHandle,
 } from "react";
-import { StyleSheet } from "react-native";
+import { Keyboard, StyleSheet } from "react-native";
 import BottomSheetLib, {
 	BottomSheetView,
 	BottomSheetProps as RNBottomSheetProps,
@@ -68,6 +68,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 			(index: number) => {
 				onChange?.(index);
 				if (index === -1) {
+					Keyboard.dismiss();
 					onClose?.();
 				}
 			},
@@ -127,15 +128,15 @@ export const BottomSheet = forwardRef<BottomSheetRef, BottomSheetProps>(
 		return (
 			<BottomSheetLib
 				ref={bottomSheetRef}
-				{...props}
-				onChange={handleSheetChanges}
-				backgroundStyle={dynamicBackgroundStyle}
-				handleIndicatorStyle={dynamicHandleIndicatorStyle}
 				keyboardBehavior="extend"
 				keyboardBlurBehavior="restore"
 				android_keyboardInputMode="adjustResize"
 				enableHandlePanningGesture={true}
 				enableContentPanningGesture={true}
+				{...props}
+				onChange={handleSheetChanges}
+				backgroundStyle={dynamicBackgroundStyle}
+				handleIndicatorStyle={dynamicHandleIndicatorStyle}
 				backdropComponent={showBackdrop ? renderBackdrop : undefined}
 			>
 				<ContentContainer
