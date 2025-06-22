@@ -75,7 +75,14 @@ export const DistrictSelect = forwardRef<SelectRef, DistrictSelectProps>(
 
 		const dropdownItems: ItemType<ValueType>[] = useMemo(() => {
 			if (!data) return [];
-			return mapFeatureCollectionToDropdownItems<ValueType>(data);
+			const items = mapFeatureCollectionToDropdownItems<ValueType>(data);
+			const sortedItems = items.sort((a, b) => {
+				const nameA = a.label?.toLowerCase() || "";
+				const nameB = b.label?.toLowerCase() || "";
+				return nameA.localeCompare(nameB);
+			});
+
+			return sortedItems;
 		}, [data]);
 
 		return (
