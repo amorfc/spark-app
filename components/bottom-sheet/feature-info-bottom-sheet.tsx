@@ -69,31 +69,31 @@ export const FeatureInfoBottomSheet = forwardRef<
 	const featureInfoData = [
 		{
 			icon: icon,
-			header: "Type",
+			header: t("map.feature_details.type"),
 			content: label,
 			type: "type",
 		},
 		{
 			icon: "📍",
-			header: "Location",
+			header: t("map.feature_details.location"),
 			content: locationString,
 			type: "location",
 		},
 		{
 			icon: "🕸️",
-			header: "Network",
+			header: t("map.feature_details.network"),
 			content: feature.properties?.network,
 			type: "network",
 		},
 		{
 			icon: "🚀",
-			header: "Operator",
+			header: t("map.feature_details.operator"),
 			content: feature.properties?.operator,
 			type: "operator",
 		},
 		{
 			icon: "🌐",
-			header: "Source",
+			header: t("map.feature_details.source"),
 			content: feature.properties?.source,
 			type: "source",
 		},

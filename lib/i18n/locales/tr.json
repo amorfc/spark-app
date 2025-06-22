@@ -167,6 +167,13 @@
 			"poi_categories": {
 				"food_and_drink": "🍽️ Yiyecek ve İçecek",
 				"transportation": "🚌 Ulaşım"
+			},
+			"feature_details": {
+				"type": "Tür",
+				"location": "Konum",
+				"network": "Ağ",
+				"operator": "Operatör",
+				"source": "Kaynak"
 			}
 		},
 		"app": {
