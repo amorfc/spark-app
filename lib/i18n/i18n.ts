@@ -18,7 +18,9 @@ const i18nInstance = i18n.use(initReactI18next);
 const initI18n = async () => {
 	const defaultLanguage = "tr";
 	const savedLang = await AsyncStorage.getItem("app-language");
-	const language = savedLang || defaultLanguage;
+	const deviceLang = Localization.locale.split("-")[0];
+
+	const language = savedLang || deviceLang || defaultLanguage;
 
 	i18nInstance.init({
 		compatibilityJSON: "v4",
