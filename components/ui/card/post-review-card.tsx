@@ -61,6 +61,7 @@ export const PostReviewCard = ({
 
 	return (
 		<TouchableOpacity
+			disabled={!isOwnReview}
 			className="bg-card border border-border rounded-lg p-4 mb-3"
 			onPress={onPress}
 		>
