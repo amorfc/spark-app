@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { H1 } from "@/components/ui/typography";
 import { useAuth } from "@/context/supabase-provider";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { LangSelect } from "@/components/select/lang-select";
 
 const getFormSchema = (t: any) =>
 	z.object({
@@ -79,6 +80,7 @@ export default function SignIn() {
 								/>
 							)}
 						/>
+						<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 					</View>
 				</Form>
 			</View>

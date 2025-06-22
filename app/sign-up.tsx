@@ -15,6 +15,7 @@ import { router } from "expo-router";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { routes } from "@/lib/routes";
 import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
+import { LangSelect } from "@/components/select/lang-select";
 
 const getFormSchema = (t: any) =>
 	z
@@ -212,6 +213,7 @@ export default function SignUp() {
 									</View>
 								)}
 							/>
+							<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 						</View>
 					</Form>
 				</KeyboardAwareForm>

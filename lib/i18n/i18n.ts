@@ -16,14 +16,14 @@ const resources = {
 const i18nInstance = i18n.use(initReactI18next);
 
 const initI18n = async () => {
+	const defaultLanguage = "tr";
 	const savedLang = await AsyncStorage.getItem("app-language");
-	const deviceLang = Localization.locale.split("-")[0];
-	const language = savedLang || deviceLang;
+	const language = savedLang || defaultLanguage;
 
 	i18nInstance.init({
 		compatibilityJSON: "v4",
 		resources,
-		fallbackLng: "en",
+		fallbackLng: defaultLanguage,
 		lng: language,
 		interpolation: {
 			escapeValue: false,
