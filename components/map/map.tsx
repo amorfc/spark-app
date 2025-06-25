@@ -13,14 +13,12 @@ import { getCameraBounds } from "@/lib/mapbox";
 import { BoundingBox } from "@/types/osm";
 import MapPolygon from "@/components/map/map-polygon";
 import { MapPois } from "@/components/map/map-pois";
-import { UserLocation } from "@/components/map/user-location";
 
 export interface MapRef {
 	centerOnCoordinates: (
 		coordinates: [number, number],
 		zoomLevel?: number,
 	) => void;
-	centerOnUserLocation: () => void;
 }
 
 interface MapProps {
@@ -32,7 +30,6 @@ interface MapProps {
 	variant?: "subtle" | "moderate" | "vibrant";
 	onShapePress?: (payload: GeoJSON.Feature) => void;
 	onPointPress: (payload: GeoJSON.Feature) => void;
-	showUserLocation?: boolean;
 }
 
 export enum MapMode {
@@ -51,7 +48,6 @@ const Map = forwardRef<MapRef, MapProps>(
 			onPointPress,
 			onMapLoad,
 			variant = "subtle",
-			showUserLocation = true,
 		},
 		ref,
 	) => {
@@ -95,29 +91,13 @@ const Map = forwardRef<MapRef, MapProps>(
 			[],
 		);
 
-		// Public method to center camera on user location
-		const centerOnUserLocation = useCallback(() => {
-			if (mapRef.current) {
-				try {
-					// This will trigger the map to center on user location if available
-					mapRef.current.getCenter().then((center) => {
-						// Get user location and center on it
-						// The UserLocation component will handle the actual location
-					});
-				} catch (error) {
-					console.error("Error centering on user location:", error);
-				}
-			}
-		}, []);
-
 		// Expose methods to parent via ref
 		useImperativeHandle(
 			ref,
 			() => ({
 				centerOnCoordinates,
-				centerOnUserLocation,
 			}),
-			[centerOnCoordinates, centerOnUserLocation],
+			[centerOnCoordinates],
 		);
 
 		useEffect(() => {
@@ -158,16 +138,6 @@ const Map = forwardRef<MapRef, MapProps>(
 						animationDuration={1000}
 						bounds={cameraBounds}
 					/>
-
-					{/* User Location */}
-					{showUserLocation && (
-						<UserLocation
-							visible={true}
-							showsUserHeadingIndicator={true}
-							androidRenderMode="gps"
-							minDisplacement={10}
-						/>
-					)}
 
 					{/* Filling Layer Shape if presented */}
 					{shape && <MapPolygon shape={shape} variant={variant} />}

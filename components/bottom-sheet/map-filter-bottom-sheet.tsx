@@ -21,11 +21,12 @@ import { useMapSearch } from "@/hooks/useMapSearch";
 import { colors } from "@/constants/colors";
 import { DistrictSelect } from "@/components/select/district-select";
 import { useTranslation } from "@/lib/i18n/hooks";
-export interface MapFilterBottomSheetRef extends BottomSheetRef {
+export interface MapFilterBottomSheetRef
+	extends Omit<BottomSheetRef, "children"> {
 	clearFilters: () => void;
 }
 
-interface MapFilterBottomSheetProps extends Omit<BottomSheetRef, "children"> {
+interface MapFilterBottomSheetProps {
 	selectedPOICategories: POICategoryDefinition[];
 	onPOICategoriesChange: (categories: POICategoryDefinition[]) => void;
 }

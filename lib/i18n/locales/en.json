@@ -153,7 +153,6 @@
 			"search_input": "Search input"
 		},
 		"map": {
-			"user_location": "Your location",
 			"feature_info": "Feature information",
 			"filter": "Filter",
 			"search": "Search locations",

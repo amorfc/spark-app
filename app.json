@@ -1,6 +1,6 @@
 {
 	"expo": {
-		"name": "spark-app",
+		"name": "Spark App",
 		"slug": "spark-app",
 		"scheme": "spark-app",
 		"version": "1.0.0",
@@ -30,10 +30,6 @@
 			},
 			"bundleIdentifier": "com.sparkcompanytr.sparkapp",
 			"infoPlist": {
-				"NSLocationWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
-				"NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to location to show your position on the map.",
-				"NSLocationAlwaysUsageDescription": "This app needs access to location to show your position on the map.",
-				"UIBackgroundModes": ["location", "fetch"],
 				"ITSAppUsesNonExemptEncryption": false
 			}
 		},
@@ -51,7 +47,7 @@
 					"image": "./assets/splash-dark.png"
 				}
 			},
-			"permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+
 			"package": "com.sparkcompanytr.sparkapp"
 		},
 		"androidStatusBar": {
@@ -71,9 +67,7 @@
 			[
 				"@rnmapbox/maps",
 				{
-					"locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-					"locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
-					"locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location in the background."
+					"RNMapboxMapsImpl": "mapbox"
 				}
 			]
 		],

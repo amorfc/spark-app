@@ -7,16 +7,14 @@ import {
 } from "@/components/bottom-sheet/map-filter-bottom-sheet";
 import { useMapboxInit } from "@/hooks/useMapboxInit";
 import { useMapSearch } from "@/hooks/useMapSearch";
-import { calculateBoundsFromFeature, findPolygonAsync } from "@/lib/geometry";
-import { useDistricts } from "@/hooks/useDistricts";
+import { calculateBoundsFromFeature } from "@/lib/geometry";
+
 import { POICategoryDefinition } from "@/services/poi-service";
 import { useAmenities } from "@/hooks/useAmenities";
 import { FeatureInfoBottomSheet } from "@/components/bottom-sheet/feature-info-bottom-sheet";
 import { BottomSheetRef } from "@/components/bottom-sheet/bottom-sheet";
 
 import MapFilterButton from "@/components/map/map-filter-button";
-import UserLocationButton from "@/components/map/user-location-button";
-import { useUserLocation } from "@/hooks/useUserLocation";
 
 export default function MapScreen() {
 	// Initialize Mapbox with React Query
@@ -36,16 +34,7 @@ export default function MapScreen() {
 		selectedFeature,
 		clearSelectedFeature,
 		updateSelectedFeature,
-		updateDistrict,
 	} = useMapSearch();
-	const { data: districts } = useDistricts();
-
-	// User location hook
-	const {
-		location: userLocation,
-		hasPermission,
-		getCurrentLocation,
-	} = useUserLocation();
 
 	const mapRef = useRef<MapRef>(null);
 
@@ -92,61 +81,6 @@ export default function MapScreen() {
 		[updateCategoryGroups],
 	);
 
-	// Handle user location button press
-	const handleUserLocationPress = useCallback(async () => {
-		updateMapLoading(true);
-		try {
-			let location = userLocation;
-			if (process.env.NODE_ENV === "development") {
-				location = {
-					latitude: 40.99,
-					longitude: 29.028,
-					timestamp: Date.now(),
-				};
-			}
-
-			if (!hasPermission) {
-				// The hook will handle permission request
-				await getCurrentLocation();
-				return;
-			}
-
-			if (!location) {
-				await getCurrentLocation();
-			}
-
-			if (!location) {
-				return;
-			}
-
-			// Center map on existing location
-			const closestFeature = await findPolygonAsync(
-				districts?.features ?? [],
-				location.longitude,
-				location.latitude,
-			);
-			if (closestFeature) {
-				updateDistrict(closestFeature);
-			}
-			{
-				mapRef.current?.centerOnCoordinates(
-					[location.longitude, location.latitude],
-					14,
-				);
-			}
-		} catch {
-		} finally {
-			updateMapLoading(false);
-		}
-	}, [
-		updateMapLoading,
-		userLocation,
-		hasPermission,
-		districts?.features,
-		getCurrentLocation,
-		updateDistrict,
-	]);
-
 	// Show loading indicator while Mapbox is initializing
 	if (isMapboxLoading || !mapReady) {
 		return (
@@ -184,9 +118,8 @@ export default function MapScreen() {
 	return (
 		<View className="flex-1">
 			{/* Filter Button - Top Right */}
-			<View className="absolute top-20 right-4 z-10 flex-col gap-2">
+			<View className="absolute top-20 right-4 z-10">
 				<MapFilterButton onPress={openFilterSheet} />
-				<UserLocationButton onPress={handleUserLocationPress} />
 			</View>
 
 			<Map
@@ -198,7 +131,6 @@ export default function MapScreen() {
 				onMapLoad={handleMapLoad}
 				onPointPress={handlePointPress}
 				currentBounds={currentCameraBounds}
-				showUserLocation={false}
 			/>
 
 			{/* Feature Info Bottom Sheet */}
@@ -213,7 +145,6 @@ export default function MapScreen() {
 			{/* Map Filter Bottom Sheet */}
 			<MapFilterBottomSheet
 				ref={filterSheetRef}
-				// onClose={handleCloseFilterSheet}
 				selectedPOICategories={categoryGroups}
 				onPOICategoriesChange={handlePOICategoriesChange}
 			/>
