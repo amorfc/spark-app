@@ -73,6 +73,7 @@
 			"submit_review": "Yorum Gönder",
 			"update_review_button": "Yorumu Güncelle",
 			"delete_review": "Yorumu Sil",
+			"delete_confirmation": "Yorumunuzu silmek istediğinizden emin misiniz?",
 			"current_ratings": "Mevcut Puanlamalar",
 			"average_rating": "Ortalama Puan",
 			"safety_rating": "Güvenlik Puanı",
@@ -90,6 +91,9 @@
 			"review_updated": "Yorumunuz güncellendi.",
 			"review_submitted": "Yorumunuz için teşekkürler!",
 			"invalid_feature": "Geçersiz özellik ID",
+			"show_more": "Daha fazla göster",
+			"show_less": "Daha az göster",
+			"updated": "Güncellendi",
 			"form": {
 				"safety_rating_required": "Lütfen güvenlik puanı verin",
 				"quality_rating_required": "Lütfen kalite puanı verin",

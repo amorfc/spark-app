@@ -9,13 +9,14 @@ import { useProfile } from "@/hooks/useProfile";
 import { getFullName } from "@/lib/profile";
 import { LangSelect } from "@/components/select/lang-select";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { useMapSearch } from "@/hooks/useMapSearch";
 
 export default function Settings() {
 	const { signOut } = useAuth();
 	const { profile, isLoading } = useProfile();
 	const { t } = useTranslation();
 	const fullName = getFullName(profile);
-
+	const { resetMap } = useMapSearch();
 	const getGreeting = () => {
 		const hour = new Date().getHours();
 		if (hour < 12) return t("greetings.good_morning");
@@ -65,6 +66,7 @@ export default function Settings() {
 					variant="default"
 					onPress={async () => {
 						await signOut();
+						resetMap();
 					}}
 				>
 					<Text>{t("auth.sign_out")}</Text>

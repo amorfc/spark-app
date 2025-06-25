@@ -73,6 +73,7 @@
 			"submit_review": "Submit Review",
 			"update_review_button": "Update Review",
 			"delete_review": "Delete Review",
+			"delete_confirmation": "Are you sure you want to delete this review?",
 			"current_ratings": "Current Ratings",
 			"average_rating": "Average Rating",
 			"safety_rating": "Safety Rating",
@@ -90,6 +91,9 @@
 			"review_updated": "Your review has been updated.",
 			"review_submitted": "Thank you for your review!",
 			"invalid_feature": "Invalid feature ID",
+			"show_more": "Show more",
+			"show_less": "Show less",
+			"updated": "Updated",
 			"form": {
 				"safety_rating_required": "Please provide a safety rating",
 				"quality_rating_required": "Please provide a quality rating",

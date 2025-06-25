@@ -7,6 +7,7 @@ import { Review } from "@/types/reviews";
 import { useDeleteReview } from "@/hooks/useReviews";
 import { useAuth } from "@/context/supabase-provider";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
+import { useTranslation } from "react-i18next";
 
 interface ReviewItemProps {
 	review: Review;
@@ -22,6 +23,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 	const [isExpanded, setIsExpanded] = useState(false);
 	const { mutate: deleteReview, isPending: isDeleting } = useDeleteReview();
 	const { session } = useAuth();
+	const { t, i18n } = useTranslation();
 	const canDelete = review.user_id === session?.user?.id;
 
 	const handleDelete = async () => {
@@ -32,7 +34,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 	};
 
 	const formatDate = (dateString: string) => {
-		return new Date(dateString).toLocaleDateString("en-US", {
+		return new Date(dateString).toLocaleDateString(i18n.language, {
 			year: "numeric",
 			month: "short",
 			day: "numeric",
@@ -50,17 +52,13 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 
 	const handleDeletePress = () => {
 		//Alert and if ok, delete the review
-		Alert.alert(
-			"Delete Review",
-			"Are you sure you want to delete this review?",
-			[
-				{ text: "Cancel", style: "cancel" },
-				{
-					text: "Delete",
-					onPress: handleDelete,
-				},
-			],
-		);
+		Alert.alert(t("reviews.delete_review"), t("reviews.delete_confirmation"), [
+			{ text: t("common.cancel"), style: "cancel" },
+			{
+				text: t("common.delete"),
+				onPress: handleDelete,
+			},
+		]);
 	};
 
 	return (
@@ -74,7 +72,9 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 			{/* Header with average rating and date */}
 			<View className="flex-row items-center justify-between mb-3">
 				<View className="flex-row items-center gap-x-2">
-					<Text className="text-sm font-medium">Average Rating</Text>
+					<Text className="text-sm font-medium">
+						{t("reviews.average_rating")}
+					</Text>
 					<StarRating rating={averageRating} readonly size="sm" />
 					<Text className="text-sm text-muted-foreground">
 						{averageRating.toFixed(1)}
@@ -87,7 +87,9 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 			<View className="flex-row justify-between items-center space-y-2 mb-3">
 				<View>
 					<View className="flex-row items-center gap-x-2">
-						<Text className="text-sm font-medium">Safety</Text>
+						<Text className="text-sm font-medium">
+							{t("reviews.safety_rating")}
+						</Text>
 						<View className="flex-row items-center space-x-1">
 							<StarRating rating={review.safety_rating} readonly size="sm" />
 							<Text className="text-xs text-muted-foreground">
@@ -97,7 +99,9 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 					</View>
 
 					<View className="flex-row items-center gap-x-2">
-						<Text className="text-sm font-medium">Quality</Text>
+						<Text className="text-sm font-medium">
+							{t("reviews.quality_rating")}
+						</Text>
 						<View className="flex-row items-center space-x-1">
 							<StarRating rating={review.quality_rating} readonly size="sm" />
 							<Text className="text-xs text-muted-foreground">
@@ -120,7 +124,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 					{isLongComment && (
 						<Pressable onPress={() => setIsExpanded(!isExpanded)}>
 							<Text className="text-xs text-primary mt-1 font-medium">
-								{isExpanded ? "Show less" : "Show more"}
+								{isExpanded ? t("reviews.show_less") : t("reviews.show_more")}
 							</Text>
 						</Pressable>
 					)}
@@ -130,7 +134,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 			{/* Updated indicator */}
 			{review.updated_at !== review.created_at && (
 				<Text className="text-xs text-muted-foreground mt-2 italic">
-					Updated {formatDate(review.updated_at)}
+					{t("reviews.updated")} {formatDate(review.updated_at)}
 				</Text>
 			)}
 
