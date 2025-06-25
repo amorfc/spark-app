@@ -40,7 +40,7 @@ export default function AppLayout() {
 										name="sign-up"
 										options={{
 											presentation: "modal",
-											headerShown: true,
+											headerShown: false,
 											headerTitle: "Sign Up",
 											headerStyle: {
 												backgroundColor: colors.light.background,
@@ -53,7 +53,7 @@ export default function AppLayout() {
 										name="tos"
 										options={{
 											presentation: "modal",
-											headerShown: true,
+											headerShown: false,
 											headerTitle: "Terms of Service and Privacy Policy",
 											headerStyle: {
 												backgroundColor: colors.light.background,
@@ -66,7 +66,7 @@ export default function AppLayout() {
 										name="sign-in"
 										options={{
 											presentation: "modal",
-											headerShown: true,
+											headerShown: false,
 											headerTitle: "Sign In",
 											headerStyle: {
 												backgroundColor: colors.light.background,

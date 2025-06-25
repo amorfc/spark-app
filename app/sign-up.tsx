@@ -79,9 +79,9 @@ export default function SignUp() {
 	const handleTermsPress = () => router.push(routes.tos());
 
 	return (
-		<SafeAreaView className="flex-1 bg-background p-4" edges={["bottom"]}>
-			<View className="flex-1 gap-4 web:m-4">
-				<H1 className="self-start">{t("auth.sign_up")}</H1>
+		<SafeAreaView className="flex-1 bg-background p-2" edges={["bottom"]}>
+			<View className="flex-1 gap-2">
+				<H1 className="self-center">{t("auth.sign_up")}</H1>
 				<KeyboardAwareForm extraScrollHeight={250}>
 					<Form {...form}>
 						<View className="gap-4">
