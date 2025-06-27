@@ -20,7 +20,7 @@ web-build/
 osm/
 
 assets/geo
-
+*.aab
 ios/
 android/
 
