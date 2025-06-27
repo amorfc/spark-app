@@ -34,8 +34,8 @@
 			"password": "Password",
 			"confirm_password": "Confirm Password",
 			"female_confirmation": "I confirm I am female",
-			"accept_terms": "I accept the",
-			"terms_and_privacy": "Terms and Condition and Privacy Policy",
+			"accept_terms": "By continuing, you agree to our",
+			"terms_and_privacy": "Terms and Use and Privacy Policy",
 			"validation": {
 				"first_name_required": "Please enter your first name.",
 				"last_name_required": "Please enter your last name.",

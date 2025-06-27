@@ -1,7 +1,12 @@
 import { SafeAreaView } from "@/components/safe-area-view";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Button, ScrollView, useWindowDimensions } from "react-native";
+import {
+	Button,
+	Platform,
+	ScrollView,
+	useWindowDimensions,
+} from "react-native";
 import RenderHTML from "react-native-render-html";
 
 export default function ToS() {
@@ -9,6 +14,27 @@ export default function ToS() {
 	const {
 		i18n: { language },
 	} = useTranslation();
+	const platformSpecificRightEn =
+		Platform.OS === "ios"
+			? `  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">12. Apple End User License Agreement (EULA)</h2>
+<p>By downloading or using Spark from the Apple App Store, you also agree to Apple's standard End User License Agreement (EULA), available at:
+<a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">https://www.apple.com/legal/internet-services/itunes/dev/stdeula/</a>
+</p>`
+			: `  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">12. Google End User License Agreement (EULA)</h2>
+<p>By downloading or using Spark from the Google Play Store, you also agree to Google's standard End User License Agreement (EULA), available at:
+<a href="https://policies.google.com/terms" target="_blank">https://policies.google.com/terms</a>
+</p>`;
+
+	const platformSpecificRightTr =
+		Platform.OS === "ios"
+			? `  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">12. Apple Son Kullanıcı Lisans Sözleşmesi (EULA)</h2>
+<p>Apple App Store üzerinden indirerek veya kullanarak, Apple'ın standart Son Kullanıcı Lisans Sözleşmesi’ni (EULA) kabul etmiş olursunuz. EULA’ya şu bağlantıdan ulaşabilirsiniz:
+<a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank">https://www.apple.com/legal/internet-services/itunes/dev/stdeula/</a>
+</p>`
+			: `  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">12. Google End User License Agreement (EULA)</h2>
+<p>Google Play Store üzerinden indirerek veya kullanarak, Google'ın standart Son Kullanıcı Lisans Sözleşmesi’ni (EULA) kabul etmiş olursunuz. EULA’ya şu bağlantıdan ulaşabilirsiniz:
+<a href="https://policies.google.com/terms" target="_blank">https://policies.google.com/terms</a>
+</p>`;
 
 	const enToS = `<body style="font-family: sans-serif; color: #1e293b; background-color: #ffffff; padding: 16px; max-width: 100%; line-height: 1.6; font-size: 14px;">
 
@@ -74,10 +100,20 @@ export default function ToS() {
   <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">8. Agreement Changes</h2>
   <p>Service terms may be updated at any time. Changes will be published within the application.</p>
 
-  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">9. Governing Law</h2>
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">9. Account Deletion</h2>
+  <p>Users have the right to permanently delete their account and all associated data. This can be done directly from the app in the Profile > Settings section. Upon deletion, your data will be removed from our servers within 24 hours.</p>
+
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">10. User Reporting and Blocking</h2>
+<p>Spark provides in-app tools for users to report objectionable content or behavior and to block other users. Reports are reviewed promptly, and necessary actions, including content removal and user suspension, may be taken within 24 hours in accordance with our community guidelines.</p>
+
+  <p>To maintain a safe environment, Spark uses automated filters and manual review to detect and restrict objectionable or harmful content. Content that violates our guidelines may be removed without notice. Users can also report content they find inappropriate.</p>
+
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">11. Governing Law</h2>
   <p>This agreement is governed by the laws of the Republic of Turkey. Disputes will be resolved in Istanbul Anadolu Courts.</p>
 
-  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">10. Contact</h2>
+  ${platformSpecificRightEn}
+
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">13. Contact</h2>
   <p>Email: <a href="mailto:SparkCompanyTR@gmail.com">SparkCompanyTR@gmail.com</a></p>
 
   <div style="margin-top: 24px; font-weight: bold;">
@@ -150,11 +186,22 @@ export default function ToS() {
   <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">8. Sözleşme Değişiklikleri</h2>
   <p>Hizmet şartları herhangi bir zamanda değiştirilebilir. Değişiklikler uygulama içinde yayınlanarak yürürlüğe girer.</p>
 
-  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">9. Geçerli Hukuk</h2>
+    <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">9. Hesap Silme</h2>
+  <p>Kullanıcılar, hesaplarını ve tüm ilişkili verilerini kalıcı olarak silebilir. Bu işlem, uygulama içindeki Profil > Ayarlar bölümünden doğrudan yapılabilir. Silme işlemi gerçekleştiğinde, verileriniz 24 saat içinde sunucumuzdan kaldırılacaktır.</p>
+
+  <p>Güvenli bir ortamı sürdürebilmek için, Spark otomatik filtreler ve elle gözden geçirme kullanarak itibarı dışı ve zararlı içerikleri tespit eder ve sınırlar. Bu yönergeleri ihlal eden içerikler gerektiğinde görünürlükten kaldırılabilir. Kullanıcılar ayrıca kendilerine uygunsuz buldukları içeriği bildirebilirler.</p>
+
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">10. Kullanıcı Şikayeti ve Engelleme</h2>
+  <p>Spark, kullanıcıların uygunsuz içerik veya davranışları uygulama içinden bildirmesi ve diğer kullanıcıları engellemesi için araçlar sunar. Bildirimler hızlı bir şekilde incelenir ve topluluk kurallarımıza uygun olarak içerik silme veya kullanıcıyı askıya alma işlemleri 24 saat içinde gerçekleştirilebilir.</p>
+
+
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">11. Geçerli Hukuk</h2>
   <p>Bu sözleşme Türkiye Cumhuriyeti yasalarına tabidir. Uyuşmazlık durumunda İstanbul Anadolu Mahkemeleri yetkilidir.</p>
 
-  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">10. İletişim</h2>
-  <p>E-posta: <a href="mailto:SparkCompanyTR@gmail.com">SparkCompanyTRm@gmail.com</a></p>
+  ${platformSpecificRightTr}
+
+  <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">13. İletişim</h2>
+  <p>E-posta: <a href="mailto:SparkCompanyTR@gmail.com">SparkCompanyTR@gmail.com</a></p>
 
   <div style="margin-top: 24px; font-weight: bold;">
     Bu uygulamayı kullanarak, tüm şartları okuyup anladığınızı ve kabul ettiğinizi beyan etmiş olursunuz.
