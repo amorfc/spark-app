@@ -30,7 +30,9 @@
 			},
 			"bundleIdentifier": "com.sparkcompanytr.sparkapp",
 			"infoPlist": {
-				"ITSAppUsesNonExemptEncryption": false
+				"ITSAppUsesNonExemptEncryption": false,
+				"NSLocationWhenInUseUsageDescription": "We use your location to show nearby safe locations and transportation points on the map.",
+				"NSLocationAlwaysAndWhenInUseUsageDescription": "Your location helps us personalize your experience and show relevant safety data around you."
 			}
 		},
 		"android": {
