@@ -196,16 +196,15 @@ export default function SignUp() {
 												field.onChange(checked);
 											}}
 											renderLabel={() => (
-												<View className="flex-row items-center gap-1">
-													<Text className="text-sm text-foreground">
-														{t("auth.accept_terms")}
-													</Text>{" "}
-													<Pressable onPress={handleTermsPress}>
-														<Text className="text-blue-500 text-sm underline">
-															{t("auth.terms_and_privacy")}
-														</Text>
-													</Pressable>
-												</View>
+												<Text className="text-sm text-foreground">
+													{t("auth.accept_terms") + " "}
+													<Text
+														className="text-sm text-blue-500 underline"
+														onPress={handleTermsPress}
+													>
+														{t("auth.terms_and_privacy")}
+													</Text>
+												</Text>
 											)}
 										/>
 										{form.formState.errors.acceptTerms && (

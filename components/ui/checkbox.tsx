@@ -44,11 +44,11 @@ CheckboxPrimitive.Indicator.displayName = "CheckboxIndicator";
 const Checkbox = React.forwardRef<View, CheckboxProps>(
 	({ className, label, labelClassName, renderLabel, ...props }, ref) => {
 		return (
-			<View className="flex-row items-center gap-2">
+			<View className="flex-row items-start gap-2">
 				<View
 					ref={ref}
 					className={cn(
-						"h-5 w-5 rounded border border-foreground justify-center items-center",
+						"h-5 w-5 rounded border border-foreground justify-center items-center mt-0.5",
 						props.checked ? "bg-primary" : "bg-background",
 						props.disabled && "opacity-50",
 						className,
@@ -70,13 +70,15 @@ const Checkbox = React.forwardRef<View, CheckboxProps>(
 						/>
 					)}
 				</View>
-				{renderLabel ? (
-					renderLabel()
-				) : (
-					<Text className={cn("text-sm text-foreground", labelClassName)}>
-						{label}
-					</Text>
-				)}
+				<View className="flex-1">
+					{renderLabel ? (
+						renderLabel()
+					) : (
+						<Text className={cn("text-sm text-foreground", labelClassName)}>
+							{label}
+						</Text>
+					)}
+				</View>
 			</View>
 		);
 	},
