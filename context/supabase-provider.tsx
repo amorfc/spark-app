@@ -10,6 +10,7 @@ import { SplashScreen, useRouter } from "expo-router";
 import { Session } from "@supabase/supabase-js";
 
 import { supabase } from "@/config/supabase";
+import { useTranslation } from "react-i18next";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,6 +40,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [initialized, setInitialized] = useState(false);
 	const [session, setSession] = useState<Session | null>(null);
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	const signUp = async (
 		email: string,
@@ -57,7 +59,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		});
 
 		if (error) {
-			console.error("Error signing up:", error);
+			if (error.message === "User already registered") {
+				throw new Error(t("errors.user_already_registered"));
+			}
+
 			throw error;
 		}
 
@@ -75,7 +80,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		});
 
 		if (error) {
-			console.error("Error signing in:", error);
+			if (error.message === "Invalid login credentials") {
+				throw new Error(t("errors.invalid_login_credentials"));
+			}
+
 			throw error;
 		}
 
@@ -94,7 +102,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		const { error } = await supabase.auth.signOut();
 
 		if (error) {
-			console.error("Error signing out:", error);
 			return;
 		}
 	};

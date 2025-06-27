@@ -121,7 +121,8 @@
 			"loading_failed": "Veri yüklenemedi",
 			"save_failed": "Değişiklikler kaydedilemedi",
 			"delete_failed": "Öğe silinemedi",
-			"error_prefix": "Hata:"
+			"invalid_login_credentials": "Geçersiz giriş bilgileri",
+			"user_already_registered": "Bu e-posta adresi zaten kullanılıyor"
 		},
 		"empty_states": {
 			"no_reviews": "Yorum bulunamadı",

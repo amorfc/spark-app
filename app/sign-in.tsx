@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Alert, View } from "react-native";
 import * as z from "zod";
 
 import { SafeAreaView } from "@/components/safe-area-view";
@@ -41,7 +41,11 @@ export default function SignIn() {
 
 			form.reset();
 		} catch (error: Error | any) {
-			console.error(error.message);
+			Alert.alert(t("common.error"), error.message, [
+				{
+					text: t("common.ok"),
+				},
+			]);
 		}
 	}
 

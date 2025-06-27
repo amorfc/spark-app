@@ -71,8 +71,11 @@ export default function SignUp() {
 
 			form.reset();
 		} catch (error: Error | any) {
-			Alert.alert(error.message);
-			console.error(error.message);
+			Alert.alert(t("common.error"), error.message, [
+				{
+					text: t("common.ok"),
+				},
+			]);
 		}
 	}
 

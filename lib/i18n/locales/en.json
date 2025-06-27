@@ -121,7 +121,8 @@
 			"loading_failed": "Failed to load data",
 			"save_failed": "Failed to save changes",
 			"delete_failed": "Failed to delete item",
-			"error_prefix": "Error:"
+			"invalid_login_credentials": "Invalid login credentials",
+			"user_already_registered": "This email address is already in use"
 		},
 		"empty_states": {
 			"no_reviews": "No reviews found",
