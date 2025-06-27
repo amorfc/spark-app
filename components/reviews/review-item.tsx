@@ -8,6 +8,8 @@ import { useDeleteReview } from "@/hooks/useReviews";
 import { useAuth } from "@/context/supabase-provider";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useTranslation } from "react-i18next";
+import { ModerationMenu } from "@/components/moderation";
+import { FilteredText } from "@/components/moderation/filtered-content";
 
 interface ReviewItemProps {
 	review: Review;
@@ -80,7 +82,21 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 						{averageRating.toFixed(1)}
 					</Text>
 				</View>
-				{canDelete && <DeleteIconButton onPress={handleDeletePress} />}
+
+				{/* Action Buttons */}
+				<View className="flex-row items-center">
+					{canDelete && <DeleteIconButton onPress={handleDeletePress} />}
+
+					{/* Moderation Menu for Others' Reviews */}
+					{!canDelete && (
+						<ModerationMenu
+							contentType="review"
+							contentId={review.id}
+							authorId={review.user_id}
+							authorName="Anonymous" // Feature reviews don't have profile info
+						/>
+					)}
+				</View>
 			</View>
 
 			{/* Individual ratings */}
@@ -118,9 +134,10 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 			{/* Comment with expandable functionality */}
 			{review.comment && (
 				<View className="pt-2 border-t border-border">
-					<Text className="text-sm text-foreground leading-relaxed">
-						{displayComment}
-					</Text>
+					<FilteredText
+						text={displayComment || ""}
+						className="text-sm text-foreground leading-relaxed"
+					/>
 					{isLongComment && (
 						<Pressable onPress={() => setIsExpanded(!isExpanded)}>
 							<Text className="text-xs text-primary mt-1 font-medium">

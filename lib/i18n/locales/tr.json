@@ -126,6 +126,47 @@
 			"invalid_login_credentials": "Geçersiz giriş bilgileri",
 			"user_already_registered": "Bu e-posta adresi zaten kullanılıyor"
 		},
+		"moderation": {
+			"moderation_options": "Moderasyon Seçenekleri",
+			"reporting_content_by": "{{authorName}} tarafından gönderilen {{contentType}} bildiriliyor",
+			"content_types": {
+				"post": "gönderi",
+				"review": "değerlendirme",
+				"post_review": "yorum"
+			},
+			"report_content": "İçeriği bildir",
+			"block_user": "Kullanıcıyı engelle",
+			"unblock_user": "Kullanıcı engelini kaldır",
+			"report_submitted": "Bildirim başarıyla gönderildi",
+			"user_blocked": "Kullanıcı başarıyla engellendi",
+			"user_unblocked": "Kullanıcı engeli başarıyla kaldırıldı",
+			"report_types": {
+				"inappropriate_content": "Uygunsuz içerik",
+				"spam": "Spam",
+				"harassment": "Taciz",
+				"hate_speech": "Nefret söylemi",
+				"violence": "Şiddet",
+				"misinformation": "Yanlış bilgi",
+				"copyright": "Telif hakkı ihlali",
+				"other": "Diğer"
+			},
+			"report_form": {
+				"title": "İçeriği Bildir",
+				"reason": "Bildirme nedeni",
+				"description": "Ek detaylar (isteğe bağlı)",
+				"description_placeholder": "Lütfen sorun hakkında daha fazla detay verin...",
+				"submit": "Bildirimi Gönder"
+			},
+			"block_confirmation": {
+				"title": "Kullanıcıyı Engelle",
+				"message": "Bu kullanıcıyı engellemek istediğinizden emin misiniz? Artık onların gönderilerini ve yorumlarını görmeyeceksiniz.",
+				"block": "Engelle",
+				"cancel": "İptal"
+			},
+			"content_filtered": "Bu içerik uygunsuz dil içerdiği için filtrelenmiştir.",
+			"content_hidden": "Bu içerik topluluk kuralları nedeniyle gizlenmiştir.",
+			"report_as_inappropriate": "Uygunsuz İçerik Olarak Bildir"
+		},
 		"empty_states": {
 			"no_reviews": "Yorum bulunamadı",
 			"be_first_reviewer": "Bu özelliği yorumlayan ilk kişi olun",

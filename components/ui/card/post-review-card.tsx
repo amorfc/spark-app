@@ -5,6 +5,8 @@ import { useDeletePostReview } from "@/hooks/usePosts";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { PostReviewWithProfile } from "@/types/posts";
 import { Text, TouchableOpacity, View, Alert } from "react-native";
+import { ModerationMenu } from "@/components/moderation";
+import { FilteredText } from "@/components/moderation/filtered-content";
 
 interface PostReviewCardProps {
 	item: PostReviewWithProfile;
@@ -90,14 +92,27 @@ export const PostReviewCard = ({
 					</View>
 				</View>
 
-				{/* Delete Button for Own Reviews */}
-				{isOwnReview && canDelete && (
-					<DeleteIconButton onPress={handleDeletePress} />
-				)}
+				{/* Action Buttons */}
+				<View className="flex-row items-center">
+					{/* Delete Button for Own Reviews */}
+					{isOwnReview && canDelete && (
+						<DeleteIconButton onPress={handleDeletePress} />
+					)}
+
+					{/* Moderation Menu for Others' Reviews */}
+					{!isOwnReview && (
+						<ModerationMenu
+							contentType="post_review"
+							contentId={item.id}
+							authorId={item.user_id}
+							authorName={`${item.reviewer_profile?.first_name || ""} ${item.reviewer_profile?.last_name || ""}`.trim()}
+						/>
+					)}
+				</View>
 			</View>
 
 			{/* Review Content */}
-			<Text className="text-foreground leading-5">{item.text}</Text>
+			<FilteredText text={item.text} className="text-foreground leading-5" />
 		</TouchableOpacity>
 	);
 };

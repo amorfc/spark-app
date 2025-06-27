@@ -126,6 +126,65 @@
 			"invalid_login_credentials": "Invalid login credentials",
 			"user_already_registered": "This email address is already in use"
 		},
+		"common": {
+			"cancel": "Cancel",
+			"delete": "Delete",
+			"save": "Save",
+			"edit": "Edit",
+			"update": "Update",
+			"submit": "Submit",
+			"ok": "OK",
+			"yes": "Yes",
+			"no": "No",
+			"success": "Success",
+			"error": "Error",
+			"loading": "Loading",
+			"submitting": "Submitting...",
+			"go_back": "Go Back",
+			"close": "Close",
+			"characters": "characters"
+		},
+		"moderation": {
+			"moderation_options": "Moderation Options",
+			"reporting_content_by": "Reporting {{contentType}} sent by {{authorName}}",
+			"content_types": {
+				"post": "post",
+				"review": "review",
+				"post_review": "comment"
+			},
+			"report_content": "Report content",
+			"block_user": "Block user",
+			"unblock_user": "Unblock user",
+			"report_submitted": "Report submitted successfully",
+			"user_blocked": "User blocked successfully",
+			"user_unblocked": "User unblocked successfully",
+			"report_types": {
+				"inappropriate_content": "Inappropriate content",
+				"spam": "Spam",
+				"harassment": "Harassment",
+				"hate_speech": "Hate speech",
+				"violence": "Violence",
+				"misinformation": "Misinformation",
+				"copyright": "Copyright violation",
+				"other": "Other"
+			},
+			"report_form": {
+				"title": "Report Content",
+				"reason": "Reason for reporting",
+				"description": "Additional details (optional)",
+				"description_placeholder": "Please provide more details about the issue...",
+				"submit": "Submit Report"
+			},
+			"block_confirmation": {
+				"title": "Block User",
+				"message": "Are you sure you want to block this user? You won't see their posts or comments anymore.",
+				"block": "Block",
+				"cancel": "Cancel"
+			},
+			"content_filtered": "This content contains inappropriate language and has been filtered.",
+			"content_hidden": "This content has been hidden due to community guidelines.",
+			"report_as_inappropriate": "Report as Inappropriate"
+		},
 		"empty_states": {
 			"no_reviews": "No reviews found",
 			"be_first_reviewer": "Be the first to review this feature",

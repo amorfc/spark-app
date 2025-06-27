@@ -10,6 +10,8 @@ import { useTranslation } from "@/lib/i18n/hooks";
 import { useAuth } from "@/context/supabase-provider";
 import { useDeletePost } from "@/hooks/usePosts";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
+import { ModerationMenu } from "@/components/moderation";
+import { FilteredText } from "@/components/moderation/filtered-content";
 
 interface PostCardProps {
 	item: PostWithProfile;
@@ -88,16 +90,31 @@ export const PostCard = ({
 					</View>
 				</View>
 
-				{/* Delete Button for Own Posts */}
-				{isOwnPost && canDelete && (
-					<DeleteIconButton onPress={handleDeletePress} />
-				)}
+				{/* Action Buttons */}
+				<View className="flex-row items-center">
+					{/* Delete Button for Own Posts */}
+					{isOwnPost && canDelete && (
+						<DeleteIconButton onPress={handleDeletePress} />
+					)}
+
+					{/* Moderation Menu for Others' Posts */}
+					{!isOwnPost && (
+						<ModerationMenu
+							contentType="post"
+							contentId={item.id}
+							authorId={item.user_id}
+							authorName={`${item.author_profile?.first_name || ""} ${item.author_profile?.last_name || ""}`.trim()}
+						/>
+					)}
+				</View>
 			</View>
 
 			{/* Post Content */}
-			<Text className="text-foreground leading-5 mb-3" numberOfLines={4}>
-				{item.content}
-			</Text>
+			<FilteredText
+				text={item.content}
+				className="text-foreground leading-5 mb-3"
+				numberOfLines={4}
+			/>
 
 			{/* Post Stats */}
 			<View className="flex-row items-center justify-between pt-2 border-t border-border">

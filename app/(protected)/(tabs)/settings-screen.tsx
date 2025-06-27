@@ -73,22 +73,20 @@ export default function Settings() {
 			<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 			<View className="p-6 pt-4 border-t border-border">
 				<View className="mb-4">
-					<View className="flex-row items-center gap-2">
-						<Text className="text-lg font-semibold">
-							{t("settings.account")}
-						</Text>
+					<Text className="text-lg font-semibold">{t("settings.account")}</Text>
+					<View className="flex-row items-center justify-between">
+						<Muted className="text-sm">
+							{t("settings.sign_out_description")}
+						</Muted>
 						<Button
 							className="w-min"
 							size="sm"
-							variant="destructive"
+							variant="link"
 							onPress={showDeleteAccountAlert}
 						>
 							<Text>{t("settings.delete_account")}</Text>
 						</Button>
 					</View>
-					<Muted className="text-sm">
-						{t("settings.sign_out_description")}
-					</Muted>
 				</View>
 
 				<Button
