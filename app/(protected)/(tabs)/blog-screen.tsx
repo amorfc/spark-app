@@ -11,7 +11,7 @@ import { SafeAreaView } from "@/components/safe-area-view";
 import { useTranslation } from "@/lib/i18n/hooks";
 
 // Import blog data
-import blogData from "@/assets/data/blog-posts.json";
+import blogData from "@/assets/data/blog_posts.json";
 
 export default function BlogScreen() {
 	const { t } = useTranslation();

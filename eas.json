@@ -13,13 +13,20 @@
 		},
 		"production": {
 			"distribution": "store",
+			"developmentClient": false,
 			"env": {
 				"NODE_ENV": "production"
 			},
 			"ios": {
 				"simulator": false
 			},
-			"autoIncrement": true
+			"android": {
+				"gradleCommand": ":app:bundleRelease"
+			},
+			"autoIncrement": true,
+			"autoSubmit": {
+				"profile": "production"
+			}
 		}
 	},
 	"submit": {
@@ -27,6 +34,14 @@
 			"ios": {
 				"appleId": "SparkCompanyTR@gmail.com",
 				"ascAppId": "6747034934"
+			},
+			"android": {
+				"track": "production"
+			}
+		},
+		"internal": {
+			"android": {
+				"track": "internal"
 			}
 		}
 	}
