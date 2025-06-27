@@ -24,6 +24,7 @@ type AuthState = {
 	) => Promise<void>;
 	signIn: (email: string, password: string) => Promise<void>;
 	signOut: () => Promise<void>;
+	deleteUser: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthState>({
@@ -32,6 +33,7 @@ export const AuthContext = createContext<AuthState>({
 	signUp: async () => {},
 	signIn: async () => {},
 	signOut: async () => {},
+	deleteUser: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -106,6 +108,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		}
 	};
 
+	const deleteUser = async () => {
+		await supabase.functions.invoke("delete-user", {
+			body: { userId: session?.user.id! },
+		});
+		router.replace("/welcome");
+	};
+
 	useEffect(() => {
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setSession(session);
@@ -138,6 +147,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 				signUp,
 				signIn,
 				signOut,
+				deleteUser,
 			}}
 		>
 			{children}

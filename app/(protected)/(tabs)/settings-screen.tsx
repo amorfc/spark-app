@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ActivityIndicator, Alert, View } from "react-native";
 
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,12 @@ import { getFullName } from "@/lib/profile";
 import { LangSelect } from "@/components/select/lang-select";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { useMapSearch } from "@/hooks/useMapSearch";
+import { useState } from "react";
 
 export default function Settings() {
-	const { signOut } = useAuth();
+	const { signOut, deleteUser } = useAuth();
 	const { profile, isLoading } = useProfile();
+	const [isDeleting, setIsDeleting] = useState(false);
 	const { t } = useTranslation();
 	const fullName = getFullName(profile);
 	const { resetMap } = useMapSearch();
@@ -24,8 +26,26 @@ export default function Settings() {
 		return t("greetings.good_evening");
 	};
 
+	const showDeleteAccountAlert = () => {
+		Alert.alert(
+			t("settings.delete_account"),
+			t("settings.delete_account_description"),
+			[
+				{ text: t("common.cancel"), style: "cancel" },
+				{
+					text: t("common.delete"),
+					onPress: async () => {
+						setIsDeleting(true);
+						await deleteUser();
+						setIsDeleting(false);
+					},
+				},
+			],
+		);
+	};
 	return (
 		<SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+			{isDeleting && <ActivityIndicator className="self-center" />}
 			{/* Top Section - User Greeting */}
 			<View className="p-6 pt-8">
 				<H1 className="text-left mb-2">{t("settings.title")}</H1>
@@ -53,13 +73,24 @@ export default function Settings() {
 			<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 			<View className="p-6 pt-4 border-t border-border">
 				<View className="mb-4">
-					<Text className="text-lg font-semibold mb-2">
-						{t("settings.account")}
-					</Text>
+					<View className="flex-row items-center gap-2">
+						<Text className="text-lg font-semibold">
+							{t("settings.account")}
+						</Text>
+						<Button
+							className="w-min"
+							size="sm"
+							variant="destructive"
+							onPress={showDeleteAccountAlert}
+						>
+							<Text>{t("settings.delete_account")}</Text>
+						</Button>
+					</View>
 					<Muted className="text-sm">
 						{t("settings.sign_out_description")}
 					</Muted>
 				</View>
+
 				<Button
 					className="w-full"
 					size="default"

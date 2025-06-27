@@ -54,6 +54,8 @@
 			"language": "Dil",
 			"change_language": "Uygulamanın dilini değiştirin",
 			"account": "Hesap",
+			"delete_account": "Hesabı Sil",
+			"delete_account_description": "Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
 			"sign_out_description": "Çıkış yapın ve karşılama ekranına dönün.",
 			"welcome_message": "Ayarlara Hoş Geldiniz"
 		},
