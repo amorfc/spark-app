@@ -9,6 +9,7 @@
 		"android:prod": "eas build -p android --local --profile production",
 		"android:prod:submit": "eas submit -p android --latest --profile production",
 		"ios:prod": "eas build -p ios --local --profile production",
+		"ios:prod:submit": "eas build -p ios --profile production --auto-submit",
 		"ios": "expo run:ios",
 		"clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd .. && npx expo run:ios",
 		"clean:android": "cd android && ./gradlew clean && cd .. && npx expo run:android",
