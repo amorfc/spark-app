@@ -1,4 +1,5 @@
 import { ActivityIndicator, Alert, View } from "react-native";
+import { router } from "expo-router";
 
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { getFullName } from "@/lib/profile";
 import { LangSelect } from "@/components/select/lang-select";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { useMapSearch } from "@/hooks/useMapSearch";
+import { routes } from "@/lib/routes";
 import { useState } from "react";
 
 export default function Settings() {
@@ -25,6 +27,8 @@ export default function Settings() {
 		if (hour < 18) return t("greetings.good_afternoon");
 		return t("greetings.good_evening");
 	};
+
+	const handleTermsPress = () => router.push(routes.tos());
 
 	const showDeleteAccountAlert = () => {
 		Alert.alert(
@@ -71,7 +75,7 @@ export default function Settings() {
 
 			{/* Bottom Section - Sign Out */}
 			<LangSelect style={{ borderRadius: 0 }} clearable={false} />
-			<View className="p-6 pt-4 border-t border-border">
+			<View className="px-6 pb-2 pt-4 border-t border-border">
 				<View className="mb-4">
 					<Text className="text-lg font-semibold">{t("settings.account")}</Text>
 					<View className="flex-row items-center justify-between">
@@ -99,6 +103,14 @@ export default function Settings() {
 					}}
 				>
 					<Text>{t("auth.sign_out")}</Text>
+				</Button>
+				<Button
+					className="w-min"
+					size="sm"
+					variant="link"
+					onPress={handleTermsPress}
+				>
+					<Text>{t("auth.terms_and_privacy_link")}</Text>
 				</Button>
 			</View>
 		</SafeAreaView>

@@ -35,6 +35,7 @@
 			"confirm_password": "Şifreyi Onayla",
 			"female_confirmation": "Kadın olduğumu onaylıyorum",
 			"accept_terms": "Devam ederek",
+			"terms_and_privacy_link": "Kullanım Şartları ve Gizlilik Politikası",
 			"terms_and_privacy": " Kullanım Şartları ve Gizlilik Politikası'nı kabul etmiş sayılırsınız",
 			"validation": {
 				"first_name_required": "Lütfen adınızı girin.",
