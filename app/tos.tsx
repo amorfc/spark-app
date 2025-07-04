@@ -104,8 +104,8 @@ export default function ToS() {
   <p>Users have the right to permanently delete their account and all associated data. This can be done directly from the app in the Profile > Settings section. Upon deletion, your data will be removed from our servers within 24 hours.</p>
 
   <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">10. User Reporting and Blocking</h2>
-<p>Spark provides in-app tools for users to report objectionable content or behavior and to block other users. Reports are reviewed promptly, and necessary actions, including content removal and user suspension, may be taken within 24 hours in accordance with our community guidelines.</p>
-
+  <p>Spark provides in-app tools for users to report objectionable content or behavior and to block other users. Reports are reviewed promptly, and necessary actions, including content removal and user suspension, may be taken within 24 hours in accordance with our community guidelines.</p>
+  <p>We do not tolerate offensive, harmful, or abusive content. Violators may be banned from the app.</p>
   <p>To maintain a safe environment, Spark uses automated filters and manual review to detect and restrict objectionable or harmful content. Content that violates our guidelines may be removed without notice. Users can also report content they find inappropriate.</p>
 
   <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">11. Governing Law</h2>
@@ -193,6 +193,7 @@ export default function ToS() {
 
   <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">10. Kullanıcı Şikayeti ve Engelleme</h2>
   <p>Spark, kullanıcıların uygunsuz içerik veya davranışları uygulama içinden bildirmesi ve diğer kullanıcıları engellemesi için araçlar sunar. Bildirimler hızlı bir şekilde incelenir ve topluluk kurallarımıza uygun olarak içerik silme veya kullanıcıyı askıya alma işlemleri 24 saat içinde gerçekleştirilebilir.</p>
+  <p>Saldırgan, zararlı veya kötüye kullanım içeren içeriklere kesinlikle izin vermiyoruz. Bu kuralları ihlal eden kullanıcılar uygulamadan kalıcı olarak çıkarılabilir.</p>
 
 
   <h2 style="font-size: 18px; color: #3b82f6; margin-top: 16px;">11. Geçerli Hukuk</h2>
