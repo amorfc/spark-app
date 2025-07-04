@@ -1,25 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-client";
-import { BlogPost, BlogCategory } from "@/types/blog";
-import blogData from "@/assets/data/blog_posts.json";
+import { BlogPost } from "@/types/blog";
 
 interface BlogPostsResponse {
 	data: BlogPost[];
 }
 
 const fetchBlogPosts = async (): Promise<BlogPostsResponse> => {
-	const allBlogPosts: BlogPost[] = blogData.data.map((post) => ({
-		...post,
-		category: post.category as BlogCategory,
-	}));
+	const url = "https://amorfc.github.io/spark-app/blog_posts.json";
+	const response = await fetch(url);
+	const data = await response.json();
 
-	return new Promise<BlogPostsResponse>((resolve) => {
-		setTimeout(() => {
-			resolve({
-				data: allBlogPosts,
-			});
-		}, 1000);
-	});
+	return { data: data?.data || [] };
 };
 
 export const useBlogPosts = () => {

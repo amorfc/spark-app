@@ -22,8 +22,10 @@ export const FilteredContent: React.FC<FilteredContentProps> = ({
 	const { data: keywords = [] } = useBannedKeywords();
 	const [showHidden, setShowHidden] = React.useState(false);
 
-	const { shouldShow, shouldFilter, filteredText, warning, severity } =
-		getContentVisibility(text, keywords);
+	const { shouldShow, shouldFilter, warning } = getContentVisibility(
+		text,
+		keywords,
+	);
 
 	if (!shouldShow && !showHidden) {
 		return (

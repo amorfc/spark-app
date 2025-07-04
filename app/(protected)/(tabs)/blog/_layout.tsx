@@ -9,7 +9,7 @@ export default function BlogLayout() {
 		>
 			<Stack.Screen name="index" />
 			<Stack.Screen
-				name="blog-preview"
+				name="[id]"
 				options={{
 					presentation: "modal",
 					headerShown: false,

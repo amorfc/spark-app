@@ -1,5 +1,11 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet, ScrollView, Linking } from "react-native";
+import {
+	View,
+	StyleSheet,
+	ScrollView,
+	Linking,
+	ActivityIndicator,
+} from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
 import { BlogPost, BlogCategory } from "@/types/blog";
@@ -9,22 +15,31 @@ import { blogColors } from "@/utils/blog";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { Button } from "@/components/ui/button";
 import { H1, H2, P } from "@/components/ui/typography";
-
-// Import blog data to find the specific post
-import blogData from "@/assets/data/blog_posts.json";
+import { useBlogPosts } from "@/hooks/useBlogPosts";
 
 export default function BlogPreviewScreen() {
 	const { t } = useTranslation();
 	const { id } = useLocalSearchParams<{ id: string }>();
+	const { data: blogPosts, isLoading } = useBlogPosts();
 
 	// Find the blog post by ID
 	const blogPost = useMemo(() => {
-		const allBlogPosts: BlogPost[] = blogData.data.map((post) => ({
-			...post,
-			category: post.category as BlogCategory,
-		}));
-		return allBlogPosts.find((post) => post.id === id);
-	}, [id]);
+		const allBlogPosts: BlogPost[] | undefined = blogPosts?.data.map(
+			(post) => ({
+				...post,
+				category: post.category as BlogCategory,
+			}),
+		);
+		return allBlogPosts?.find((post) => post.id === id);
+	}, [blogPosts?.data, id]);
+
+	if (isLoading) {
+		return (
+			<SafeAreaView style={styles.container}>
+				<ActivityIndicator />
+			</SafeAreaView>
+		);
+	}
 
 	if (!blogPost) {
 		return (

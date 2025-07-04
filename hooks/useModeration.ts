@@ -8,7 +8,7 @@ import {
 	isUserBlocked,
 	getBannedKeywords,
 } from "@/services/moderation-service";
-import { CreateReportData, BlockUserData } from "@/types/moderation";
+import { CreateReportData } from "@/types/moderation";
 
 // Report hooks
 export const useCreateReport = () => {

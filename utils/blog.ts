@@ -41,7 +41,7 @@ export const getBlogPostsByCategory = (
 	posts: BlogPost[],
 	category: BlogCategory,
 ): BlogPost[] => {
-	return posts.filter((post) => post.category === category);
+	return posts?.filter((post) => post.category === category) || [];
 };
 
 /**
