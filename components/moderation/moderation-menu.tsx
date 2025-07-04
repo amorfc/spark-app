@@ -167,7 +167,7 @@ export const ModerationMenu: React.FC<ModerationMenuProps> = ({
 							</TouchableOpacity>
 
 							{/* Block User Option */}
-							{/* <TouchableOpacity
+							<TouchableOpacity
 								onPress={handleBlock}
 								className="flex-row items-center p-3 rounded-lg active:bg-muted"
 							>
@@ -179,7 +179,7 @@ export const ModerationMenu: React.FC<ModerationMenuProps> = ({
 								<Text className="ml-3 text-base">
 									{t("moderation.block_user")}
 								</Text>
-							</TouchableOpacity> */}
+							</TouchableOpacity>
 
 							{/* Cancel */}
 							<TouchableOpacity

@@ -171,6 +171,13 @@ BEGIN
                     FROM (
                         SELECT * FROM post_reviews 
                         WHERE post_id = p.id 
+                          -- also hide reviews by blocked reviewers if you like:
+                          AND NOT EXISTS (
+                            SELECT 1 
+                            FROM public.blocked_users b
+                            WHERE b.blocker_id = auth.uid()
+                              AND b.blocked_id = post_reviews.user_id
+                          )
                         ORDER BY created_at DESC 
                         LIMIT 3
                     ) pr
