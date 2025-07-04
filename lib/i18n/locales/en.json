@@ -211,6 +211,14 @@
 				"podcasts": "Podcasts",
 				"self_love": "Self Love",
 				"feminism_basics": "Feminism 101"
+			},
+			"preview": {
+				"title": "Blog Preview",
+				"not_found_title": "Blog Post Not Found",
+				"not_found_heading": "Post not found",
+				"not_found_message": "The blog post you're looking for doesn't exist.",
+				"read_more": "Read More",
+				"watch_more": "Watch More"
 			}
 		},
 		"accessibility": {

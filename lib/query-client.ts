@@ -24,4 +24,6 @@ export const queryKeys = {
 	poisByCity: (city: string) => [...queryKeys.pois, city] as const,
 	poisByCityAndTypes: (city: string, types: string[]) =>
 		[...queryKeys.poisByCity(city), "types", types.sort()] as const,
+	blog: ["blog"] as const,
+	blogPosts: () => [...queryKeys.blog, "posts"] as const,
 } as const;

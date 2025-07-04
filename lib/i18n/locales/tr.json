@@ -193,6 +193,14 @@
 				"podcasts": "Podkastlar",
 				"self_love": "Kendini Sevmek",
 				"feminism_basics": "Feminizm 101"
+			},
+			"preview": {
+				"title": "Blog Önizleme",
+				"not_found_title": "Blog Yazısı Bulunamadı",
+				"not_found_heading": "Yazı bulunamadı",
+				"not_found_message": "Aradığınız blog yazısı mevcut değil.",
+				"read_more": "Daha Fazla Oku",
+				"watch_more": "Daha Fazla İzle"
 			}
 		},
 		"accessibility": {

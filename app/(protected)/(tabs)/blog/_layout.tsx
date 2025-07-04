@@ -1,0 +1,22 @@
+import { Stack } from "expo-router";
+
+export default function BlogLayout() {
+	return (
+		<Stack
+			screenOptions={{
+				headerShown: false,
+			}}
+		>
+			<Stack.Screen name="index" />
+			<Stack.Screen
+				name="blog-preview"
+				options={{
+					presentation: "modal",
+					headerShown: false,
+					gestureEnabled: true,
+					animation: "slide_from_bottom",
+				}}
+			/>
+		</Stack>
+	);
+}

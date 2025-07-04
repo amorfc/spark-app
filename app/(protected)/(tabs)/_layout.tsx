@@ -54,7 +54,7 @@ export default function TabsLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="blog-screen"
+				name="blog"
 				options={{
 					title: t("navigation.blog"),
 					tabBarIcon: ({ focused }) => (
