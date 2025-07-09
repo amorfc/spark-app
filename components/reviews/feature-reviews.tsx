@@ -17,6 +17,7 @@ import {
 import { useAuth } from "@/context/supabase-provider";
 import { Review } from "@/types/reviews";
 import { useTranslation } from "@/lib/i18n/hooks";
+import { useProfile } from "@/hooks/useProfile";
 
 interface FeatureReviewsProps {
 	featureRefId: string;
@@ -29,6 +30,8 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 	featureName,
 	className,
 }) => {
+	const { canCRUD } = useProfile();
+
 	const [showReviewForm, setShowReviewForm] = useState(false);
 	const [editingReview, setEditingReview] = useState<Review | null>(null);
 	const { t } = useTranslation();
@@ -137,7 +140,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 			</View>
 
 			{/* User Review Actions */}
-			{session && (
+			{session && canCRUD && (
 				<View className="p-4 border-b border-border">
 					{userReviewLoading ? (
 						<ActivityIndicator size="small" />

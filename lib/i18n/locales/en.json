@@ -27,6 +27,7 @@
 			"sign_up": "Sign Up",
 			"sign_in": "Sign In",
 			"sign_out": "Sign Out",
+			"continue_as_guest": "Continue as Guest",
 			"welcome": "Welcome",
 			"first_name": "First Name",
 			"last_name": "Last Name",
@@ -126,24 +127,6 @@
 			"delete_failed": "Failed to delete item",
 			"invalid_login_credentials": "Invalid login credentials",
 			"user_already_registered": "This email address is already in use"
-		},
-		"common": {
-			"cancel": "Cancel",
-			"delete": "Delete",
-			"save": "Save",
-			"edit": "Edit",
-			"update": "Update",
-			"submit": "Submit",
-			"ok": "OK",
-			"yes": "Yes",
-			"no": "No",
-			"success": "Success",
-			"error": "Error",
-			"loading": "Loading",
-			"submitting": "Submitting...",
-			"go_back": "Go Back",
-			"close": "Close",
-			"characters": "characters"
 		},
 		"moderation": {
 			"moderation_options": "Moderation Options",

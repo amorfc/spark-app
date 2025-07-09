@@ -4,7 +4,7 @@ import { Profile } from "@/types/profile";
 import { useAuth } from "@/context/supabase-provider";
 
 export const useProfile = () => {
-	const { session } = useAuth();
+	const { session, isGuest } = useAuth();
 
 	const { data, isLoading, error, refetch } = useQuery<Profile | null>({
 		queryKey: ["profile", session?.user?.id],
@@ -12,5 +12,7 @@ export const useProfile = () => {
 		queryFn: () => getCurrentUserProfile(session?.user?.id ?? ""),
 	});
 
-	return { profile: data, isLoading, error, refetch };
+	const canCRUD = !isGuest && !!session;
+
+	return { profile: data, isLoading, error, refetch, canCRUD };
 };

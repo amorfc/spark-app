@@ -12,6 +12,7 @@ import { useDeletePost } from "@/hooks/usePosts";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { ModerationMenu } from "@/components/moderation";
 import { FilteredText } from "@/components/moderation/filtered-content";
+import { useProfile } from "@/hooks/useProfile";
 
 interface PostCardProps {
 	item: PostWithProfile;
@@ -31,6 +32,7 @@ export const PostCard = ({
 	const createdAt = new Date(item.created_at);
 	const timeAgo = useTimeAgo(createdAt);
 	const deletePostMutation = useDeletePost();
+	const { canCRUD } = useProfile();
 
 	// Check if current user is the post author
 	const isOwnPost = session?.user?.id === item.user_id;
@@ -93,12 +95,12 @@ export const PostCard = ({
 				{/* Action Buttons */}
 				<View className="flex-row items-center">
 					{/* Delete Button for Own Posts */}
-					{isOwnPost && canDelete && (
+					{isOwnPost && canDelete && canCRUD && (
 						<DeleteIconButton onPress={handleDeletePress} />
 					)}
 
 					{/* Moderation Menu for Others' Posts */}
-					{!isOwnPost && (
+					{!isOwnPost && canCRUD && (
 						<ModerationMenu
 							contentType="post"
 							contentId={item.id}

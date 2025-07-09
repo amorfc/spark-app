@@ -3,7 +3,6 @@ import { BoundingBox } from "@/types/osm";
 import { POICategoryDefinition } from "@/services/poi-service";
 
 export interface MapSearchState {
-	selectedFeatureId: string | null;
 	country: string;
 	city: string;
 	district?: GeoJSON.Feature | null;
@@ -22,7 +21,6 @@ const defaultBounds: BoundingBox = {
 };
 
 const initialState: MapSearchState = {
-	selectedFeatureId: null,
 	country: "Türkiye",
 	city: "İstanbul",
 	district: null,
@@ -37,9 +35,6 @@ const mapSearchSlice = createSlice({
 	name: "mapSearch",
 	initialState,
 	reducers: {
-		setSelectedFeatureId: (state, action: PayloadAction<string | null>) => {
-			state.selectedFeatureId = action.payload;
-		},
 		setCountry: (state, action: PayloadAction<string>) => {
 			state.country = action.payload;
 		},
@@ -59,11 +54,11 @@ const mapSearchSlice = createSlice({
 			state.isLoading = action.payload;
 		},
 		resetMapState: (state) => {
-			state.selectedFeatureId = initialState.selectedFeatureId;
 			state.district = initialState.district;
 			state.currentBounds = initialState.currentBounds;
 			state.isLoading = initialState.isLoading;
 			state.categoryGroups = initialState.categoryGroups;
+			state.selectedFeature = initialState.selectedFeature;
 		},
 		setCategoryGroups: (
 			state,
@@ -82,7 +77,6 @@ const mapSearchSlice = createSlice({
 
 export const {
 	setSelectedFeature,
-	setSelectedFeatureId,
 	setCurrentBounds,
 	setCountry,
 	setCity,

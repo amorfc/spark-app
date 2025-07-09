@@ -22,6 +22,7 @@ import { Review } from "@/types/reviews";
 import { ReviewItem } from "@/components/reviews/review-item";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { routes } from "@/lib/routes";
+import { useProfile } from "@/hooks/useProfile";
 
 type FeatureInfoBottomSheetProps = Omit<BottomSheetProps, "children"> & {
 	feature: GeoJSON.Feature;
@@ -32,6 +33,7 @@ export const FeatureInfoBottomSheet = forwardRef<
 	FeatureInfoBottomSheetProps
 >(({ feature, ...bottomSheetProps }, ref) => {
 	const { t } = useTranslation();
+	const { canCRUD } = useProfile();
 
 	const bottomSheetRef = useRef<BottomSheetRef>(null);
 	const { icon, label } = useFeatureMetadata(feature);
@@ -161,22 +163,24 @@ export const FeatureInfoBottomSheet = forwardRef<
 									<MaterialIcons name="close" size={24} color={iconColor} />
 								</TouchableOpacity>
 							</View>
-							<TouchableOpacity
-								className="mt-2 items-center py-1.5 bg-primary web:hover:opacity-90 active:opacity-90 rounded-lg"
-								onPress={handleCreateReviewPress}
-							>
-								{userReviewLoading ? (
-									<ActivityIndicator size="small" color="white" />
-								) : userReview ? (
-									<Text className="text-white font-medium">
-										{t("reviews.edit_review_button")}
-									</Text>
-								) : (
-									<Text className="text-white font-medium">
-										{t("reviews.add_review")}
-									</Text>
-								)}
-							</TouchableOpacity>
+							{canCRUD && (
+								<TouchableOpacity
+									className="mt-2 items-center py-1.5 bg-primary web:hover:opacity-90 active:opacity-90 rounded-lg"
+									onPress={handleCreateReviewPress}
+								>
+									{userReviewLoading ? (
+										<ActivityIndicator size="small" color="white" />
+									) : userReview ? (
+										<Text className="text-white font-medium">
+											{t("reviews.edit_review_button")}
+										</Text>
+									) : (
+										<Text className="text-white font-medium">
+											{t("reviews.add_review")}
+										</Text>
+									)}
+								</TouchableOpacity>
+							)}
 						</View>
 
 						<View className="flex flex-row flex-wrap gap-1 mb-3">

@@ -16,11 +16,13 @@ import {
 } from "@/components/bottom-sheet/post-review-bottom-sheet";
 import { PostReviewList } from "@/components/post/post-review-list";
 import { PostReviewWithProfile } from "@/types/posts";
+import { useProfile } from "@/hooks/useProfile";
 
 export default function PostDetailScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
+	const { canCRUD } = useProfile();
 
 	// Decode the URL-encoded ID
 	const postId = id ? decodeURIComponent(id) : id;
@@ -68,9 +70,11 @@ export default function PostDetailScreen() {
 			<View className="flex-row justify-between items-center px-4 py-2 border-b border-border">
 				<Text className="text-xl font-semibold">{t("posts.post_details")}</Text>
 				<View className="flex-row items-center gap-2">
-					<Button variant="default" size="sm" onPress={openReviewCreateSheet}>
-						<Text>{t("posts.make_review")}</Text>
-					</Button>
+					{canCRUD && (
+						<Button variant="default" size="sm" onPress={openReviewCreateSheet}>
+							<Text>{t("posts.make_review")}</Text>
+						</Button>
+					)}
 					<TouchableOpacity onPress={handleClose}>
 						<MaterialIcons
 							name="close"

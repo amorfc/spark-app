@@ -19,6 +19,7 @@ import { PostReviewWithProfile } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
+import { useProfile } from "@/hooks/useProfile";
 
 const maxReviewLength = 400;
 const getPostReviewFormSchema = (t: any) =>
@@ -52,6 +53,8 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 	className,
 }) => {
 	const { t } = useTranslation();
+	const { canCRUD } = useProfile();
+
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const createMutation = useCreatePostReview();
@@ -149,7 +152,7 @@ const PostReviewForm: React.FC<PostReviewFormProps> = ({
 						? t("posts.reviews.edit_review")
 						: t("posts.reviews.add_review")}
 				</Text>
-				{isEditMode && existingReview && (
+				{isEditMode && existingReview && canCRUD && (
 					<DeleteIconButton
 						disabled={isLoading || isDeleting}
 						onPress={handleDelete}

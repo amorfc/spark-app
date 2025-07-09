@@ -9,11 +9,18 @@ import { Text } from "@/components/ui/text";
 import { H1, Muted } from "@/components/ui/typography";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { routes } from "@/lib/routes";
+import { useAuth } from "@/context/supabase-provider";
 
 export default function WelcomeScreen() {
 	const router = useRouter();
 	const { t } = useTranslation();
 	const appIcon = require("@/assets/icon.png");
+	const { continueAsGuest } = useAuth();
+
+	const handleContinueAsGuest = async () => {
+		await continueAsGuest();
+		router.push("/map");
+	};
 
 	return (
 		<SafeAreaView className="flex flex-1 bg-background p-4">
@@ -40,6 +47,13 @@ export default function WelcomeScreen() {
 					}}
 				>
 					<Text>{t("auth.sign_in")}</Text>
+				</Button>
+				<Button
+					size="default"
+					variant="outline"
+					onPress={handleContinueAsGuest}
+				>
+					<Text>{t("auth.continue_as_guest")}</Text>
 				</Button>
 			</View>
 		</SafeAreaView>

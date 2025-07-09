@@ -9,10 +9,11 @@ import { routes } from "@/lib/routes";
 import { PaginatedFlatList } from "@/components/ui/list/paginated-flatlist";
 import { PostCard } from "@/components/ui/card/post-card";
 import { Button } from "@/components/ui/button";
+import { useProfile } from "@/hooks/useProfile";
 
 export default function FeedScreen() {
 	const { t } = useTranslation();
-
+	const { canCRUD } = useProfile();
 	const {
 		posts,
 		hasNextPage,
@@ -29,13 +30,15 @@ export default function FeedScreen() {
 				<Text className="text-2xl font-bold text-foreground">
 					{t("navigation.feed")}
 				</Text>
-				<Button
-					variant="default"
-					size="sm"
-					onPress={() => router.push(routes.postCreate())}
-				>
-					<Text>{t("navigation.create_post")}</Text>
-				</Button>
+				{canCRUD && (
+					<Button
+						variant="default"
+						size="sm"
+						onPress={() => router.push(routes.postCreate())}
+					>
+						<Text>{t("navigation.create_post")}</Text>
+					</Button>
+				)}
 			</View>
 		</View>
 	);

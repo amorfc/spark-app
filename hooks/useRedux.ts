@@ -58,14 +58,9 @@ export const useAuth = () => {
 // Map Search hooks
 export const useMapSearch = () => {
 	const dispatch = useAppDispatch();
-	const {
-		selectedFeatureId,
-		country,
-		city,
-		district,
-		currentBounds,
-		isLoading,
-	} = useAppSelector((state) => state.mapSearch);
+	const { country, city, district, currentBounds, isLoading } = useAppSelector(
+		(state) => state.mapSearch,
+	);
 
 	const selectFeature = (featureId: GeoJSON.Feature | null) => {
 		dispatch(setSelectedFeature(featureId));
@@ -84,7 +79,6 @@ export const useMapSearch = () => {
 	};
 
 	return {
-		selectedFeatureId,
 		country,
 		city,
 		district,

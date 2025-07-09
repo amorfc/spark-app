@@ -7,22 +7,19 @@ export const unstable_settings = {
 };
 
 export default function ProtectedLayout() {
-	const { initialized, session } = useAuth();
+	const { initialized, session, isGuest } = useAuth();
 
 	if (!initialized) {
 		return null;
 	}
 
-	if (!session) {
+	// Allow both authenticated users and guests
+	if (!session && !isGuest) {
 		return <Redirect href="/welcome" />;
 	}
 
 	return (
-		<Stack
-			screenOptions={{
-				headerShown: false,
-			}}
-		>
+		<Stack screenOptions={{ headerShown: false }}>
 			<Stack.Screen name="(tabs)" />
 			<Stack.Screen name="modal" options={{ presentation: "modal" }} />
 		</Stack>

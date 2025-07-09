@@ -10,6 +10,7 @@ import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useTranslation } from "react-i18next";
 import { ModerationMenu } from "@/components/moderation";
 import { FilteredText } from "@/components/moderation/filtered-content";
+import { useProfile } from "@/hooks/useProfile";
 
 interface ReviewItemProps {
 	review: Review;
@@ -26,6 +27,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 	const { mutate: deleteReview, isPending: isDeleting } = useDeleteReview();
 	const { session } = useAuth();
 	const { t, i18n } = useTranslation();
+	const { canCRUD } = useProfile();
 	const canDelete = review.user_id === session?.user?.id;
 
 	const handleDelete = async () => {
@@ -85,10 +87,12 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
 
 				{/* Action Buttons */}
 				<View className="flex-row items-center">
-					{canDelete && <DeleteIconButton onPress={handleDeletePress} />}
+					{canDelete && canCRUD && (
+						<DeleteIconButton onPress={handleDeletePress} />
+					)}
 
 					{/* Moderation Menu for Others' Reviews */}
-					{!canDelete && (
+					{!canDelete && canCRUD && (
 						<ModerationMenu
 							contentType="review"
 							contentId={review.id}

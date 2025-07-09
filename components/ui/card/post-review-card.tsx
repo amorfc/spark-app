@@ -7,6 +7,7 @@ import { PostReviewWithProfile } from "@/types/posts";
 import { Text, TouchableOpacity, View, Alert } from "react-native";
 import { ModerationMenu } from "@/components/moderation";
 import { FilteredText } from "@/components/moderation/filtered-content";
+import { useProfile } from "@/hooks/useProfile";
 
 interface PostReviewCardProps {
 	item: PostReviewWithProfile;
@@ -23,6 +24,8 @@ export const PostReviewCard = ({
 	const createdAt = new Date(item.created_at);
 	const timeAgo = useTimeAgo(createdAt);
 	const { session } = useAuth();
+	const { canCRUD } = useProfile();
+
 	const deleteReviewMutation = useDeletePostReview();
 
 	// Check if current user is the review author
@@ -95,12 +98,12 @@ export const PostReviewCard = ({
 				{/* Action Buttons */}
 				<View className="flex-row items-center">
 					{/* Delete Button for Own Reviews */}
-					{isOwnReview && canDelete && (
+					{isOwnReview && canDelete && canCRUD && (
 						<DeleteIconButton onPress={handleDeletePress} />
 					)}
 
 					{/* Moderation Menu for Others' Reviews */}
-					{!isOwnReview && (
+					{!isOwnReview && canCRUD && (
 						<ModerationMenu
 							contentType="post_review"
 							contentId={item.id}
