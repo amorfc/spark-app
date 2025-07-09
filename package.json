@@ -14,8 +14,7 @@
 		"clean:ios": "cd ios && rm -rf Pods Podfile.lock build && pod install && cd .. && npx expo run:ios",
 		"clean:android": "cd android && ./gradlew clean && cd .. && npx expo run:android",
 		"lint": "eslint . --fix",
-		"generate-colors": "node ./scripts/generate-colors.js && eslint ./constants/colors.ts --fix",
-		"process-osm": "tsx scripts/process-osm-data.ts"
+		"generate-colors": "node ./scripts/generate-colors.js && eslint ./constants/colors.ts --fix"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "^14.1.0",

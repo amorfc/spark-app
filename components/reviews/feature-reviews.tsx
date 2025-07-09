@@ -58,22 +58,18 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 	const handleDeleteReview = () => {
 		if (!userReview) return;
 
-		Alert.alert(
-			t("reviews.delete_review"),
-			"Are you sure you want to delete your review? This action cannot be undone.",
-			[
-				{ text: t("common.cancel"), style: "cancel" },
-				{
-					text: t("common.delete"),
-					style: "destructive",
-					onPress: () => {
-						deleteReviewMutation.mutate({
-							featureRefId,
-						});
-					},
+		Alert.alert(t("reviews.delete_review"), t("reviews.delete_confirmation"), [
+			{ text: t("common.cancel"), style: "cancel" },
+			{
+				text: t("common.delete"),
+				style: "destructive",
+				onPress: () => {
+					deleteReviewMutation.mutate({
+						featureRefId,
+					});
 				},
-			],
-		);
+			},
+		]);
 	};
 
 	const handleFormSuccess = () => {
@@ -90,7 +86,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 		return (
 			<View className={cn("p-4", className)}>
 				<Text className="text-center text-destructive">
-					Error loading reviews. Please try again.
+					{t("reviews.error_loading")}
 				</Text>
 			</View>
 		);
@@ -101,7 +97,9 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 			{/* Header */}
 			<View className="p-4 border-b border-border">
 				<H2 className="text-center mb-2">
-					{featureName ? `Reviews for ${featureName}` : "Reviews"}
+					{featureName
+						? `${t("reviews.reviews_for")} ${featureName}`
+						: t("reviews.reviews")}
 				</H2>
 
 				{/* Stats */}
@@ -134,7 +132,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 					</View>
 				) : (
 					<Text className="text-center text-muted-foreground">
-						No reviews yet
+						{t("reviews.no_reviews")}
 					</Text>
 				)}
 			</View>
@@ -146,7 +144,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 						<ActivityIndicator size="small" />
 					) : userReview ? (
 						<View className="space-y-3">
-							<H3>Your Review</H3>
+							<H3>{t("reviews.your_review")}</H3>
 							<ReviewItem review={userReview} />
 							<View className="flex-row space-x-2">
 								<Button
@@ -154,7 +152,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 									onPress={handleEditReview}
 									className="flex-1"
 								>
-									Edit Review
+									{t("reviews.edit_review")}
 								</Button>
 								<Button
 									variant="destructive"
@@ -162,13 +160,15 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 									disabled={deleteReviewMutation.isPending}
 									className="flex-1"
 								>
-									{deleteReviewMutation.isPending ? "Deleting..." : "Delete"}
+									{deleteReviewMutation.isPending
+										? t("reviews.deleting")
+										: t("reviews.delete_review")}
 								</Button>
 							</View>
 						</View>
 					) : (
 						<Button onPress={() => setShowReviewForm(true)} className="w-full">
-							Write a Review
+							{t("reviews.write_review")}
 						</Button>
 					)}
 				</View>
@@ -192,7 +192,7 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 					<View className="flex-1 justify-center items-center">
 						<ActivityIndicator size="large" />
 						<Text className="mt-2 text-muted-foreground">
-							Loading reviews...
+							{t("reviews.loading")}
 						</Text>
 					</View>
 				) : reviews && reviews.data.length > 0 ? (
@@ -208,10 +208,10 @@ const FeatureReviews: React.FC<FeatureReviewsProps> = ({
 				) : (
 					<View className="flex-1 justify-center items-center p-8">
 						<Text className="text-center text-muted-foreground text-lg">
-							No reviews yet
+							{t("reviews.no_reviews")}
 						</Text>
 						<Text className="text-center text-muted-foreground mt-2">
-							Be the first to share your experience!
+							{t("reviews.be_first")}
 						</Text>
 					</View>
 				)}
