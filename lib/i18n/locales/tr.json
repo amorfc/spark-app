@@ -59,7 +59,9 @@
 			"delete_account": "Hesabı Sil",
 			"delete_account_description": "Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
 			"sign_out_description": "Çıkış yapın ve karşılama ekranına dönün.",
-			"welcome_message": "Ayarlara Hoş Geldiniz"
+			"welcome_message": "Ayarlara Hoş Geldiniz",
+			"guest_mode": "Misafir Modu",
+			"guest_mode_description": "Misafir modunda, tüm özelliklere erişmek için kayıt olun/giriş yapın."
 		},
 		"greetings": {
 			"good_morning": "Günaydın",

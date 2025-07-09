@@ -49,14 +49,11 @@ export default function Settings() {
 	// Handle guest user
 	if (isGuest) {
 		return (
-			<SafeAreaView className="flex-1 bg-background p-4">
+			<SafeAreaView className="flex-1 bg-background px-4 justify-end">
 				<H1>{t("settings.title")}</H1>
-				<View className="flex-1 justify-center gap-4">
-					<H2>Guest Mode</H2>
-					<P>
-						You&apos;re browsing as a guest. Sign up for full access to all
-						features.
-					</P>
+				<View className="flex-1 justify-center gap-y-4">
+					<H2>{t("settings.guest_mode")}</H2>
+					<P>{t("settings.guest_mode_description")}</P>
 
 					<Button onPress={() => router.push(routes.signUp())}>
 						<Text>{t("auth.sign_up")}</Text>
@@ -68,9 +65,16 @@ export default function Settings() {
 					>
 						<Text>{t("auth.sign_in")}</Text>
 					</Button>
+					<LangSelect style={{ borderRadius: 0 }} clearable={false} />
+					<Button
+						className="w-min"
+						size="sm"
+						variant="link"
+						onPress={handleTermsPress}
+					>
+						<Text>{t("auth.terms_and_privacy_link")}</Text>
+					</Button>
 				</View>
-
-				<LangSelect style={{ borderRadius: 0 }} clearable={false} />
 			</SafeAreaView>
 		);
 	}

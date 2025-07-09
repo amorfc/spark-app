@@ -59,7 +59,9 @@
 			"delete_account": "Delete Account",
 			"delete_account_description": "Are you sure you want to delete your account? This action cannot be undone.",
 			"sign_out_description": "Sign out and return to the welcome screen.",
-			"welcome_message": "Welcome to Settings"
+			"welcome_message": "Welcome to Settings",
+			"guest_mode": "Guest Mode",
+			"guest_mode_description": "You're browsing as a guest. Sign up/sign in for full access to all features."
 		},
 		"greetings": {
 			"good_morning": "Good morning",
