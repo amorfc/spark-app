@@ -14,6 +14,7 @@
 		"production": {
 			"distribution": "store",
 			"developmentClient": false,
+			"autoIncrement": true,
 			"env": {
 				"NODE_ENV": "production"
 			},
@@ -22,8 +23,7 @@
 			},
 			"android": {
 				"gradleCommand": ":app:bundleRelease"
-			},
-			"autoIncrement": true
+			}
 		}
 	},
 	"submit": {
