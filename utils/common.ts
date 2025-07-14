@@ -1,3 +1,5 @@
+export const maxReviewLength = 320;
+
 /**
  * Generate a unique ID using timestamp and random number
  * @returns Unique string ID

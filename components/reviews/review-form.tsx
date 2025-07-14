@@ -16,6 +16,7 @@ import { useUpsertReview } from "@/hooks/useReviews";
 import { Review } from "@/types/reviews";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
+import { maxReviewLength } from "@/utils/common";
 
 const getReviewFormSchema = (t: any) =>
 	z.object({
@@ -27,7 +28,15 @@ const getReviewFormSchema = (t: any) =>
 			.number()
 			.min(1, t("reviews.form.quality_rating_required"))
 			.max(5),
-		comment: z.string().optional(),
+		comment: z
+			.string()
+			.max(
+				maxReviewLength,
+				t("posts.reviews.validation.text_max_length", {
+					max: maxReviewLength,
+				}),
+			)
+			.optional(),
 	});
 
 type ReviewFormData = z.infer<ReturnType<typeof getReviewFormSchema>>;
@@ -164,8 +173,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 										onChangeText={field.onChange}
 										onBlur={field.onBlur}
 										className="min-h-20"
+										maxLength={maxReviewLength}
 									/>
 									<FormMessage />
+									<Text className="text-xs text-muted-foreground text-right">
+										{field.value?.length || 0}/{maxReviewLength}{" "}
+										{t("common.characters")}
+									</Text>
 								</View>
 							)}
 						/>

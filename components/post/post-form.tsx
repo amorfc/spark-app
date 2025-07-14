@@ -14,16 +14,16 @@ import { useCreatePost, useUpdatePost } from "@/hooks/usePosts";
 import { Post } from "@/types/posts";
 import { useTranslation } from "@/lib/i18n/hooks";
 import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
+import { maxReviewLength } from "@/utils/common";
 
-const maxPostLength = 500;
 const getPostFormSchema = (t: any) =>
 	z.object({
 		content: z
 			.string()
 			.min(1, t("posts.validation.content_required"))
 			.max(
-				maxPostLength,
-				t("posts.validation.content_max_length", { max: maxPostLength }),
+				maxReviewLength,
+				t("posts.validation.content_max_length", { max: maxReviewLength }),
 			),
 	});
 
@@ -113,13 +113,13 @@ const PostForm: React.FC<PostFormProps> = ({
 										onChangeText={field.onChange}
 										onBlur={field.onBlur}
 										className="min-h-32"
-										maxLength={maxPostLength}
+										maxLength={maxReviewLength}
 									/>
 									<FormMessage />
 									<Text className="text-xs text-muted-foreground text-right">
 										{t("posts.character_count", {
 											count: field.value?.length || 0,
-											max: maxPostLength,
+											max: maxReviewLength,
 										})}
 									</Text>
 								</View>

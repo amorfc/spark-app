@@ -20,8 +20,8 @@ import { useTranslation } from "@/lib/i18n/hooks";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { KeyboardAwareForm } from "@/components/ui/keyboard-aware-form";
 import { useProfile } from "@/hooks/useProfile";
+import { maxReviewLength } from "@/utils/common";
 
-const maxReviewLength = 400;
 const getPostReviewFormSchema = (t: any) =>
 	z.object({
 		text: z

@@ -115,7 +115,6 @@ export const PostCard = ({
 			<FilteredText
 				text={item.content}
 				className="text-foreground leading-5 mb-3"
-				numberOfLines={4}
 			/>
 
 			{/* Post Stats */}
